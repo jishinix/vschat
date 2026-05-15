@@ -1,0 +1,51 @@
+{
+  "name": "vschat-server",
+  "version": "1.0.0-alpha.1",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=../../out/server/index.js --minify --external:pg --external:oracledb --external:tedious --external:mysql --external:sqlite3 --external:better-sqlite3",
+    "prepublishOnly": "npm run build",
+    "test": "npm run build && cd sandbox && npm run test"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jishinix/vschat-server.git"
+  },
+  "keywords": [],
+  "author": "jishinix",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jishinix/vschat-server/issues"
+  },
+  "homepage": "https://github.com/jishinix/vschat-server#readme",
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
+    "@types/crypto-js": "^4.2.2",
+    "@types/express-session": "^1.19.0",
+    "@types/node": "^25.6.2",
+    "@types/node-forge": "^1.3.14",
+    "typescript": "^6.0.3",
+    "@vschat/shared": "*"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "knex": "^3.2.10",
+    "mysql2": "^3.22.3",
+    "node-forge": "^1.4.0",
+    "redis": "^5.12.1",
+    "short-uuid": "^6.0.3"
+  }
+}

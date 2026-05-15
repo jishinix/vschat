@@ -1,0 +1,107 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 1em;
+}
+
+.login .inputWrapper {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--vscode-inlineChatInput-border);
+    padding: 9px;
+    cursor: text;
+}
+
+.login .inputWrapper:hover {
+    border-color: gray;
+}
+
+.login .inputWrapper:focus-within {
+    background: #464646;
+    border-color: gray;
+}
+
+.login .inputWrapper input {
+    outline: none;
+    width: 100%;
+    border: none;
+    background: none;
+    color: rgb(162, 162, 162);
+}
+
+.login .inputWrapper input:focus+.slash-icon,
+.login .inputWrapper input:valid+.slash-icon {
+    display: none;
+}
+
+.login .inputWrapper input:valid~.search-icon {
+    display: block;
+}
+
+
+.login .inputWrapper svg,
+.slash-icon {
+    position: absolute;
+    color: #7e7e7e;
+}
+
+.search-icon {
+    display: none;
+    width: 12px;
+    height: auto;
+}
+
+.slash-icon {
+    right: 7px;
+    border: 1px solid #393838;
+    background: linear-gradient(-225deg, #343434, #6d6d6d);
+    border-radius: 3px;
+    text-align: center;
+    box-shadow: inset 0 -2px 0 0 #3f3f3f, inset 0 0 1px 1px rgb(94, 93, 93), 0 1px 2px 1px rgba(28, 28, 29, 0.4);
+    cursor: pointer;
+    font-size: 12px;
+    width: 15px;
+}
+
+.slash-icon:active {
+    box-shadow: inset 0 1px 0 0 #3f3f3f, inset 0 0 1px 1px rgb(94, 93, 93), 0 1px 2px 0 rgba(28, 28, 29, 0.4);
+    text-shadow: 0 1px 0 #7e7e7e;
+    color: transparent;
+}
+
+.footnote {
+    font-size: .6em;
+    user-select: none;
+}
+
+.link {
+    color: var(--vscode-textLink-foreground);
+    cursor: pointer;
+}
+
+.loginButton {
+    display: flex;
+    align-items: center;
+    border-radius: var(--vscode-cornerRadius-medium);
+    white-space: nowrap;
+    padding: 0 8px;
+    height: 22px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border-color: var(--vscode-button-background);
+    justify-content: center;
+    cursor: pointer;
+}
+
+.loginButton:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}

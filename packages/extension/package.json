@@ -1,0 +1,67 @@
+{
+  "name": "extension",
+  "displayName": "vschat",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.115.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:vschat-sidebar"
+  ],
+  "main": "../../out/extension/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vschat-sidebar-container",
+          "title": "Visual Studio Chat",
+          "icon": "resources/chat-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "vschat-sidebar-container": [
+        {
+          "type": "webview",
+          "id": "vschat-sidebar",
+          "name": "Chat",
+          "icon": "resources/chat-icon.svg"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "extension.helloWorld",
+        "title": "Hello World"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "npm run bundle && npm run copy-assets",
+    "bundle": "esbuild src/extension.ts --bundle --outfile=../../out/extension/extension.js --external:vscode --format=cjs --platform=node",
+    "copy-assets": "shx mkdir -p ../../out/extension/resources && shx cp package.json ../../out/extension/ && shx cp -r resources/* ../../out/extension/resources/",
+    "watch": "npm run bundle -- --watch",
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "dependencies": {
+    "@vschat/shared": "*"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.120.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.56.1",
+    "eslint": "^9.39.3",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}

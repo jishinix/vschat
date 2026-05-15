@@ -1,0 +1,54 @@
+
+
+
+Register:
+    Client:
+        input passwort + username
+        hashedPassword = hash(password)
+        generate private public keypair;
+        generate masterkey
+        encrypt(private_key, masterkey);
+        const masterkeycodes = [password, ...randomCodes];
+        const encryptMasterkeys = encrypt(masterkey, ...masterkeycodes);
+        encryptMasterkeys + hashedPassword + username + hash(masterkey) -> server;
+    Server: 
+        save encryptMasterkeys + hashedPassword + username + masterkey_hash
+
+Login: 
+    Client:
+        input passwort + username,
+        request server challenge;
+    Server: 
+        return randomNumber
+    Client:
+        request sessionToken body: hash(hash(passwort) + randomNumber)
+    Server:
+        check body == hash(saved_hashed_passwort + randomNumber);
+        generate sessionToken
+        return encrypt({sessiontoken: sessionToken, masterkeycodes: [...masterkeycodes]}, saved_hashed_passwort);
+    Client:
+        const payload = decrypt(encrypted_payload, hash(passwort));
+        save payload.sessionToken;
+        const masterkey = found(payload.masterkeycodes, decrypt(payload.masterkeycodes, password));
+        save masterkey
+
+        
+Password lost:
+    Client:
+        request encryptedmasterkeycodes
+    Server:
+        return encryptedmasterkeycodes
+    Client:
+        const masterkey = found(payload.encryptedmasterkeycodes, decrypt(payload.masterkeycodes, baclupcode));
+        request resetpassword challenge
+    Server:
+        return random Number
+    Client:
+        send to server: hash(hash(masterkey) + challange) + encrypt(hash(newPassword), hash(masterkey));
+    Server: 
+        check body == hash(saved_hashed_masterkey + challenge);
+        save new password
+
+
+        
+

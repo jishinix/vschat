@@ -1,0 +1,7 @@
+# Ignoriert node_modules in jedem Verzeichnis
+**/node_modules/
+
+# Ignoriert .env Dateien in jedem Verzeichnis
+**/.env
+
+/out/

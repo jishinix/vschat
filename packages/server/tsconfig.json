@@ -1,0 +1,36 @@
+{
+    "compilerOptions": {
+        /* Basis-Einstellungen */
+        "target": "ES2022", // Moderner JS-Standard für Node.js
+        "module": "node16", // Standard für die meisten Node-Projekte
+        "lib": [
+            "ES2022"
+        ],
+        "rootDir": "src", // Wo dein TS-Code liegt
+        "outDir": "../../out/server", // Wo das fertige JS hinkommt
+        /* Library-spezifisch (WICHTIG) */
+        "declaration": true, // Erstellt .d.ts Dateien für Autocomplete
+        "declarationMap": true, // Verknüpft Typen mit deinem Code für besseres Debugging
+        "sourceMap": true, // Hilft beim Debuggen von Fehlern im Originalcode
+        /* Strenge & Sicherheit */
+        "strict": true, // Aktiviert alle strengen Typ-Prüfungen
+        "noImplicitAny": true,
+        "esModuleInterop": true, // Wichtig für Kompatibilität (z.B. mit fs oder path)
+        "skipLibCheck": true, // Beschleunigt das Compilen
+        "forceConsistentCasingInFileNames": true,
+        /* Struktur */
+        "moduleResolution": "Node16",
+        "types": [
+            "node"
+        ],
+        "resolveJsonModule": true, // Falls du JSON-Dateien importieren willst
+        "removeComments": false // Kommentare behalten (hilfreich für JSDoc)
+    },
+    "include": [
+        "src/**/*"
+    ], // Alles im src-Ordner compilen
+    "exclude": [
+        "node_modules",
+        "**/*.test.ts"
+    ] // Tests und Module ignorieren
+}

@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Extension",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/out/extension"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/out/extension/**/*.js"
+            ],
+            "preLaunchTask": "execute",
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "NODE_TLS_REJECT_UNAUTHORIZED": "0" // Dann kannst du das auch aus dem Code löschen
+            }
+        }
+    ]
+}
