@@ -1,12 +1,8 @@
-import { AuthActionRtnCodes } from "@vschat/shared/interfaces/ApiInterfaces";
-import { Return } from "@vschat/shared/models/Return";
+import { AuthActionChallangeExtensionRtn, AuthActionLoginExtensionRtn, AuthActionRtnCodes, loginPayload } from "@vschat/shared/interfaces/ApiInterfaces";
+import { iReturn, Return } from "@vschat/shared/models/Return";
 import { EncryptedMasterkeysPayload } from "./AuthService";
 
-export interface loginPayload {
-    sessionToken: string;
-    encryptedPrivatekey: string;
-    encryptedMasterkeyMainSlot: string
-}
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 export class ApiService {
@@ -14,16 +10,16 @@ export class ApiService {
 
     private static async request<T>(path: string, method: "GET" | "POST", body?: any): Promise<T> {
         try {
-            console.log(`${this.baseUrl}${path}`);
+            const identifyer = Math.random().toString(36).substring(7);
+            console.log('[serverRESTApi][extension] send:', identifyer, `${this.baseUrl}${path}`, method, body)
             const response = await fetch(`${this.baseUrl}${path}`, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: body ? JSON.stringify(body) : undefined
             });
 
-            console.log(await response.text())
-
             const result = await response.json();
+            console.log('[serverRESTApi][extension] resive:', identifyer, result)
             return result as T;
         } catch (e) {
             console.log(e);
@@ -42,19 +38,19 @@ export class ApiService {
         return new Return(res.code, res.data);
     }
 
-    static async getLoginChallenge(username: string): Promise<string> {
-        const res: any = await this.request(`/challenge/login/${username}`, "GET");
-        return res.data;
+    static async getLoginChallenge(username: string): Promise<AuthActionChallangeExtensionRtn> {
+        const res = await this.request<AuthActionChallangeExtensionRtn>(`/challenge/login/${username}`, "GET");
+        return res;
     }
 
-    static async getRecoveryChallenge(username: string): Promise<string> {
-        const res: any = await this.request(`/challenge/recovery/${username}`, "GET");
-        return res.data;
+    static async getRecoveryChallenge(username: string): Promise<AuthActionChallangeExtensionRtn> {
+        const res = await this.request<AuthActionChallangeExtensionRtn>(`/challenge/recovery/${username}`, "GET");
+        return res;
     }
 
-    static async login(solvedChallenge: string, challenge: string, username: string): Promise<loginPayload | null> {
-        const res: any = await this.request("/login", "POST", { solvedChallenge, challenge, username });
-        return res.code === 0 ? res.data : null;
+    static async login(solvedChallenge: string, challenge: string, username: string): Promise<AuthActionLoginExtensionRtn> {
+        const res = await this.request<AuthActionLoginExtensionRtn>("/login", "POST", { solvedChallenge, challenge, username });
+        return res;
     }
 
     static async resetPassword(solvedChallenge: string, challenge: string, username: string, hashedNewPassword: string, newMainSlot: string): Promise<boolean> {

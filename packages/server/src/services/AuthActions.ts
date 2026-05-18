@@ -1,5 +1,5 @@
 import { Return } from "@vschat/shared/models/Return";
-import { AuthActionRtnCodes } from "@vschat/shared/interfaces/ApiInterfaces"
+import { AuthActionLoginExtensionRtn, AuthActionRtnCodes } from "@vschat/shared/interfaces/ApiInterfaces"
 import { User } from "../models/User";
 import { CryptoService } from "./CryptService";
 import { userLoader } from "./UserLoader";
@@ -81,21 +81,13 @@ class AuthActions {
         return new Return(AuthActionRtnCodes.success, challenge);
     }
 
-    async login(solvedChallenge: string, challenge: string, username: string):
-        Promise<
-            Return<AuthActionRtnCodes.success, loginPayload> |
-            Return<
-                AuthActionRtnCodes.challangeExpired |
-                AuthActionRtnCodes.invalidChallange |
-                AuthActionRtnCodes.userNotFound
-                , undefined>
-        > {
+    async login(solvedChallenge: string, challenge: string, username: string): Promise<AuthActionLoginExtensionRtn> {
         const checkChallengeResult = await this.checkChallengeResult('login', solvedChallenge, challenge, username);
         if (checkChallengeResult.code !== AuthActionRtnCodes.success) return checkChallengeResult;
 
         const user = checkChallengeResult.data;
         return new Return<AuthActionRtnCodes.success, loginPayload>(AuthActionRtnCodes.success, {
-            sessionToken: '', // später wird noch sessionlogig ergänzt
+            sessionToken: 'session-token', // später wird noch sessionlogig ergänzt
             encryptedPrivatekey: user.data.encryptedPrivateKey,
             encryptedMasterkeyMainSlot: user.data.encryptedMainSlot
         });

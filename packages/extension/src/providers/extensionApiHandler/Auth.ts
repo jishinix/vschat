@@ -18,19 +18,19 @@ export const extensionAuthApi = async (command: string, send: (message: any) => 
     }
     switch (command) {
         case 'register':
-            if (data && data.username && data.password) send(await authService.register(data.username, data.password))
+            if (data && data.username && data.password) return send(await authService.register(data.username, data.password))
             send(new Return(AuthActionRtnCodes.incompleatInformations, missingData));
             break;
         case 'login':
-            if (data && data.username && data.password) send(await authService.login(data.username, data.password))
+            if (data && data.username && data.password) return send(await authService.login(data.username, data.password))
             send(new Return(AuthActionRtnCodes.incompleatInformations, missingData));
             break;
         case 'recover':
-            if (data && data.username && data.password && data.backupcode) send(await authService.recover(data.username, data.backupcode, data.newPassword))
+            if (data && data.username && data.password && data.backupcode) return send(await authService.recover(data.username, data.backupcode, data.newPassword))
             send(false);
             break;
         case 'loginstate':
-            if (!!authService.sessionToken) send(true);
+            if (!!authService.sessionToken) return send(true);
             send(false)
 
             break;

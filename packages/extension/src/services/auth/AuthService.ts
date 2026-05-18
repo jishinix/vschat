@@ -2,7 +2,8 @@ import { ApiService } from "./ApiService";
 import { CryptoService } from "./CryptoService";
 import { randomBytes } from 'crypto';
 import * as CryptoJS from 'crypto-js';
-import { AuthActionRtnCodes } from "@vschat/shared/interfaces/ApiInterfaces"
+import { AuthActionLoginWebViewRtn, AuthActionRegisterWebViewRtn, AuthActionRtnCodes } from "@vschat/shared/interfaces/ApiInterfaces"
+import { Return } from "@vschat/shared/models/Return";
 
 export interface EncryptedMasterkeysPayload {
     mainSlot: string,
@@ -16,7 +17,7 @@ class AuthService {
     privateKey?: string;
     masterkey?: string;
 
-    async register(username: string, password: string) {
+    async register(username: string, password: string): Promise<AuthActionRegisterWebViewRtn> {
 
         const hashedPassword = await CryptoService.deriveHashes(password);
         const keypair = CryptoService.generateRSAKeys();
@@ -29,11 +30,7 @@ class AuthService {
             masterkeyProof: await CryptoService.deriveHashes(masterkey)
         };
         const apiResult = await ApiService.register(username, hashedPassword, keypair.publicKey, encryptedPrivatekey, encryptedMasterkeysPayloads)
-        if (apiResult.code === AuthActionRtnCodes.success) {
-            return await this.login(username, password);
-        } else {
-            return apiResult;
-        }
+        return apiResult;
     }
 
     private generateBackupCodes(count: number = 10, length: number = 8): string[] {
@@ -51,18 +48,22 @@ class AuthService {
         return codes;
     }
 
-    async login(username: string, password: string) {
+    async login(username: string, password: string): Promise<AuthActionLoginWebViewRtn> {
         const hashedPassword = await CryptoService.deriveHashes(password);
-        const challenge = await ApiService.getLoginChallenge(username);
+        const challengeRtn = await ApiService.getLoginChallenge(username);
+        if (challengeRtn.code !== 0) return challengeRtn;
+        const challenge = challengeRtn.data;
         const solvedChallenge = await CryptoService.createAuthProof(hashedPassword, challenge);
 
-        const loginPayload = await ApiService.login(solvedChallenge, challenge, username);
-        if (!loginPayload) return false;
+        const loginRtn = await ApiService.login(solvedChallenge, challenge, username);
+        if (loginRtn.code !== 0) return loginRtn;
+
+        const loginPayload = loginRtn.data;
 
         this.sessionToken = loginPayload.sessionToken;
         this.masterkey = CryptoService.decryptText(loginPayload.encryptedMasterkeyMainSlot, password);
         this.privateKey = CryptoService.decryptText(loginPayload.encryptedPrivatekey, this.masterkey);
-        return true;
+        return new Return(AuthActionRtnCodes.success, this.sessionToken);
     }
 
     async recover(username: string, backupcode: string, newPassword: string) {
@@ -72,7 +73,9 @@ class AuthService {
         if (!masterkey) return false;
 
         const hashedMasterkey = await CryptoService.deriveHashes(masterkey);
-        const challenge = await ApiService.getRecoveryChallenge(username);
+        const challengeRtn = await ApiService.getLoginChallenge(username);
+        if (challengeRtn.code !== 0) return challengeRtn;
+        const challenge = challengeRtn.data;
         const solvedChallenge = await CryptoService.createAuthProof(hashedMasterkey, challenge);
         const newMainSlot = CryptoService.encryptData(masterkey, newPassword);
 

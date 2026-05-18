@@ -37,7 +37,7 @@ export const views = {
                 <label class="inputWrapper">
                     <input type="password" name="text" class="input" required="" id="password" placeholder="Passwort">
                 </label>
-                <button class="loginButton" id="registerBtn">Einloggen</button>
+                <button class="loginButton" id="registerBtn">Registrieren</button>
                 <span class="footnote">Schon einen Account? dann <span class="link" id="loginlink">Einloggen</span></span>
             </div>
         `
@@ -48,8 +48,10 @@ export const views = {
             document.getElementById('registerBtn')?.addEventListener('click', () => {
                 const un = document.getElementById('username') as HTMLInputElement;
                 const pw = document.getElementById('password') as HTMLInputElement;
-                if (un && un.value && pw && pw.value)
-                    authApi.register(un.value, pw.value);
+                if (un && un.value && pw && pw.value) {
+                    const rtn = authApi.register(un.value, pw.value);
+                    rtn.then(e => e)
+                }
             })
         }, 1)
     }

@@ -1,5 +1,5 @@
 import { ExtensionAPIBase } from "./ApiBase.js";
-import type { AuthActionRegisterRtn } from "@vschat/shared/interfaces/ApiInterfaces.js"
+import { type AuthActionLoginWebViewRtn, type AuthActionRegisterWebViewRtn } from "@vschat/shared/interfaces/ApiInterfaces.js"
 
 
 class AuthApi extends ExtensionAPIBase {
@@ -10,11 +10,11 @@ class AuthApi extends ExtensionAPIBase {
         return await this.request<boolean>('loginstate')
     }
     async register(username: string, password: string) {
-        return await this.request<AuthActionRegisterRtn>('register', { username, password })
+        return await this.request<AuthActionRegisterWebViewRtn>('register', { username, password })
     }
 
     async login(username: string, password: string) {
-        return await this.request('login', { username, password })
+        return await this.request<AuthActionLoginWebViewRtn>('login', { username, password })
     }
 
     async recover(username: string, backupcode: string, newPassword: string) {
