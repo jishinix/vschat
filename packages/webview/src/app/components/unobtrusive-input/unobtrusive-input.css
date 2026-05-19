@@ -1,0 +1,18 @@
+input {
+    background-color: var(--vscode-agentStatusIndicator-background);
+    border: 1px solid var(--vscode-commandCenter-border, transparent);
+    border-radius: 6px;
+    margin: .2em 0;
+    width: 100%;
+    padding: .2em .7em;
+    color: #fff;
+    box-sizing: border-box;
+}
+
+input:hover {
+    background-color: var(--vscode-agentStatusIndicator-background);
+}
+
+input:focus {
+    border-color: #fff;
+}

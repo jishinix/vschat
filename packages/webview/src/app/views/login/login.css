@@ -1,0 +1,11 @@
+.btn-login-wrapper {
+    margin-top: .5em;
+    display: flex;
+    justify-content: end;
+    flex-direction: row-reverse;
+    gap: .5em;
+}
+
+.error-banner {
+    color: var(--vscode-errorForeground, red);
+}

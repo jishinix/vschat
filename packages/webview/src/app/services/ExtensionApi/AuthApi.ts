@@ -1,8 +1,11 @@
 import { ExtensionAPIBase } from "./ApiBase.js";
+import { Injectable } from '@angular/core';
 import { type AuthActionLoginWebViewRtn, type AuthActionRegisterWebViewRtn } from "@vschat/shared/interfaces/ApiInterfaces.js"
 
-
-class AuthApi extends ExtensionAPIBase {
+@Injectable({
+    providedIn: 'root'
+})
+export class AuthApi extends ExtensionAPIBase {
     constructor() {
         super('auth')
     }
@@ -21,6 +24,3 @@ class AuthApi extends ExtensionAPIBase {
         return await this.request('recover', { username, backupcode, newPassword })
     }
 }
-
-
-export const authApi = new AuthApi();

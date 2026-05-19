@@ -10,6 +10,15 @@ export enum AuthActionRtnCodes {
     internalError
 }
 
+export const AuthActionRtnCodesMessageMap = {
+    [AuthActionRtnCodes.userNameAlreadyExists]: 'Username Already Exists.',
+    [AuthActionRtnCodes.userNotFound]: 'Nutzer Nicht gefunden.',
+    [AuthActionRtnCodes.challangeExpired]: 'Challange ist Abgelaufen.',
+    [AuthActionRtnCodes.invalidChallange]: 'Challange ist ungültig. Aktion Fehlgeschlagen.',
+    [AuthActionRtnCodes.incompleatInformations]: 'Angaaben unvolständig.',
+    [AuthActionRtnCodes.internalError]: 'Interner Servererror.',
+}
+
 export interface loginPayload {
     sessionToken: string;
     encryptedPrivatekey: string;
@@ -26,12 +35,12 @@ export type AuthActionRegisterWebViewRtn =
 
 export type AuthActionLoginWebViewRtn =
     iReturn<AuthActionRtnCodes.incompleatInformations, string[]> |
-    iReturn<AuthActionRtnCodes.success, string> |
     iReturn<
         AuthActionRtnCodes.internalError |
         AuthActionRtnCodes.userNotFound |
         AuthActionRtnCodes.invalidChallange |
-        AuthActionRtnCodes.challangeExpired
+        AuthActionRtnCodes.challangeExpired |
+        AuthActionRtnCodes.success
         , undefined
     >
 

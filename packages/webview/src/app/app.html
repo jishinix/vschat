@@ -1,0 +1,25 @@
+<div class="vschat-container">
+
+	@switch (currentView) {
+	@case ('login') {
+	<app-login (loginSuccess)="switchView('chat')" (registerPage)="switchView('register')"></app-login>
+	}
+	@case ('register') {
+	<app-register (loginSuccess)="switchView('chat')"></app-register>
+	}
+	@case ('chat') {
+	<app-chat></app-chat>
+	}
+	@case ('chatlist') {
+	<app-chatlist></app-chatlist>
+	}
+	}
+	<br><br><br><br><br>
+	<footer class="test-nav">
+		<button (click)="switchView('login')">Login</button>
+		<button (click)="switchView('chat')">Chat</button>
+		<button (click)="switchView('register')">Register</button>
+		<button (click)="switchView('chatlist')">chatlist</button>
+	</footer>
+
+</div>

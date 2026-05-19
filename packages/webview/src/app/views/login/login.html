@@ -1,0 +1,22 @@
+<div class="login-container" (keydown.enter)="onLoginSubmit()">
+    <h2>VSChat Login</h2>
+    <p class="subtitle">Melde dich an um los zu legen!</p>
+    <app-unobtrusive-input placeholder="Benutzername | Zoey" type="text" [(value)]="username"></app-unobtrusive-input>
+
+    <app-unobtrusive-input placeholder="Passwort | Geheim" type="password" [(value)]="password"></app-unobtrusive-input>
+
+    @if (errorMessage) {
+    <div class="error-banner">
+        {{ errorMessage }}
+    </div>
+    }
+
+    <div class="btn-login-wrapper">
+        <button class="btn-primary" (click)="onLoginSubmit()" [disabled]="!username.trim() || !password.trim()">
+            Einloggen
+        </button>
+        <button class="btn-secondary" (click)="registerPage.emit()">
+            zum Registrieren
+        </button>
+    </div>
+</div>

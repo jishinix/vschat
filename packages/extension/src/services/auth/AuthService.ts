@@ -63,7 +63,7 @@ class AuthService {
         this.sessionToken = loginPayload.sessionToken;
         this.masterkey = CryptoService.decryptText(loginPayload.encryptedMasterkeyMainSlot, password);
         this.privateKey = CryptoService.decryptText(loginPayload.encryptedPrivatekey, this.masterkey);
-        return new Return(AuthActionRtnCodes.success, this.sessionToken);
+        return new Return(AuthActionRtnCodes.success, undefined);
     }
 
     async recover(username: string, backupcode: string, newPassword: string) {
