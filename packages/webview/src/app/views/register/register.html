@@ -1,1 +1,24 @@
-<p>register works!</p>
+<div class="login-container" (keydown.enter)="onRegisterSubmit()">
+    <h2>VSChat Registrieren</h2>
+    <p class="subtitle">Registriere dich!</p>
+    <app-unobtrusive-input placeholder="Benutzername | Zoey" type="text" [(value)]="username"></app-unobtrusive-input>
+
+    <app-unobtrusive-input placeholder="Passwort | Geheim" type="password" [(value)]="password"></app-unobtrusive-input>
+    <app-unobtrusive-input placeholder="Passwort wiederhohlen" type="password"
+        [(value)]="passwordConfirm"></app-unobtrusive-input>
+
+    @if (errorMessage) {
+    <div class="error-banner">
+        {{ errorMessage }}
+    </div>
+    }
+
+    <div class="btn-login-wrapper">
+        <button class="btn-primary" (click)="onRegisterSubmit()" [disabled]="!username.trim() || !password.trim()">
+            Registrieren
+        </button>
+        <button class="btn-secondary" (click)="loginPage.emit()">
+            zum Einloggen
+        </button>
+    </div>
+</div>

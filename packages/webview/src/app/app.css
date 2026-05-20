@@ -1,0 +1,4 @@
+.generalSuccsessNotificaton,
+.generalErrorNotificaton {
+    color: var(--vscode-errorForeground, red);
+}

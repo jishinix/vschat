@@ -3,12 +3,14 @@ import { FormsModule } from '@angular/forms'; // UNBEDINGT ERFORDERLICH für [(n
 import { AuthApi } from '../../services/ExtensionApi/AuthApi'
 import { UnobtrusiveInput } from '../../components/unobtrusive-input/unobtrusive-input';
 import { AuthActionRtnCodes, AuthActionRtnCodesMessageMap } from '@vschat/shared/interfaces/ApiInterfaces'
+import { CollapsibleTab } from '../../components/collapsible-tab/collapsible-tab';
 
 @Component({
 	selector: 'app-login',
 	imports: [
 		FormsModule,
-		UnobtrusiveInput
+		UnobtrusiveInput,
+		CollapsibleTab
 	],
 	templateUrl: './login.html',
 	styleUrl: './login.css',

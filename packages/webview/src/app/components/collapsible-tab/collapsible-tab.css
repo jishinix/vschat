@@ -1,0 +1,64 @@
+.collapsible-tab {
+    position: relative;
+    --header-offset: var(--next-offset, 0px);
+    --zindex: var(--lastindex, 9999999)
+}
+
+.collapsible-tab>.collabsible-tab-header {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: .2em;
+    transition-duration: 200ms;
+    position: sticky;
+    top: var(--header-offset);
+    z-index: var(--zindex);
+    background-color: var(--vscode-sideBar-background);
+    color: var(--vscode-foreground);
+}
+
+.collapsible-tab>.collabsible-tab-header div {
+    flex-grow: 1;
+}
+
+.collapsible-tab>.contentWrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition-duration: 200ms;
+    --next-offset: calc(var(--header-offset) + 24px);
+    --lastindex: calc(var(--zindex) - 1)
+}
+
+.collapsible-tab.active>.contentWrapper {
+    grid-template-rows: 1fr;
+}
+
+.collapsible-tab>.contentWrapper>* {
+    margin-left: 1em;
+    color: var(--vscode-foreground);
+    overflow: hidden;
+}
+
+.collapsible-tab.active>.contentWrapper>* {
+    overflow: visible;
+}
+
+.collapsible-tab>.collabsible-tab-header:hover {
+    color: var(--vscode-button-hoverBackground);
+}
+
+.collapsible-tab>.collabsible-tab-header svg {
+    width: 12px;
+    transition-duration: 200ms;
+    fill: var(--vscode-foreground);
+}
+
+
+.collapsible-tab>.collabsible-tab-header:hover svg {
+    fill: var(--vscode-button-hoverBackground);
+}
+
+.collapsible-tab.active>.collabsible-tab-header svg {
+    transform: rotate(90deg);
+}

@@ -6,6 +6,11 @@ import { Register } from './views/register/register';
 
 type AppViews = 'login' | 'register' | 'chatlist' | 'chat'
 
+export interface ViewSwitchMessage {
+	succsess?: string,
+	error?: string
+}
+
 @Component({
 	selector: 'app-root',
 	imports: [
@@ -21,8 +26,13 @@ type AppViews = 'login' | 'register' | 'chatlist' | 'chat'
 export class App {
 	protected readonly title = signal('webview');
 	currentView: AppViews = 'login';
+	generalSuccsess: string = "";
+	generalError: string = "";
 
-	switchView(view: AppViews) {
+	switchView(view: AppViews, viewSwitchMessage: ViewSwitchMessage = {}) {
+		this.generalSuccsess = viewSwitchMessage.succsess || '';
+		this.generalError = viewSwitchMessage.error || '';
+
 		this.currentView = view;
 	}
 }

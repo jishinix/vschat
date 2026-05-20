@@ -1,11 +1,23 @@
 <div class="vschat-container">
 
+	@if (generalSuccsess) {
+	<span class="generalSuccsessNotificaton">
+		{{ generalSuccsess }}
+	</span>
+	}
+	@if (generalError) {
+	<span class="generalErrorNotificaton">
+		{{ generalError }}
+	</span>
+	}
+
 	@switch (currentView) {
 	@case ('login') {
 	<app-login (loginSuccess)="switchView('chat')" (registerPage)="switchView('register')"></app-login>
 	}
 	@case ('register') {
-	<app-register (loginSuccess)="switchView('chat')"></app-register>
+	<app-register (registerSuccess)="switchView('chat')" (loginPage)="switchView('login', $event || {})">
+	</app-register>
 	}
 	@case ('chat') {
 	<app-chat></app-chat>
@@ -14,6 +26,7 @@
 	<app-chatlist></app-chatlist>
 	}
 	}
+
 	<br><br><br><br><br>
 	<footer class="test-nav">
 		<button (click)="switchView('login')">Login</button>
