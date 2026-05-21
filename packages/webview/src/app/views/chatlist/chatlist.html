@@ -1,1 +1,12 @@
-<p>chatlist works!</p>
+<app-chat-overlay>
+    @for(chat of chats; track chat.id) {
+
+    } @empty {
+    <div class="chat-list-add-friends-button-wrapper">
+        <p>Keine Aktiven Chats Vorhanden</p>
+        <button class="btn-primary" (click)="navigation.switchView('friends')">
+            Freunde Hinzufügen
+        </button>
+    </div>
+    }
+</app-chat-overlay>

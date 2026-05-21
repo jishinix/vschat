@@ -1,16 +1,14 @@
-import { Component, signal } from '@angular/core'; import { CommonModule } from '@angular/common';
+import { Component, Injectable, signal } from '@angular/core'; import { CommonModule } from '@angular/common';
 import { Login } from './views/login/login';
 import { Chat } from './views/chat/chat';
 import { Chatlist } from './views/chatlist/chatlist';
 import { Register } from './views/register/register';
+import { NavigationService } from './services/NavigationService';
+import { Friends } from './views/friends/friends';
 
-type AppViews = 'login' | 'register' | 'chatlist' | 'chat'
-
-export interface ViewSwitchMessage {
-	succsess?: string,
-	error?: string
-}
-
+@Injectable({
+	providedIn: 'root'
+})
 @Component({
 	selector: 'app-root',
 	imports: [
@@ -18,21 +16,12 @@ export interface ViewSwitchMessage {
 		Login,
 		Chat,
 		Chatlist,
-		Register
+		Register,
+		Friends
 	],
 	templateUrl: './app.html',
 	styleUrl: './app.css'
 })
 export class App {
-	protected readonly title = signal('webview');
-	currentView: AppViews = 'login';
-	generalSuccsess: string = "";
-	generalError: string = "";
-
-	switchView(view: AppViews, viewSwitchMessage: ViewSwitchMessage = {}) {
-		this.generalSuccsess = viewSwitchMessage.succsess || '';
-		this.generalError = viewSwitchMessage.error || '';
-
-		this.currentView = view;
-	}
+	constructor(public navigation: NavigationService) { }
 }

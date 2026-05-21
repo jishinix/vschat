@@ -15,7 +15,7 @@
         <button class="btn-primary" (click)="onLoginSubmit()" [disabled]="!username.trim() || !password.trim()">
             Einloggen
         </button>
-        <button class="btn-secondary" (click)="registerPage.emit()">
+        <button class="btn-secondary" (click)="navigation.switchView('register')">
             zum Registrieren
         </button>
     </div>

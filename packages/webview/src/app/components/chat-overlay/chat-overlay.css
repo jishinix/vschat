@@ -1,0 +1,46 @@
+.chatOverlay {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.chatOverlay header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: .5em;
+    border-bottom: solid 1px var(--vscode-activityBarTop-activeBorder);
+    padding: .5em;
+}
+
+.chatOverlay header svg {
+    fill: var(--vscode-foreground);
+    width: 24px;
+    cursor: pointer;
+}
+
+.chatOverlay header svg:hover {
+    fill: var(--vscode-button-hoverBackground);
+}
+
+.chatOverlay .chatOverlayContent {
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.chatOverlay footer {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: .5em;
+    background-color: var(--vscode-editor-hoverHighlightBackground);
+}
+
+.chatOverlay footer .profilePic {
+    aspect-ratio: 1;
+    width: 24px;
+    background-color: var(--vscode-button-hoverBackground);
+    border-radius: 50%;
+}
+
+.chatOverlay footer .username {}

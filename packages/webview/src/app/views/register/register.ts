@@ -3,7 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { UnobtrusiveInput } from '../../components/unobtrusive-input/unobtrusive-input';
 import { AuthApi } from '../../services/ExtensionApi/AuthApi';
 import { AuthActionRtnCodes, AuthActionRtnCodesMessageMap } from '@vschat/shared/interfaces/ApiInterfaces';
-import { ViewSwitchMessage } from '../../app';
+import { NavigationService } from '../../services/NavigationService';
+import { ExtensionBackendCommunication } from '../../services/ExtensionApi/ExtensionBackendCommunication';
 
 @Component({
     selector: 'app-register',
@@ -21,10 +22,7 @@ export class Register {
 
     public errorMessage: string = '';
 
-    @Output() registerSuccess = new EventEmitter<void>();
-    @Output() loginPage = new EventEmitter<void | ViewSwitchMessage>();
-
-    constructor(private authApi: AuthApi, private cdr: ChangeDetectorRef) { }
+    constructor(private ebc: ExtensionBackendCommunication, private cdr: ChangeDetectorRef, public navigation: NavigationService) { }
 
     public async onRegisterSubmit(): Promise<void> {
         this.errorMessage = '';
@@ -43,15 +41,17 @@ export class Register {
             return;
         }
 
-        const registerResult = await this.authApi.register(username, password);
+        console.log('1');
+        const registerResult = await this.ebc.auth.register(username, password);
         if (registerResult.code !== AuthActionRtnCodes.success) {
             this.errorMessage = AuthActionRtnCodesMessageMap[registerResult.code];
         } else {
-            const loginResult = await this.authApi.login(username, password);
+            const loginResult = await this.ebc.auth.login(username, password);
             if (loginResult.code !== AuthActionRtnCodes.success) {
-                this.loginPage.emit({ succsess: "Account wurde erfolgreich erstellt." });
+                console.log(loginResult);
+                this.navigation.switchView('login', { success: "Account wurde erfolgreich erstellt." })
             } else {
-                this.registerSuccess.emit();
+                this.navigation.switchView('chatlist',)
             }
         }
         this.cdr.detectChanges();

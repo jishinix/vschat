@@ -27,7 +27,8 @@
         "removeComments": false // Kommentare behalten (hilfreich für JSDoc)
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "../shared/Utils/Cache.ts"
     ], // Alles im src-Ordner compilen
     "exclude": [
         "node_modules",

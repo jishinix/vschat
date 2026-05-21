@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { HandleBase } from './extensionApiHandler/HandleBase';
+import { WebviewCommunication } from '../services/WebviewApi/WebviewCommunication';
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'vschat-sidebar';
@@ -21,7 +21,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        new HandleBase(webviewView.webview);
+        new WebviewCommunication(webviewView.webview);
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {

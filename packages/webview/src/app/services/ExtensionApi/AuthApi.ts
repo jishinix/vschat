@@ -1,13 +1,13 @@
-import { ExtensionAPIBase } from "./ApiBase.js";
-import { Injectable } from '@angular/core';
 import { type AuthActionLoginWebViewRtn, type AuthActionRegisterWebViewRtn } from "@vschat/shared/interfaces/ApiInterfaces.js"
+import { NamespaceHandler } from '@vschat/shared/Utils/BidirectionalMessageProtocolNamespaceWrapper.js'
 
-@Injectable({
-    providedIn: 'root'
-})
-export class AuthApi extends ExtensionAPIBase {
+
+export class AuthApi extends NamespaceHandler {
     constructor() {
         super('auth')
+    }
+    handle(command: string, data?: Record<string, any> | undefined): any | Promise<any> {
+
     }
     async getLoginState() {
         return await this.request<boolean>('loginstate')

@@ -1,7 +1,7 @@
 import { database } from "./DbService";
 import { User } from "../models/User";
 import { AutosaveObserver } from "../Utils/AutosaveObserver";
-import { Cache } from "./Cache";
+import { Cache } from "@vschat/shared/Utils/Cache";
 
 export interface RawUserData {
     id: string;

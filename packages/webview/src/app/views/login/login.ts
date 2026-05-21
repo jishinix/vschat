@@ -1,9 +1,10 @@
 import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // UNBEDINGT ERFORDERLICH für [(ngModel)]
-import { AuthApi } from '../../services/ExtensionApi/AuthApi'
+import { ExtensionBackendCommunication } from '../../services/ExtensionApi/ExtensionBackendCommunication'
 import { UnobtrusiveInput } from '../../components/unobtrusive-input/unobtrusive-input';
 import { AuthActionRtnCodes, AuthActionRtnCodesMessageMap } from '@vschat/shared/interfaces/ApiInterfaces'
 import { CollapsibleTab } from '../../components/collapsible-tab/collapsible-tab';
+import { NavigationService } from '../../services/NavigationService';
 
 @Component({
 	selector: 'app-login',
@@ -21,10 +22,7 @@ export class Login {
 
 	public errorMessage: string = '';
 
-	@Output() loginSuccess = new EventEmitter<void>();
-	@Output() registerPage = new EventEmitter<void>();
-
-	constructor(private authApi: AuthApi, private cdr: ChangeDetectorRef) { }
+	constructor(private ebc: ExtensionBackendCommunication, private cdr: ChangeDetectorRef, public navigation: NavigationService) { }
 
 	public async onLoginSubmit(): Promise<void> {
 		this.errorMessage = '';
@@ -34,12 +32,12 @@ export class Login {
 			return;
 		}
 
-		const loginResult = await this.authApi.login(this.username, this.password);
+		const loginResult = await this.ebc.auth.login(this.username, this.password);
 		if (loginResult.code !== AuthActionRtnCodes.success) {
 			this.errorMessage = AuthActionRtnCodesMessageMap[loginResult.code];
 			this.cdr.detectChanges();
 		} else {
-			this.loginSuccess.emit();
+			this.navigation.switchView('chatlist')
 		}
 	}
 }

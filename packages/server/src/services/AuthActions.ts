@@ -27,7 +27,7 @@ class AuthActions {
         if (await this.checkUserNameExist(username)) return new Return(AuthActionRtnCodes.userNameAlreadyExists);
 
         const userId = generate();
-        userLoader.addData(userId, new User({
+        await userLoader.addData(userId, new User({
             id: userId,
             username: username,
             hashedPassword: hashedPassword,

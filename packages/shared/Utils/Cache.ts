@@ -30,7 +30,7 @@ export abstract class Cache<T extends Object, K extends (keyof T)[] = []> {
     private aliasPointer: Map<keyof T, Map<string, string>> = new Map();
 
 
-    constructor(pointerKeys: K) {
+    constructor(pointerKeys: K, private noProxy: boolean = false) {
         for (const key of pointerKeys) {
             this.aliasPointer.set(key, new Map());
         }
@@ -242,6 +242,7 @@ export abstract class Cache<T extends Object, K extends (keyof T)[] = []> {
     }
 
     private createDeepProxy(data: T, key: string, isStart: boolean = true): T {
+        if (this.noProxy) return data;
 
         //damit keine doppelten proxys zu einem objekt erstellt werden
         if (this.proxyCache.has(data)) {
