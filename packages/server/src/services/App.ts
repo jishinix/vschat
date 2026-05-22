@@ -7,13 +7,16 @@ import path from 'path';
 import { pathToFileURL, fileURLToPath } from "url";
 import http from 'http';
 import { route } from '../routes/authRoutes';
+import { websocketManager } from './WebsocketManager';
 
 
 export class App {
     private app: Express;
+    private websocketManager;
 
     constructor() {
         this.app = express();
+        this.websocketManager = websocketManager;
     }
 
 

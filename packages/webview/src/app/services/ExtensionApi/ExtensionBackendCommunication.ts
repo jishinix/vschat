@@ -33,9 +33,6 @@ export class ExtensionBackendCommunication extends BidirectionalMessageProtocolN
             this.auth,
             this.chat
         ]);
-
-        console.log('ping test')
-        this.pingPongTest.ping()
     }
 
     protected async send(payload: CommandPayload): Promise<void> {

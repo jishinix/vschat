@@ -4,6 +4,8 @@ import { randomBytes } from 'crypto';
 import * as CryptoJS from 'crypto-js';
 import { AuthActionLoginWebViewRtn, AuthActionRegisterWebViewRtn, AuthActionRtnCodes } from "@vschat/shared/interfaces/ApiInterfaces"
 import { Return } from "@vschat/shared/models/Return";
+import { WebviewCommunication } from "../WebviewApi/WebviewCommunication";
+import { serverCommunication } from "../ServerWebsocketApi/ServerCommunication";
 
 export interface EncryptedMasterkeysPayload {
     mainSlot: string,
@@ -63,6 +65,7 @@ class AuthService {
         this.sessionToken = loginPayload.sessionToken;
         this.masterkey = CryptoService.decryptText(loginPayload.encryptedMasterkeyMainSlot, password);
         this.privateKey = CryptoService.decryptText(loginPayload.encryptedPrivatekey, this.masterkey);
+        serverCommunication.connect(this.sessionToken);
         return new Return(AuthActionRtnCodes.success, undefined);
     }
 

@@ -4,6 +4,7 @@ import { User } from "../models/User";
 import { CryptoService } from "./CryptService";
 import { userLoader } from "./UserLoader";
 import { generate } from 'short-uuid';
+import { sessionManager } from "./SessionManager";
 
 export interface loginPayload {
     sessionToken: string;
@@ -87,7 +88,7 @@ class AuthActions {
 
         const user = checkChallengeResult.data;
         return new Return<AuthActionRtnCodes.success, loginPayload>(AuthActionRtnCodes.success, {
-            sessionToken: 'session-token', // später wird noch sessionlogig ergänzt
+            sessionToken: await sessionManager.generateSession(user.data.id), // später wird noch sessionlogig ergänzt
             encryptedPrivatekey: user.data.encryptedPrivateKey,
             encryptedMasterkeyMainSlot: user.data.encryptedMainSlot
         });

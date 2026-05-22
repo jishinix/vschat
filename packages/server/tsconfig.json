@@ -28,7 +28,6 @@
     },
     "include": [
         "src/**/*",
-        "../shared/Utils/Cache.ts"
     ], // Alles im src-Ordner compilen
     "exclude": [
         "node_modules",

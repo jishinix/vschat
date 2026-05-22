@@ -41,8 +41,8 @@ export class Register {
             return;
         }
 
-        console.log('1');
         const registerResult = await this.ebc.auth.register(username, password);
+        registerResult.data
         if (registerResult.code !== AuthActionRtnCodes.success) {
             this.errorMessage = AuthActionRtnCodesMessageMap[registerResult.code];
         } else {
