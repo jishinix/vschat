@@ -28,7 +28,7 @@ export class AuthApi extends NamespaceHandler<typeof extension_webview_authComma
             return handleAuthRtn(await authService.register(data.username, data.password))
         },
         loginstate: async (data) => {
-            return !!authService.sessionToken;
+            return { status: !!authService.sessionToken };
         }
     } satisfies NamespaceHandler<typeof extension_webview_authCommands>['handles'];
 

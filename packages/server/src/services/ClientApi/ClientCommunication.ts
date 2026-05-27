@@ -3,7 +3,7 @@ import { BidirectionalMessageProtocolNamespaceWrapper } from '@vschat/shared/Uti
 import { CommandPayload } from '@vschat/shared/Utils/BidirectionalMessageProtocol';
 import { ApiCoreController } from './ApiCoreController';
 
-export class ClientCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
+export class ClientCommunication extends BidirectionalMessageProtocolNamespaceWrapper<{ socket: Socket }> {
     coreHandler: ApiCoreController;
 
     constructor(private socket: Socket) {
@@ -27,7 +27,7 @@ export class ClientCommunication extends BidirectionalMessageProtocolNamespaceWr
 
     protected initReceive(): void {
         this.socket.on('message', (data: CommandPayload) => {
-            this.receive(data);
+            this.receive(data, { socket: this.socket });
         });
     }
 }

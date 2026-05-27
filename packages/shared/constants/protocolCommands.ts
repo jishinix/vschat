@@ -1,17 +1,17 @@
-import { User } from '../interfaces/User'
+import { Relationship, PublicUser, PrivateUser } from '../interfaces/User'
 import { AuthActionLoginWebViewRtn, AuthActionRegisterWebViewRtn } from '../interfaces/ApiInterfaces'
 import { ChatList } from '../interfaces/Chat'
 
 
 export const server_client_coreCommands = {
-    USER_NOT_FOUND: { name: 'userNotFound', dataType: {}, returnData: {} }
+    USER_NOT_FOUND: { name: 'userNotFound', dataType: {}, returnType: {} }
 } as const
 
 export const server_client_userCommands = {
-    GET_LOGED_IN_USER: { name: 'getLogedInUser', dataType: {}, returnData: { user: {} as User } },
-    GET_FRIENDS: { name: 'getFriends', dataType: {}, returnData: { user: [] as User[] } },
-    GET_USER: { dataType: { userId: '' as string }, returnData: { user: {} as User } }
-}
+    GET_LOGED_IN_USER: { name: 'getLogedInUser', dataType: {}, returnType: { user: {} as PrivateUser | null } },
+    GET_RELATIONS: { name: 'getRelations', dataType: {}, returnType: { relations: [] as Relationship[] } },
+    GET_USER: { name: 'getUser', dataType: { userId: '' as string }, returnType: { user: {} as PublicUser | null } } // name ergänzt & returnType
+} as const
 
 export const extension_webview_authCommands = {
     RECOVER: { name: 'recover', dataType: { username: "" as string, backupcode: "" as string, newPassword: "" as string }, returnType: {} as any },

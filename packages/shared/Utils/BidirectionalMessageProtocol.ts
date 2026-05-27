@@ -40,7 +40,7 @@ class MessageRetryManager {
     }
 }
 
-export abstract class BidirectionalMessageProtocol {
+export abstract class BidirectionalMessageProtocol<ExtraDataType extends Record<string, any>> {
     private promises: Map<string, { resolve: (res: any) => void, reject: (rej: any) => void, timer: ReturnType<typeof setTimeout> }> = new Map();
     private pendingRequests = new MessageRetryManager();
     private pendingAnswers = new MessageRetryManager();
@@ -56,13 +56,13 @@ export abstract class BidirectionalMessageProtocol {
 
     protected abstract initReceive(): void;
     protected abstract send(payload: CommandPayload): Promise<void>;
-    protected abstract handleMessage(payload: CommandPayload): Promise<void>;
+    protected abstract handleMessage(payload: CommandPayload, extraData: ExtraDataType): Promise<void>;
 
 
-    protected async receive(payload: CommandPayload) {
+    protected async receive(payload: CommandPayload, extraData?: ExtraDataType) {
         switch (payload.type) {
             case messageTypes.request:
-                this.handleRequest(payload);
+                this.handleRequest(payload, extraData || {} as ExtraDataType);
                 break;
             case messageTypes.answer:
                 this.handleAnswer(payload);
@@ -71,7 +71,7 @@ export abstract class BidirectionalMessageProtocol {
                 this.clearRequest(payload);
                 break;
             case messageTypes.emit:
-                this.handleEmit(payload);
+                this.handleEmit(payload, extraData || {} as ExtraDataType);
                 break;
             case messageTypes.emitConfirm:
                 this.clearEmit(payload);
@@ -79,14 +79,14 @@ export abstract class BidirectionalMessageProtocol {
         }
     }
 
-    private async handleRequest(payload: CommandPayload) {
+    private async handleRequest(payload: CommandPayload, extraData: ExtraDataType) {
         // falls der server schon am beantworten ist, aber zu lang brauchst wird eine erneute request ignoriert
         if (this.handlingRequests.has(payload.requestId)) return;
 
         this.handlingRequests.add(payload.requestId);
         console.log(`[${this.instance}] receive: [${payload.requestId}] ${payload.command}`, payload.data);
         try {
-            await this.handleMessage(payload);
+            await this.handleMessage(payload, extraData);
         } catch (error) {
             console.error(`Fehler beim Verarbeiten von [${payload.requestId}] ${payload.command}:`, error);
         }
@@ -122,12 +122,12 @@ export abstract class BidirectionalMessageProtocol {
         }, this.timeoutMs);
     }
 
-    private handleEmit(payload: CommandPayload) {
+    private handleEmit(payload: CommandPayload, extraData: ExtraDataType) {
         console.log(`[${this.instance}] got emit: [${payload.requestId}]`, payload.data);
         const { requestId, data } = payload;
 
         if (!this.emitedRequestIds.has(payload.requestId)) {
-            this.handleMessage(payload);
+            this.handleMessage(payload, extraData);
             this.emitedRequestIds.add(payload.requestId);
             setTimeout(() => {
                 this.releaseId(payload.requestId)

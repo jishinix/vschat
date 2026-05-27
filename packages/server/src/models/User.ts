@@ -1,10 +1,36 @@
-import { RawUserData } from "../services/UserLoader";
+import { PrivateUser, PublicUser } from '@vschat/shared/interfaces/User'
 
 
 export class User {
-    username: string; // muss extra angegeben sein um im cache als pointer zu fungieren.
-    constructor(public data: RawUserData) {
-        this.username = data.username;
+    constructor(private _data: PrivateUser) {
 
+    }
+
+    get data(): PublicUser {
+        const {
+            hashedPassword,
+            masterKeyProof,
+            encryptedPrivateKey,
+            encryptedMainSlot,
+            encryptedBackupSlots,
+            relations,
+            ...publicData
+        } = this._data;
+
+        type PrivateKeys = Omit<PrivateUser, keyof PublicUser>;
+        const _guard: Record<keyof PrivateKeys, any> = {
+            hashedPassword,
+            masterKeyProof,
+            encryptedPrivateKey,
+            encryptedMainSlot,
+            encryptedBackupSlots,
+            relations
+        };
+
+        return publicData;
+    }
+
+    get privateData(): PrivateUser {
+        return this._data;
     }
 }

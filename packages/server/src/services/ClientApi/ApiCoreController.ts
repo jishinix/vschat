@@ -7,10 +7,12 @@ export class ApiCoreController extends NamespaceHandler<typeof server_client_cor
         super('core', server_client_coreCommands)
     }
     handles = {
-        userNotFound() { }
-    };
+        userNotFound: async (data) => {
+            return;
+        }
+    } satisfies NamespaceHandler<typeof server_client_coreCommands>['handles'];
 
     async userNotFound() {
-        await this.emit(server_client_coreCommands.USER_NOT_FOUND.name);
+        await this.emit('userNotFound');
     }
 }

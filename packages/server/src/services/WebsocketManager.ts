@@ -7,15 +7,17 @@ import { User } from '../models/User';
 import { sessionManager } from './SessionManager';
 
 interface SocketData {
-    getUser: () => Promise<User | null>; // Tausche 'any' gegen deinen User-Typ aus
+    getUser: () => Promise<User | null>;
     protocol: ClientCommunication;
 }
+
+export type socketWithDataType = Socket<any, any, any, SocketData>;
 
 class WebsocketManager {
     private app: express.Express;
     private httpServer: HttpServer;
     private io: Server<any, any, any, SocketData>;;
-    private userSocketMap = new Map<string, Socket<any, any, any, SocketData>[]>;
+    private userSocketMap = new Map<string, socketWithDataType[]>;
 
     constructor() {
         this.app = express();
@@ -26,7 +28,7 @@ class WebsocketManager {
             }
         });
 
-        this.io.use(async (socket: Socket<any, any, any, SocketData>, next) => {
+        this.io.use(async (socket: socketWithDataType, next) => {
             const token = socket.handshake.auth.token;
 
             if (!token) {
@@ -60,14 +62,14 @@ class WebsocketManager {
         });
 
 
-        this.io.on('connection', async (socket: Socket<any, any, any, SocketData>) => {
+        this.io.on('connection', async (socket: socketWithDataType) => {
             const clientComm = new ClientCommunication(socket);
             socket.data.protocol = clientComm
 
             const user = await socket.data.getUser();
             if (!user) return;
             const id = user.data.id;
-            console.log(`Client verbunden: [${socket.id}] (User: ${user.username})`);
+            console.log(`Client verbunden: [${socket.id}] (User: ${user.data.username})`);
 
             clientComm.initializeUserAuthHandler()
 
@@ -79,7 +81,7 @@ class WebsocketManager {
             this.userSocketMap.set(id, userSockets);
 
             socket.on('disconnect', () => {
-                console.log(`Client getrennt: [${socket.id}] (User: ${user.username})`);
+                console.log(`Client getrennt: [${socket.id}] (User: ${user.data.username})`);
                 const userSockets = this.getUserSockets(id).filter(e => e !== socket);
                 if (!userSockets.length) this.userSocketMap.delete(id);
                 else this.userSocketMap.set(id, userSockets);
@@ -92,7 +94,7 @@ class WebsocketManager {
         });
     }
 
-    public getUserSockets(userId: string): Socket<any, any, any, SocketData>[] {
+    public getUserSockets(userId: string): socketWithDataType[] {
         const sockets = this.userSocketMap.get(userId);
         return sockets ? [...sockets] : [];
     }
