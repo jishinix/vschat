@@ -1,4 +1,4 @@
-import { PrivateUser, PublicUser } from '@vschat/shared/interfaces/User'
+import { PrivateUser, PublicUser, UserReference } from '@vschat/shared/interfaces/User'
 
 
 export class User {
@@ -28,6 +28,11 @@ export class User {
         };
 
         return Object.freeze(publicData);
+    }
+
+    get dataReference(): UserReference {
+        const { id, username, publicKey } = this._data;
+        return Object.freeze({ id, username, publicKey });
     }
 
     get privateData(): PrivateUser {

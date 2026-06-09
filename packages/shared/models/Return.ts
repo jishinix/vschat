@@ -2,7 +2,8 @@
 
 export interface iReturn<T extends number = number, K extends any = any> {
     code: T,
-    data: K
+    data: K,
+    message?: string
 }
 
 export class Return<T extends number = number, K = any> implements iReturn<T> {

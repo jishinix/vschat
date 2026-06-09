@@ -1,1 +1,11 @@
-<p>friends works!</p>
+<app-chat-overlay>
+    <div class="sendFriendRequestWrapper">
+        <app-unobtrusive-input placeholder="UUID" type="text" [(value)]="uuid"></app-unobtrusive-input>
+
+        <div class="friendRequestButtonWrapper">
+            <button class="btn-primary" (click)="sendFriendRequest()">
+                Send FriendRequest
+            </button>
+        </div>
+    </div>
+</app-chat-overlay>

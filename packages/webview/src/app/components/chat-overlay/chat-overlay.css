@@ -43,4 +43,15 @@
     border-radius: 50%;
 }
 
-.chatOverlay footer .username {}
+.chatOverlay footer .username {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .25em;
+    fill: var(--vscode-foreground);
+}
+
+.chatOverlay footer .username:hover {
+    fill: var(--vscode-button-hoverBackground);
+    color: var(--vscode-button-hoverBackground);
+}

@@ -5,6 +5,7 @@ import { AuthApi } from './AuthApi';
 import { Injectable } from '@angular/core';
 import { ChatApi } from './ChatApi';
 import { UserApi } from './UserApi';
+import { UserFeedbackEmits } from './UserFeedbackEmits';
 
 interface VsCodeApi {
     postMessage(message: any): void;
@@ -22,20 +23,23 @@ const vscode = acquireVsCodeApi();
 export class ExtensionBackendCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
     private vscode = vscode;
     public auth: AuthApi;
-    public chat: ChatApi
-    public user: UserApi
+    public chat: ChatApi;
+    public user: UserApi;
+    public userFeedback: UserFeedbackEmits;
 
     constructor() {
         super('WEBVIEW')
         this.auth = new AuthApi();
         this.chat = new ChatApi();
         this.user = new UserApi();
+        this.userFeedback = new UserFeedbackEmits();
 
         this.initReceive();
         this.initializeBaseHandlers([
             this.auth,
             this.chat,
-            this.user
+            this.user,
+            this.userFeedback
         ]);
     }
 

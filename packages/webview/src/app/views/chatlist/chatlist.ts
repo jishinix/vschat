@@ -18,8 +18,8 @@ export class Chatlist {
     constructor(private chatApi: ChatApi, public navigation: NavigationService) { }
 
     ngOnInit(): void {
-        /*this.chatApi.getChatList().then(chatList => {
+        this.chatApi.getChatList().then(chatList => {
             this.chats = chatList;
-        })*/
+        })
     }
 }

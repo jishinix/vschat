@@ -6,6 +6,7 @@ import { authService } from "../auth/AuthService";
 import { extension_webview_authCommands, extension_webview_userCommands } from '@vschat/shared/constants/protocolCommands'
 import { userLoader } from "../UserLoader";
 import { serverCommunication } from "../ServerWebsocketApi/ServerCommunication";
+import { UserActionReturnCodes } from "@vschat/shared/interfaces/UserActionInterfaces";
 
 export class UserApi extends NamespaceHandler<typeof extension_webview_userCommands> {
     constructor() {
@@ -17,7 +18,16 @@ export class UserApi extends NamespaceHandler<typeof extension_webview_userComma
             if (!user) return { user: null };
             console.log('USER', user);
             return { user };
-        }
+        },
+        sendFriendRequest: async (data) => {
+            const friendRequestReturn = await serverCommunication.userHandler.sendFriendRequest(data.userId);
+            if (friendRequestReturn.code === UserActionReturnCodes.success) {
+                vscode.window.showInformationMessage(`Es wurde erfolgreich eine Freundesanfrage an ${friendRequestReturn.data.username} (${friendRequestReturn.data.id}) verschickt`);
+            } else {
+                vscode.window.showErrorMessage(`Fehler(${friendRequestReturn.code}): ${friendRequestReturn.message}`);
+            }
+            return friendRequestReturn;
+        },
     } satisfies NamespaceHandler<typeof extension_webview_userCommands>['handles'];
 
     handleIncompleteInformations(command: string, missing: string[]) {

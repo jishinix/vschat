@@ -5,12 +5,14 @@ import * as vscode from 'vscode';
 import { serverCommunication } from '../ServerWebsocketApi/ServerCommunication';
 import { ApiCoreController } from '../ServerWebsocketApi/ApiCoreController';
 import { UserApi } from './UserApi';
+import { UserFeedbackEmits } from './UserFeedbackEmits';
 
 
 export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
     public auth: AuthApi;
     public core: ApiCoreController;
     public user: UserApi;
+    public userFeedback: UserFeedbackEmits;
 
     constructor(private webview: vscode.Webview) {
 
@@ -18,12 +20,14 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
         this.auth = new AuthApi();
         this.core = new ApiCoreController();
         this.user = new UserApi();
+        this.userFeedback = new UserFeedbackEmits();
 
         this.initReceive();
         this.initializeBaseHandlers([
             this.auth,
             this.core,
-            this.user
+            this.user,
+            this.userFeedback,
         ])
         //serverCommunication.connect('asd');
     }

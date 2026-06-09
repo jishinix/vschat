@@ -1,0 +1,8 @@
+.sendFriendRequestWrapper {
+    padding: 1em;
+}
+
+.friendRequestButtonWrapper {
+    display: flex;
+    justify-content: center;
+}

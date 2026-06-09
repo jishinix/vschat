@@ -4,6 +4,9 @@ import { User } from "../../models/User";
 import { Socket } from "socket.io";
 import { socketWithDataType } from "../WebsocketManager";
 import { userLoader } from "../UserLoader";
+import { Relationship } from "../../models/Relationship";
+import { Return } from "@vschat/shared/models/Return";
+import { UserActionReturnCodes, UserSendFriendRequestReturn } from "@vschat/shared/interfaces/UserActionInterfaces";
 
 
 export class ApiUserController extends NamespaceHandler<typeof server_client_userCommands, { socket: socketWithDataType }> {
@@ -19,6 +22,19 @@ export class ApiUserController extends NamespaceHandler<typeof server_client_use
         getUser: async (data, extraData) => {
             const user = (await userLoader.getData([data.userId])).get(data.userId);
             return { user: user?.privateData || null };
+        },
+        sendFriendRequest: async (data, extraData) => {
+            const user = await extraData.socket.data.getUser()
+            if (!user) return new Return(UserActionReturnCodes.notLoggedIn, undefined);
+            const relatedUser = (await userLoader.getData([data.userId])).get(data.userId);
+            if (!relatedUser) return new Return(UserActionReturnCodes.relatedUserNotfound, undefined);
+
+            const relationReturn = await Relationship.createFriendRequest(user?.data.id, data.userId);
+
+            if (relationReturn.code === UserActionReturnCodes.success) {
+                return new Return(UserActionReturnCodes.success, relatedUser.dataReference)
+            }
+            return new Return(relationReturn.code, undefined, relationReturn.message);
         }
     } satisfies NamespaceHandler<typeof server_client_userCommands, { socket: socketWithDataType }>['handles'];
 

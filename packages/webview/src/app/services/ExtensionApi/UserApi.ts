@@ -14,6 +14,10 @@ export class UserApi extends NamespaceHandler<typeof extension_webview_userComma
         return await this.request('getLogedInUser');
     }
 
+    async sendFriendRequest(userId: string) {
+        return await this.request('sendFriendRequest', { userId });
+    }
+
     async getFriends() {
         return await this.request('getFriends');
     }
