@@ -22,6 +22,10 @@ export class ApiUserController extends NamespaceHandler<typeof server_client_use
         }
     } satisfies NamespaceHandler<typeof server_client_userCommands, { socket: socketWithDataType }>['handles'];
 
+    constructor() {
+        super('user', server_client_userCommands)
+    }
+
     async getCurrentLogedInUser(): Promise<User> {
         return {} as User;
     }

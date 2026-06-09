@@ -4,24 +4,28 @@ import { CommandPayload } from '@vschat/shared/Utils/BidirectionalMessageProtoco
 import * as vscode from 'vscode';
 import { serverCommunication } from '../ServerWebsocketApi/ServerCommunication';
 import { ApiCoreController } from '../ServerWebsocketApi/ApiCoreController';
+import { UserApi } from './UserApi';
 
 
 export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
     public auth: AuthApi;
     public core: ApiCoreController;
+    public user: UserApi;
 
     constructor(private webview: vscode.Webview) {
 
         super('EXTENSION-WEBVIEW')
         this.auth = new AuthApi();
         this.core = new ApiCoreController();
+        this.user = new UserApi();
 
         this.initReceive();
         this.initializeBaseHandlers([
             this.auth,
-            this.core
+            this.core,
+            this.user
         ])
-        serverCommunication.connect('asd');
+        //serverCommunication.connect('asd');
     }
 
     protected async send(payload: CommandPayload): Promise<void> {

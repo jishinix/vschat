@@ -1,5 +1,7 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { NavigationService } from '../../services/NavigationService';
+import { PrivateWebviewUser } from '@vschat/shared/interfaces/User';
+import { ExtensionBackendCommunication } from '../../services/ExtensionApi/ExtensionBackendCommunication';
 
 @Component({
     selector: 'app-chat-overlay',
@@ -8,5 +10,11 @@ import { NavigationService } from '../../services/NavigationService';
     styleUrl: './chat-overlay.css',
 })
 export class ChatOverlay {
-    constructor(public navigation: NavigationService) { }
+    public logedInUser: PrivateWebviewUser | null = null;
+    constructor(public navigation: NavigationService, private ebc: ExtensionBackendCommunication, private cdr: ChangeDetectorRef) {
+        this.ebc.user.getLogedInUser().then(user => {
+            this.logedInUser = user.user
+            this.cdr.detectChanges();
+        });
+    }
 }

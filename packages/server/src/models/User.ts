@@ -27,7 +27,7 @@ export class User {
             relations
         };
 
-        return publicData;
+        return Object.freeze(publicData);
     }
 
     get privateData(): PrivateUser {

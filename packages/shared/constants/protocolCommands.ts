@@ -1,4 +1,4 @@
-import { Relationship, PublicUser, PrivateUser } from '../interfaces/User'
+import { Relationship, PublicUser, PrivateUser, PrivateWebviewUser } from '../interfaces/User'
 import { AuthActionLoginWebViewRtn, AuthActionRegisterWebViewRtn } from '../interfaces/ApiInterfaces'
 import { ChatList } from '../interfaces/Chat'
 
@@ -10,7 +10,8 @@ export const server_client_coreCommands = {
 export const server_client_userCommands = {
     GET_LOGED_IN_USER: { name: 'getLogedInUser', dataType: {}, returnType: { user: {} as PrivateUser | null } },
     GET_RELATIONS: { name: 'getRelations', dataType: {}, returnType: { relations: [] as Relationship[] } },
-    GET_USER: { name: 'getUser', dataType: { userId: '' as string }, returnType: { user: {} as PublicUser | null } } // name ergänzt & returnType
+    GET_USER: { name: 'getUser', dataType: { userId: '' as string }, returnType: { user: {} as PublicUser | null } },
+    GET_USERS: { name: 'getUsers', dataType: { userIds: [] as string[] }, returnType: { user: {} as Record<string, PublicUser> } }
 } as const
 
 export const extension_webview_authCommands = {
@@ -18,6 +19,16 @@ export const extension_webview_authCommands = {
     LOGIN: { name: 'login', dataType: { username: "" as string, password: "" as string }, returnType: {} as AuthActionLoginWebViewRtn },
     REGISTER: { name: 'register', dataType: { username: "" as string, password: "" as string }, returnType: {} as AuthActionRegisterWebViewRtn },
     GET_LOGIN_STATE: { name: 'loginstate', dataType: {}, returnType: {} as { status: boolean } }
+} as const
+
+export const extension_webview_userCommands = {
+    GET_LOGED_IN_USER: { name: 'getLogedInUser', dataType: {}, returnType: { user: {} as PrivateWebviewUser | null } },
+    GET_FRIENDS: { name: 'getFriends', dataType: {}, returnType: { friends: [] as string[] } },
+    IS_BLOCKED_BY: { name: 'isBlockedBy', dataType: { userId: '' as string }, returnType: { isBlocked: false as boolean } },
+    HAS_BLOCKED: { name: 'hasBlocked', dataType: { userId: '' as string }, returnType: { hasBlocked: false as boolean } },
+    HAS_PENDING_FRIEND_REQUEST: { name: 'hasPendingFriendRequest', dataType: { userId: '' as string }, returnType: { hasRequest: false as boolean } },
+    GET_PENDING_REQUESTS: { name: 'getPendingRequests', dataType: {}, returnType: { requests: [] as string[] } },
+    GET_USERS: { name: 'getUsers', dataType: { userIds: [] as string[] }, returnType: { user: {} as Record<string, PublicUser> } }
 } as const
 
 export const extension_webview_chatCommands = {

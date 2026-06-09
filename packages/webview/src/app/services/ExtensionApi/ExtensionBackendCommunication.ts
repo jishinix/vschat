@@ -4,6 +4,7 @@ import { CommandPayload } from '@vschat/shared/Utils/BidirectionalMessageProtoco
 import { AuthApi } from './AuthApi';
 import { Injectable } from '@angular/core';
 import { ChatApi } from './ChatApi';
+import { UserApi } from './UserApi';
 
 interface VsCodeApi {
     postMessage(message: any): void;
@@ -22,16 +23,19 @@ export class ExtensionBackendCommunication extends BidirectionalMessageProtocolN
     private vscode = vscode;
     public auth: AuthApi;
     public chat: ChatApi
+    public user: UserApi
 
     constructor() {
         super('WEBVIEW')
-        this.auth = new AuthApi();;
-        this.chat = new ChatApi();;
+        this.auth = new AuthApi();
+        this.chat = new ChatApi();
+        this.user = new UserApi();
 
         this.initReceive();
         this.initializeBaseHandlers([
             this.auth,
-            this.chat
+            this.chat,
+            this.user
         ]);
     }
 

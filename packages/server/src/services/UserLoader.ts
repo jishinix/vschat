@@ -89,6 +89,7 @@ class UserLoader extends Cache<PrivateUser, User, ['username']> {
     }
 
     protected async saveData(data: Map<string, PrivateUser>) {
+        console.log(data);
         const userArray = Array.from(data.values());
         const userEntries = userArray.map(e => {
             return {

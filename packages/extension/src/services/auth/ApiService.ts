@@ -18,7 +18,7 @@ export class ApiService {
                 body: body ? JSON.stringify(body) : undefined
             });
 
-            const result = await response.json();
+            const result = await response.json()
             console.log('[serverRESTApi][extension] resive:', identifyer, result)
             return result as T;
         } catch (e) {

@@ -1,14 +1,27 @@
 import { CommandPayload } from '@vschat/shared/Utils/BidirectionalMessageProtocol';
 import { BidirectionalMessageProtocolNamespaceWrapper } from '@vschat/shared/Utils/BidirectionalMessageProtocolNamespaceWrapper';
 import { io, Socket } from 'socket.io-client';
+import { ApiCoreController } from './ApiCoreController';
+import { ApiUserController } from './ApiUserController';
+
 
 class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
-    private _socket!: Socket; private isInitialized = false;
+    private _socket!: Socket;
+    private isInitialized = false;
+    coreHandler: ApiCoreController;
+    userHandler: ApiUserController;
 
     constructor() {
         super('EXTENSION-SERVER')
 
-        this.initializeBaseHandlers([]);
+        this.coreHandler = new ApiCoreController()
+        this.userHandler = new ApiUserController();
+        //this.initReceive();
+
+        this.initializeBaseHandlers([
+            this.coreHandler,
+            this.userHandler
+        ])
     }
     protected async send(payload: CommandPayload): Promise<void> {
         this.socket.send(payload)

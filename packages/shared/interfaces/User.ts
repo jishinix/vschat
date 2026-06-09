@@ -6,12 +6,20 @@ export interface UserReference {
     publicKey: string
 }
 
-export enum RelationshipStatus {
-    friendshipRequested = 'fr',
-    friendshipRequestIgnored = 'fri',
-    friendship = 'f',
-    blocked = 'b',
-}
+export const RelationshipStatus = {
+    friendshipRequested: 'fr',
+    friendshipRequestIgnored: 'fri',
+    friendship: 'f',
+    blocked: 'b',
+} as const
+export type RelationshipStatus = typeof RelationshipStatus[keyof typeof RelationshipStatus];
+
+export const SpecificRelationshipStatus = {
+    ...RelationshipStatus,
+    gotBlocked: 'gb',
+    gotFriendshipRequest: 'gfr'
+} as const
+export type SpecificRelationshipStatus = typeof SpecificRelationshipStatus[keyof typeof SpecificRelationshipStatus];
 
 export interface Relationship {
     id: number,
@@ -32,3 +40,11 @@ export interface PrivateUser extends PublicUser {
     encryptedBackupSlots: string[];
     relations: Relationship[];
 }
+
+export type PrivateWebviewUser = Omit<PrivateUser,
+    "hashedPassword" |
+    "masterKeyProof" |
+    "encryptedPrivateKey" |
+    "encryptedMainSlot" |
+    "encryptedBackupSlots"
+>

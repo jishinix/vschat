@@ -5,6 +5,7 @@ import { CryptoService } from "./CryptService";
 import { userLoader } from "./UserLoader";
 import { generate } from 'short-uuid';
 import { sessionManager } from "./SessionManager";
+import { PrivateUser } from "@vschat/shared/interfaces/User";
 
 export interface loginPayload {
     sessionToken: string;
@@ -28,7 +29,7 @@ class AuthActions {
         if (await this.checkUserNameExist(username)) return new Return(AuthActionRtnCodes.userNameAlreadyExists);
 
         const userId = generate();
-        await userLoader.addData(userId, new User({
+        const user: PrivateUser = {
             id: userId,
             username: username,
             hashedPassword: hashedPassword,
@@ -36,8 +37,10 @@ class AuthActions {
             encryptedPrivateKey: encryptedPrivatekey,
             encryptedMainSlot: encryptedMasterkeyPayloads.mainSlot,
             encryptedBackupSlots: encryptedMasterkeyPayloads.backupSlots,
-            masterKeyProof: encryptedMasterkeyPayloads.masterkeyProof
-        }))
+            masterKeyProof: encryptedMasterkeyPayloads.masterkeyProof,
+            relations: []
+        }
+        await userLoader.addData(userId, user)
 
         return new Return(AuthActionRtnCodes.success);
     }
@@ -73,7 +76,7 @@ class AuthActions {
         if (!user) return new Return<AuthActionRtnCodes.userNotFound, undefined>(AuthActionRtnCodes.userNotFound);
 
         const challenge = Math.random().toString(36).substring(2, 15)
-        const challengeResult = await CryptoService.deriveHashes(user.data.hashedPassword + challenge);
+        const challengeResult = await CryptoService.deriveHashes(user.privateData.hashedPassword + challenge);
         const challengeKey = username + challengeType + challenge;
         this.challenges[challengeType].set(challengeKey, challengeResult);
         setTimeout(() => {
@@ -89,8 +92,8 @@ class AuthActions {
         const user = checkChallengeResult.data;
         return new Return<AuthActionRtnCodes.success, loginPayload>(AuthActionRtnCodes.success, {
             sessionToken: await sessionManager.generateSession(user.data.id), // später wird noch sessionlogig ergänzt
-            encryptedPrivatekey: user.data.encryptedPrivateKey,
-            encryptedMasterkeyMainSlot: user.data.encryptedMainSlot
+            encryptedPrivatekey: user.privateData.encryptedPrivateKey,
+            encryptedMasterkeyMainSlot: user.privateData.encryptedMainSlot
         });
     }
 
@@ -107,8 +110,8 @@ class AuthActions {
         if (checkChallengeResult.code !== AuthActionRtnCodes.success) return checkChallengeResult;
 
         const user = checkChallengeResult.data;
-        user.data.hashedPassword = hashedNewPassword;
-        user.data.encryptedMainSlot = newMainSlot;
+        user.privateData.hashedPassword = hashedNewPassword;
+        user.privateData.encryptedMainSlot = newMainSlot;
         return new Return(AuthActionRtnCodes.success);
 
     }
@@ -139,9 +142,9 @@ class AuthActions {
         const user = (await userLoader.getByAlias('username', [username.toLocaleLowerCase()]))?.get(username.toLocaleLowerCase());
         if (!user) return new Return<AuthActionRtnCodes.userNotFound, undefined>(AuthActionRtnCodes.userNotFound);
         return new Return(AuthActionRtnCodes.success, {
-            mainSlot: user.data.encryptedMainSlot,
-            backupSlots: user.data.encryptedBackupSlots,
-            masterkeyProof: user.data.masterKeyProof
+            mainSlot: user.privateData.encryptedMainSlot,
+            backupSlots: user.privateData.encryptedBackupSlots,
+            masterkeyProof: user.privateData.masterKeyProof
         });
     }
 }
