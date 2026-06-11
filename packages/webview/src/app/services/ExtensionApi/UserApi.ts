@@ -1,14 +1,24 @@
 import { extension_webview_authCommands, extension_webview_userCommands } from "@vschat/shared/constants/protocolCommands"
 import { type AuthActionLoginWebViewRtn, type AuthActionRegisterWebViewRtn } from "@vschat/shared/interfaces/ApiInterfaces.js"
+import { lookuptypes } from "@vschat/shared/interfaces/RelationLookuptypes";
 import { NamespaceHandler } from '@vschat/shared/Utils/BidirectionalMessageProtocolNamespaceWrapper.js'
 import { using } from "rxjs";
+import { AccountStorage } from "../AccountStorage";
+import { inject, Injector } from "@angular/core";
 
 
 export class UserApi extends NamespaceHandler<typeof extension_webview_userCommands> {
+    private injector = inject(Injector);
     constructor() {
         super('user', extension_webview_userCommands)
     }
-    handles = {} satisfies NamespaceHandler<typeof extension_webview_authCommands>['handles'];
+    handles = {
+        updateRelationshipLookup: async (data) => {
+            const as = this.injector.get(AccountStorage);
+            as.addRelationship(data.lookuptype, data.lookup);
+            return {};
+        }
+    } satisfies NamespaceHandler<typeof extension_webview_userCommands>['handles'];
 
     async getLogedInUser() {
         return await this.request('getLogedInUser');
@@ -18,12 +28,12 @@ export class UserApi extends NamespaceHandler<typeof extension_webview_userComma
         return await this.request('sendFriendRequest', { userId });
     }
 
-    async getFriends() {
-        return await this.request('getFriends');
+    async ignoreFriendRequest(userId: string) {
+        return await this.request('ignoreFriendRequest', { userId });
     }
 
-    async getPendingRequests() {
-        return await this.request('getPendingRequests');
+    async getRelationLookup(lookuptype: lookuptypes) {
+        return this.request('getRelationshipLookup', { lookuptype: lookuptype })
     }
 
     async getUsers(userIds: string[]) {

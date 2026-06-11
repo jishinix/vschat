@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export type AppViews = 'login' | 'register' | 'chatlist' | 'chat' | 'friends';
+export type AppViews = 'init-direct' | 'login' | 'register' | 'chatlist' | 'chat' | 'friends';
 
 export interface ViewSwitchMessage {
     success?: string;
@@ -11,7 +11,7 @@ export interface ViewSwitchMessage {
     providedIn: 'root'
 })
 export class NavigationService {
-    currentView = signal<AppViews>('login');
+    currentView = signal<AppViews>('init-direct');
 
     generalSuccess = signal<string>('');
     generalError = signal<string>('');

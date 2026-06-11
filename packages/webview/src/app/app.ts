@@ -5,6 +5,7 @@ import { Chatlist } from './views/chatlist/chatlist';
 import { Register } from './views/register/register';
 import { NavigationService } from './services/NavigationService';
 import { Friends } from './views/friends/friends';
+import { InitDirect } from './init-direct/init-direct';
 
 @Injectable({
 	providedIn: 'root'
@@ -17,7 +18,8 @@ import { Friends } from './views/friends/friends';
 		Chat,
 		Chatlist,
 		Register,
-		Friends
+		Friends,
+		InitDirect
 	],
 	templateUrl: './app.html',
 	styleUrl: './app.css'

@@ -6,3 +6,39 @@
     display: flex;
     justify-content: center;
 }
+
+.friendequst {
+    display: flex;
+    justify-content: space-between;
+}
+
+.friendequst .buttonWrapper {
+    display: flex;
+}
+
+.friendequst .buttonWrapper .denie,
+.friendequst .buttonWrapper .withdraw,
+.friendequst .buttonWrapper .startChat,
+.friendequst .buttonWrapper .accept {
+    cursor: pointer;
+}
+
+.friendequst .buttonWrapper .denie,
+.friendequst .buttonWrapper .withdraw {
+    fill: #f00;
+}
+
+.friendequst .buttonWrapper .accept {
+    fill: #0f0;
+}
+
+.friendequst .buttonWrapper .startChat {
+    fill: var(--vscode-button-hoverBackground);
+}
+
+
+
+.friendequst .buttonWrapper svg {
+    cursor: pointer;
+    width: 16px;
+}
