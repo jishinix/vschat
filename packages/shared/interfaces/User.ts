@@ -11,6 +11,7 @@ export const RelationshipStatus = {
     friendshipRequestIgnored: 'fri',
     friendship: 'f',
     blocked: 'b',
+    none: 'n'
 } as const
 export type RelationshipStatus = typeof RelationshipStatus[keyof typeof RelationshipStatus];
 
@@ -22,7 +23,7 @@ export const SpecificRelationshipStatus = {
 export type SpecificRelationshipStatus = typeof SpecificRelationshipStatus[keyof typeof SpecificRelationshipStatus];
 
 export interface Relationship {
-    id: number,
+    id: string,
     userId: string,
     relatedUserId: string,
     status: RelationshipStatus

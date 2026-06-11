@@ -1,11 +1,18 @@
 import { NamespaceHandler } from "@vschat/shared/Utils/BidirectionalMessageProtocolNamespaceWrapper";
 import { server_client_userCommands } from '@vschat/shared/constants/protocolCommands'
 import { PrivateUser } from "../../models/PrivateUser";
+import { userLoader } from "../UserLoader";
+import { WebviewCommunication } from "../WebviewApi/WebviewCommunication";
 
 
 export class ApiUserController extends NamespaceHandler<typeof server_client_userCommands> {
     logedInUser: PrivateUser | null = null;
     handles = {
+        relationUpdate: async (data) => {
+            const user = await this.getLogedInUser();
+            user?.addRelationship(data.relation);
+            return {};
+        }
     } satisfies NamespaceHandler<typeof server_client_userCommands>['handles'];
 
     constructor() {
@@ -36,4 +43,9 @@ export class ApiUserController extends NamespaceHandler<typeof server_client_use
     async sendFriendRequest(userId: string) {
         return await this.request('sendFriendRequest', { userId });
     }
+
+    async ignoreFriendRequest(userId: string) {
+        return await this.request('ignoreFriendRequest', { userId });
+    }
+
 }

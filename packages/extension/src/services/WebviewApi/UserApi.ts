@@ -7,6 +7,7 @@ import { extension_webview_authCommands, extension_webview_userCommands } from '
 import { userLoader } from "../UserLoader";
 import { serverCommunication } from "../ServerWebsocketApi/ServerCommunication";
 import { UserActionReturnCodes } from "@vschat/shared/interfaces/UserActionInterfaces";
+import { lookuptypes } from '@vschat/shared/interfaces/RelationLookuptypes'
 
 export class UserApi extends NamespaceHandler<typeof extension_webview_userCommands> {
     constructor() {
@@ -28,7 +29,23 @@ export class UserApi extends NamespaceHandler<typeof extension_webview_userComma
             }
             return friendRequestReturn;
         },
+        getRelationshipLookup: async (data) => {
+            const user = await serverCommunication.userHandler.getLogedInUser();
+            if (!user) throw new Error('cant fetch Pending FriendRequests. Not loged in.');
+            return { lookup: await user.getRelationLookup(data.lookuptype) };
+        },
+        getUsers: async (data) => {
+            const user = await serverCommunication.userHandler.getUsers(data.userIds);
+            return user
+        },
+        ignoreFriendRequest: async (data) => {
+            return await serverCommunication.userHandler.ignoreFriendRequest(data.userId);
+        }
     } satisfies NamespaceHandler<typeof extension_webview_userCommands>['handles'];
+
+    updateRelationLookup(lookup: lookuptypes, users: string[]) {
+        this.emit('updateRelationshipLookup', { lookuptype: lookup, lookup: users })
+    }
 
     handleIncompleteInformations(command: string, missing: string[]) {
         return new Return(AuthActionRtnCodes.incompleatInformations, missing);

@@ -2,6 +2,7 @@ import { Relationship, PublicUser, PrivateUser, PrivateWebviewUser, UserReferenc
 import { AuthActionLoginWebViewRtn, AuthActionRegisterWebViewRtn } from '../interfaces/ApiInterfaces'
 import { ChatList } from '../interfaces/Chat'
 import { UserSendFriendRequestReturn } from '../interfaces/UserActionInterfaces'
+import { lookuptypes } from '../interfaces/RelationLookuptypes'
 
 
 export const server_client_coreCommands = {
@@ -14,6 +15,8 @@ export const server_client_userCommands = {
     GET_USER: { name: 'getUser', dataType: { userId: '' as string }, returnType: { user: {} as PublicUser | null } },
     GET_USERS: { name: 'getUsers', dataType: { userIds: [] as string[] }, returnType: { user: {} as Record<string, PublicUser> } },
     SEND_FRIEND_REQUEST: { name: 'sendFriendRequest', dataType: { userId: '' as string }, returnType: {} as UserSendFriendRequestReturn },
+    IGNORE_FRIEND_REQUEST: { name: 'ignoreFriendRequest', dataType: { userId: '' as string }, returnType: {} as UserSendFriendRequestReturn },
+    CLIENT_RELATIONUPDATE: { name: 'relationUpdate', dataType: { relation: {} as Relationship }, returnType: {} },
 } as const
 
 export const extension_webview_authCommands = {
@@ -25,13 +28,16 @@ export const extension_webview_authCommands = {
 
 export const extension_webview_userCommands = {
     GET_LOGED_IN_USER: { name: 'getLogedInUser', dataType: {}, returnType: { user: {} as PrivateWebviewUser | null } },
-    GET_FRIENDS: { name: 'getFriends', dataType: {}, returnType: { friends: [] as string[] } },
     IS_BLOCKED_BY: { name: 'isBlockedBy', dataType: { userId: '' as string }, returnType: { isBlocked: false as boolean } },
     HAS_BLOCKED: { name: 'hasBlocked', dataType: { userId: '' as string }, returnType: { hasBlocked: false as boolean } },
     HAS_PENDING_FRIEND_REQUEST: { name: 'hasPendingFriendRequest', dataType: { userId: '' as string }, returnType: { hasRequest: false as boolean } },
-    GET_PENDING_REQUESTS: { name: 'getPendingRequests', dataType: {}, returnType: { requests: [] as string[] } },
     GET_USERS: { name: 'getUsers', dataType: { userIds: [] as string[] }, returnType: { user: {} as Record<string, PublicUser> } },
     SEND_FRIEND_REQUEST: { name: 'sendFriendRequest', dataType: { userId: '' as string }, returnType: {} as UserSendFriendRequestReturn },
+    IGNORE_FRIEND_REQUEST: { name: 'ignoreFriendRequest', dataType: { userId: '' as string }, returnType: {} as UserSendFriendRequestReturn },
+
+    UPDATE_RELATIONSHIP_LOOKUP: { name: 'updateRelationshipLookup', dataType: { lookuptype: '' as lookuptypes, lookup: [] as string[] }, returnType: {} },
+    GET_RELATIONSHIP_LOOKUP: { name: 'getRelationshipLookup', dataType: { lookuptype: '' as lookuptypes }, returnType: { lookup: [] as string[] } },
+
 } as const
 
 export const extension_webview_userFeedbackEmits = {

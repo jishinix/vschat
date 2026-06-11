@@ -2,6 +2,9 @@ import { Relationship as iRelationship, RelationshipStatus } from "@vschat/share
 import { database } from "../services/DbService";
 import { Return } from "@vschat/shared/models/Return";
 import { UserActionReturnCodes, UserActionReturnCodesMessageMap } from "@vschat/shared/interfaces/UserActionInterfaces"
+import { userLoader } from "../services/UserLoader";
+import { generate } from "short-uuid";
+import { ApiUserController } from "../services/ClientApi/ApiUserController";
 
 export class Relationship {
     private constructor(private _data: iRelationship) {
@@ -10,6 +13,16 @@ export class Relationship {
 
     get data() {
         return this._data;
+    }
+
+    private async saveRelationShip() {
+        const relationIdQuery = await database('Relationships')
+            .insert([{
+                Id: this.data.id,
+                UserId: this.data.userId,
+                RelatedUserId: this.data.relatedUserId,
+                Status: this.data.status
+            }]).onConflict(['UserId', 'RelatedUserId']).merge();
     }
 
     private static async getRelationship(userId: string, relatedUserId: string) {
@@ -36,26 +49,21 @@ export class Relationship {
         if (userId === relatedUserId) {
             return new Return(UserActionReturnCodes.relatedUserIsUser, {}, UserActionReturnCodesMessageMap[UserActionReturnCodes.relatedUserIsUser])
         }
-        const relationIdQuery = await database('Relationships')
-            .insert([{
-                UserId: userId,
-                RelatedUserId: relatedUserId,
-                Status: status
-            }]).onConflict(['UserId', 'RelatedUserId']).merge().returning('Id');
-
-
-        const relationId = (relationIdQuery[0].Id ?? relationIdQuery[0]) as number;
-        return new Return(
-            UserActionReturnCodes.success, new Relationship({
-                id: relationId,
-                userId,
-                relatedUserId,
-                status
-            })
-        )
+        const rs = new Relationship({
+            id: generate(),
+            userId,
+            relatedUserId,
+            status
+        })
+        const success = await ApiUserController.sendNewRelationship(rs);
+        if (!success) return new Return(UserActionReturnCodes.someUserNotFound, rs)
+        await rs.saveRelationShip();
+        return new Return(UserActionReturnCodes.success, rs)
     }
 
     static async createFriendRequest(userId: string, relatedUserId: string) {
+        const relationShip = await this.getRelationship(relatedUserId, userId);
+        if (relationShip?.data.status === RelationshipStatus.friendshipRequested) return await this.acceptFriendRequest(userId, relatedUserId);
         return await this.createRelationship(userId, relatedUserId, RelationshipStatus.friendshipRequested);
     }
 
@@ -73,7 +81,8 @@ export class Relationship {
         const relationShip = await this.getRelationship(relatedUserId, userId);
         if (relationShip?.data.status === RelationshipStatus.friendshipRequested) {
             await this.createRelationship(relatedUserId, userId, RelationshipStatus.friendship);
-            return await this.createRelationship(userId, relatedUserId, RelationshipStatus.friendship);
+            const rtn = new Return(UserActionReturnCodes.success, await this.createRelationship(userId, relatedUserId, RelationshipStatus.friendship));
+            return rtn;
         }
         return new Return(UserActionReturnCodes.noFriendRequestToAcceptAvalable, {}, UserActionReturnCodesMessageMap[UserActionReturnCodes.noFriendRequestToAcceptAvalable]);
     }

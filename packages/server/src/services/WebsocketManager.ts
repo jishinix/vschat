@@ -8,6 +8,7 @@ import { sessionManager } from './SessionManager';
 
 interface SocketData {
     getUser: () => Promise<User | null>;
+    userId: string,
     protocol: ClientCommunication;
 }
 
@@ -16,7 +17,7 @@ export type socketWithDataType = Socket<any, any, any, SocketData>;
 class WebsocketManager {
     private app: express.Express;
     private httpServer: HttpServer;
-    private io: Server<any, any, any, SocketData>;;
+    private io: Server<any, any, any, SocketData>;
     private userSocketMap = new Map<string, socketWithDataType[]>;
 
     constructor() {
@@ -57,6 +58,7 @@ class WebsocketManager {
                 }
                 return user
             };
+            socket.data.userId = userId;
 
             next();
         });

@@ -13,8 +13,9 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
     public core: ApiCoreController;
     public user: UserApi;
     public userFeedback: UserFeedbackEmits;
+    private static instance: WebviewCommunication | null = null;
 
-    constructor(private webview: vscode.Webview) {
+    private constructor(private webview: vscode.Webview) {
 
         super('EXTENSION-WEBVIEW')
         this.auth = new AuthApi();
@@ -30,6 +31,14 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
             this.userFeedback,
         ])
         //serverCommunication.connect('asd');
+    }
+
+    static getInstance(webview?: vscode.Webview) {
+        if (!this.instance) {
+            if (!webview) throw new Error('in construct WebviewCommunication you need a webview');
+            this.instance = new WebviewCommunication(webview);
+        }
+        return this.instance;
     }
 
     protected async send(payload: CommandPayload): Promise<void> {

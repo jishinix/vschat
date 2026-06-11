@@ -7,14 +7,16 @@ export enum UserActionReturnCodes {
     relatedUserNotfound,
     relatedUserIsUser,
     noFriendRequestToAcceptAvalable,
-    notLoggedIn
+    notLoggedIn,
+    someUserNotFound
 
 }
 
 export const UserActionReturnCodesMessageMap = {
     [UserActionReturnCodes.relatedUserNotfound]: 'Nutzer Nicht gefunden',
     [UserActionReturnCodes.relatedUserIsUser]: 'Der angegebene Nutzer bist du selbst.',
-    [UserActionReturnCodes.noFriendRequestToAcceptAvalable]: 'Dieser Nutzer hat dir keine freundesanfrage gestellt'
+    [UserActionReturnCodes.noFriendRequestToAcceptAvalable]: 'Dieser Nutzer hat dir keine freundesanfrage gestellt',
+    [UserActionReturnCodes.someUserNotFound]: 'Ein nutzer wurde nicht gefunden..'
 }
 
 export type UserSendFriendRequestReturn =
@@ -22,6 +24,8 @@ export type UserSendFriendRequestReturn =
     iReturn<
         UserActionReturnCodes.relatedUserIsUser |
         UserActionReturnCodes.relatedUserNotfound |
-        UserActionReturnCodes.notLoggedIn,
+        UserActionReturnCodes.notLoggedIn |
+        UserActionReturnCodes.noFriendRequestToAcceptAvalable |
+        UserActionReturnCodes.someUserNotFound,
         undefined
     >

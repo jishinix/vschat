@@ -21,7 +21,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        new WebviewCommunication(webviewView.webview);
+        WebviewCommunication.getInstance(webviewView.webview);
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
