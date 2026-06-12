@@ -3,6 +3,7 @@ import { BidirectionalMessageProtocolNamespaceWrapper } from '@vschat/shared/Uti
 import { io, Socket } from 'socket.io-client';
 import { ApiCoreController } from './ApiCoreController';
 import { ApiUserController } from './ApiUserController';
+import { ApiChatController } from './ApiChatController';
 
 
 class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
@@ -10,17 +11,20 @@ class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
     private isInitialized = false;
     coreHandler: ApiCoreController;
     userHandler: ApiUserController;
+    chatHandler: ApiChatController;
 
     constructor() {
         super('EXTENSION-SERVER')
 
-        this.coreHandler = new ApiCoreController()
+        this.coreHandler = new ApiCoreController();
         this.userHandler = new ApiUserController();
+        this.chatHandler = new ApiChatController();
         //this.initReceive();
 
         this.initializeBaseHandlers([
             this.coreHandler,
-            this.userHandler
+            this.userHandler,
+            this.chatHandler
         ])
     }
     protected async send(payload: CommandPayload): Promise<void> {

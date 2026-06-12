@@ -1,4 +1,4 @@
-import { Message } from "./Messages";
+import { MessageData } from "./Messages";
 import { UserReference } from "./User";
 
 
@@ -17,9 +17,7 @@ interface ChatBase {
 }
 
 export interface ChatListItem extends ChatBase {
-    lastMsg: Message
+    lastMsg: MessageData
 }
 
-export interface Chat extends ChatBase {
-    messages: Message[];
-}
+export interface ChatData extends ChatBase { }

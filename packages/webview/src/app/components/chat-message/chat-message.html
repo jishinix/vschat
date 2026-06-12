@@ -1,0 +1,29 @@
+<div class="code-block">
+    <div class="code-line">
+        <span class="token-keyword">export</span>&nbsp;<span class="token-keyword">class</span>&nbsp;<span
+            class="token-class-name">{{ messageData.sender?.username?.replace(' ', '_') || 'UnknownUser'
+            }}</span>&nbsp;<span class="token-punctuation">{{ '{' }}</span><span class="token-comment">/* {{
+            messageData.timestamp }} */</span>
+    </div>
+
+    <div class="code-line indent-1">
+        <span class="token-keyword">private</span>&nbsp;<span class="token-variable">msg</span>&nbsp;<span
+            class="token-punctuation">=</span>&nbsp;<span class="token-punctuation">[</span>
+    </div>
+
+    @for (line of messageData.content?.split('\n'); track $index) {
+    @if (line && line.trim().length > 0) {
+    <div class="code-line indent-2">
+        <span class="token-string">"{{ line.trim() }}"</span><span class="token-punctuation">,</span>
+    </div>
+    }
+    }
+
+    <div class="code-line indent-1">
+        <span class="token-punctuation">];</span>
+    </div>
+
+    <div class="code-line">
+        <span class="token-punctuation">{{ '}' }}</span>
+    </div>
+</div>

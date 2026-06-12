@@ -4,7 +4,7 @@ import { NamespaceHandler } from "@vschat/shared/Utils/BidirectionalMessageProto
 import * as vscode from 'vscode';
 import { authService } from "../auth/AuthService";
 import { extension_webview_authCommands, extension_webview_userCommands } from '@vschat/shared/constants/protocolCommands'
-import { userLoader } from "../UserLoader";
+import { userLoader } from "../Loader/UserLoader";
 import { serverCommunication } from "../ServerWebsocketApi/ServerCommunication";
 import { UserActionReturnCodes } from "@vschat/shared/interfaces/UserActionInterfaces";
 import { lookuptypes } from '@vschat/shared/interfaces/RelationLookuptypes'
@@ -35,8 +35,14 @@ export class UserApi extends NamespaceHandler<typeof extension_webview_userComma
             return { lookup: await user.getRelationLookup(data.lookuptype) };
         },
         getUsers: async (data) => {
-            const user = await serverCommunication.userHandler.getUsers(data.userIds);
-            return user
+
+            const users = (await userLoader.getData(data.userIds));
+            const publicUsers = new Map(
+                [...users]
+                    .filter(([, user]) => user !== null)
+                    .map(([key, user]) => [key, user!.data])
+            );
+            return { user: Object.fromEntries(publicUsers) || null };
         },
         ignoreFriendRequest: async (data) => {
             return await serverCommunication.userHandler.ignoreFriendRequest(data.userId);

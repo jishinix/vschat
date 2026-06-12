@@ -1,0 +1,5 @@
+<div class="editor-window">
+    @for (msg of activeChatMessages; track msg.id) {
+    <app-chat-message [messageData]=msg></app-chat-message>
+    }
+</div>

@@ -29,7 +29,8 @@
 }
 
 .chatOverlay footer {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 1em;
     padding: .5em;
@@ -54,4 +55,8 @@
 .chatOverlay footer .username:hover {
     fill: var(--vscode-button-hoverBackground);
     color: var(--vscode-button-hoverBackground);
+}
+
+.version {
+    justify-self: end;
 }

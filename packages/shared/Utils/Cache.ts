@@ -20,7 +20,7 @@ interface CacheElement<InputData> {
  * Speicher entfernt, sofern sie nicht mehr aktiv abgefragt werden.
  * * @template InputData Muss ein Objekt sein, das die Datenstruktur repräsentiert.
  */
-export abstract class Cache<InputData extends Object, Outputdata = InputData, InputDataKeys extends (keyof InputData)[] = []> {
+export abstract class Cache<InputData extends Object = any, Outputdata = InputData, InputDataKeys extends (keyof InputData)[] = []> {
     private cache: Map<string, CacheElement<InputData>> = new Map();
     protected expireTime: number = 1000 * 60 * 10;
     protected statusExpireTime: number = 1000 * 30;
@@ -28,13 +28,19 @@ export abstract class Cache<InputData extends Object, Outputdata = InputData, In
     private proxyTimeout: NodeJS.Timeout | null = null;
     private proxyCache: WeakMap<InputData, any> = new WeakMap();
     private aliasPointer: Map<keyof InputData, Map<string, string>> = new Map();
-    private outputCache: WeakMap<InputData, Outputdata> = new WeakMap();
+    private WeakOutputCache: WeakMap<InputData, Outputdata> = new WeakMap();
+    private persistendOutputCache: Map<InputData, Outputdata> = new Map();
 
 
-    constructor(pointerKeys: InputDataKeys, private noProxy: boolean = false) {
+    constructor(pointerKeys: InputDataKeys, private noProxy: boolean = false, private usePersistendOutPutCache = false) {
         for (const key of pointerKeys) {
             this.aliasPointer.set(key, new Map());
         }
+    }
+
+    get outputCache() {
+        if (this.usePersistendOutPutCache) return this.persistendOutputCache;
+        else return this.WeakOutputCache;
     }
 
     /**
@@ -143,6 +149,7 @@ export abstract class Cache<InputData extends Object, Outputdata = InputData, In
         const requireDeleteKeys: Set<string> = new Set(keys);
         await this.deleteData(requireDeleteKeys);
         for (const key of requireDeleteKeys) {
+            if (this.cache.has(key)) this.outputCache.delete(this.cache.get(key)!.data);
             this.cache.delete(key);
             this.dirtyKeys.delete(key);
         }
@@ -161,6 +168,7 @@ export abstract class Cache<InputData extends Object, Outputdata = InputData, In
         return setTimeout(() => {
             const element = this.cache.get(id);
             if (element) {
+                this.outputCache.delete(element.data);
                 for (const [prop, map] of this.aliasPointer) {
                     const aliasValue = String(element.data[prop]);
                     map.delete(aliasValue); // Pointer entfernen

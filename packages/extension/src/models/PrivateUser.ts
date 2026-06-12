@@ -1,7 +1,7 @@
 import { PrivateUser as IPrivateUser, PublicUser as IPublicUser, PrivateWebviewUser, Relationship, RelationshipStatus } from '@vschat/shared/interfaces/User'
 import { serverCommunication } from '../services/ServerWebsocketApi/ServerCommunication';
 import { PublicUser } from './PublicUser';
-import { userLoader } from '../services/UserLoader';
+import { userLoader } from '../services/Loader/UserLoader';
 import { WebviewCommunication } from '../services/WebviewApi/WebviewCommunication';
 import { lookuptypes } from '@vschat/shared/interfaces/RelationLookuptypes'
 

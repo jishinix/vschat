@@ -3,7 +3,7 @@ import { server_client_userCommands } from '@vschat/shared/constants/protocolCom
 import { User } from "../../models/User";
 import { Socket } from "socket.io";
 import { socketWithDataType } from "../WebsocketManager";
-import { userLoader } from "../UserLoader";
+import { userLoader } from "../Loader/UserLoader";
 import { Relationship } from "../../models/Relationship";
 import { Return } from "@vschat/shared/models/Return";
 import { UserActionReturnCodes, UserSendFriendRequestReturn } from "@vschat/shared/interfaces/UserActionInterfaces";

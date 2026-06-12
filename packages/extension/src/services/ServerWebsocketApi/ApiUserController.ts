@@ -1,7 +1,7 @@
 import { NamespaceHandler } from "@vschat/shared/Utils/BidirectionalMessageProtocolNamespaceWrapper";
 import { server_client_userCommands } from '@vschat/shared/constants/protocolCommands'
 import { PrivateUser } from "../../models/PrivateUser";
-import { userLoader } from "../UserLoader";
+import { userLoader } from "../Loader/UserLoader";
 import { WebviewCommunication } from "../WebviewApi/WebviewCommunication";
 
 

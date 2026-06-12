@@ -3,6 +3,8 @@ import { AuthActionLoginWebViewRtn, AuthActionRegisterWebViewRtn } from '../inte
 import { ChatList } from '../interfaces/Chat'
 import { UserSendFriendRequestReturn } from '../interfaces/UserActionInterfaces'
 import { lookuptypes } from '../interfaces/RelationLookuptypes'
+import { MessageData } from '../interfaces/Messages'
+import { ChatData } from '../interfaces/Chat'
 
 
 export const server_client_coreCommands = {
@@ -45,6 +47,24 @@ export const extension_webview_userFeedbackEmits = {
     UUID_INFO: { name: 'UUIDInfo', dataType: {}, returnType: {} }
 } as const
 
+
+export const server_client_chatCommands = {
+    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
+    GET_CHATS: { name: 'getChats', dataType: { chatIds: [] as string[] }, returnType: { chats: {} as Record<string, ChatData> } },
+    FETCH_MESSAGEIDS: { name: 'fetchMessageIds', dataType: { chatId: '' as string, max: 50 as number, lastMessageId: '' as string | null }, returnType: { messageIds: [] as string[] } },
+    GET_MESSAGES: { name: 'getMessages', dataType: { chatId: '' as string, messageIds: [] as string[] }, returnType: { messages: {} as Record<string, MessageData> } },
+
+    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
+    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as MessageData }, returnType: {} },
+    RESIVE_MESSAGE: { name: 'resiveMessage', datatype: { message: {} as MessageData }, returnType: {} },
+} as const
+
 export const extension_webview_chatCommands = {
-    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList }
+    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
+    GET_CHATS: { name: 'getChats', dataType: { chatIds: [] as string[] }, returnType: { chats: [] as ChatData[] } },
+    FETCH_MESSAGES: { name: 'fetchMessages', dataType: { chatId: '' as string, max: 50 as number, lastMessageId: '' as string }, returnType: { messages: [] as MessageData[] } },
+
+    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
+    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as MessageData }, returnType: {} },
+    RESIVE_MESSAGE: { name: 'resiveMessage', dataType: { message: {} as MessageData }, returnType: {} },
 } as const

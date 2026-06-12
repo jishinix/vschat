@@ -1,7 +1,8 @@
 import { UserReference } from "./User";
 
 
-export interface Message {
+export interface MessageData {
+    id: string,
     chatId: string
     timestamp: number,
     sender: UserReference,
