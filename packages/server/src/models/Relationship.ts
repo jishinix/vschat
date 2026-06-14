@@ -2,9 +2,9 @@ import { Relationship as iRelationship, RelationshipStatus } from "@vschat/share
 import { database } from "../services/DbService";
 import { Return } from "@vschat/shared/models/Return";
 import { UserActionReturnCodes, UserActionReturnCodesMessageMap } from "@vschat/shared/interfaces/UserActionInterfaces"
-import { userLoader } from "../services/UserLoader";
 import { generate } from "short-uuid";
 import { ApiUserController } from "../services/ClientApi/ApiUserController";
+import { User } from "./User";
 
 export class Relationship {
     private constructor(private _data: iRelationship) {
@@ -55,7 +55,7 @@ export class Relationship {
             relatedUserId,
             status
         })
-        const success = await ApiUserController.sendNewRelationship(rs);
+        const success = await User.addRelationsip(rs);
         if (!success) return new Return(UserActionReturnCodes.someUserNotFound, rs)
         await rs.saveRelationShip();
         return new Return(UserActionReturnCodes.success, rs)

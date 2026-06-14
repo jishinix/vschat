@@ -2,7 +2,7 @@ import express from 'express';
 import { createServer, Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import { ClientCommunication } from './ClientApi/ClientCommunication';
-import { userLoader } from './UserLoader';
+import { userLoader } from './Loader/UserLoader';
 import { User } from '../models/User';
 import { sessionManager } from './SessionManager';
 

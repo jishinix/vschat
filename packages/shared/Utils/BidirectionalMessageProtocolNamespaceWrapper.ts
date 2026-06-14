@@ -79,7 +79,7 @@ export abstract class NamespaceHandler<CommandsRecord extends Record<string, any
             const incomingData = (data || {}) as Record<string, any>;
 
             for (const key of requiredKeys) {
-                if (incomingData[key] === undefined || incomingData[key] === null || incomingData[key] === '') {
+                if (incomingData[key] === undefined || incomingData[key] === '') {
                     missingData.push(key);
                 }
             }
@@ -98,7 +98,10 @@ export abstract class NamespaceHandler<CommandsRecord extends Record<string, any
 
         const checkedData = await this.checkData<T>(command, data);
         if (checkedData === true) return await handlerFunc(data, extraData);
-        else return checkedData;
+        else {
+            console.log('checkData faild', JSON.stringify(checkedData));
+            return checkedData;
+        };
     }
 
 

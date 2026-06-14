@@ -10,20 +10,63 @@ import { Message } from '@vschat/shared/models/Message'
 import { chatLoader } from "./ChatLoader";
 
 
-export type LoaderMessageType = Message<typeof chatLoader, typeof userLoader>
+export type LoaderMessageType = Message<MessageData, typeof chatLoader, typeof userLoader>
 
 export class MessagesLoader extends Cache<MessageData, LoaderMessageType> {
     constructor(private chatId: string) {
-        super([]);
+        super([], true);
     }
 
     protected async loadData(key: Set<string>): Promise<Map<string, MessageData>> {
         const rtn = new Map<string, MessageData>();
-        const messages = await this.getDefaultMessageQuery()
+        const messages = await database('Messages')
+            .select([
+                'Messages.Id as MessageId',
+                'ChatId',
+                'Timestamp',
+                'EncryptedContent.Content as EncryptedContentValue',
+                'EncryptedContent.Fingerprint as Fingerprint',
+                'Users.Id as UserId',
+                'Username',
+                'PublicKey'
+            ])
+            .join('Users', 'SenderId', '=', 'Users.Id')
+            .join('EncryptedContent', 'EncryptedContentId', '=', 'EncryptedContent.Id')
             .whereIn('Messages.Id', Array.from(key))
+
         for (const message of messages) {
-            rtn.set(message.MessageId, this.generateMessageFromDbRtn(message))
+            rtn.set(message.MessageId, {
+                id: message.MessageId,
+                chatId: message.ChatId,
+                timestamp: message.Timestamp,
+                encryptedContent: {
+                    encryptedContent: message.EncryptedContentValue,
+                    fingerPrint: message.Fingerprint,
+                    keys: {}
+                },
+                sender: {
+                    id: message.UserId,
+                    username: message.Username,
+                    publicKey: message.PublicKey
+                }
+            })
         }
+        const encryptionKeys = await database('EncryptedContentKeys')
+            .select([
+                'Messages.Id as MessageId',
+                'UserId',
+                'Key'
+            ])
+            .join('EncryptedContent', 'EncryptedContentKeys.EncryptedContentId', '=', 'EncryptedContent.Id')
+            .join('Messages', 'Messages.EncryptedContentId', '=', 'EncryptedContent.Id')
+            .whereIn('Messages.Id', Array.from(key))
+
+        for (const key of encryptionKeys) {
+            const msg = rtn.get(key.MessageId);
+            if (msg)
+                msg.encryptedContent.keys[key.UserId] = key.Key
+        }
+
         return rtn;
     }
 
@@ -58,44 +101,51 @@ export class MessagesLoader extends Cache<MessageData, LoaderMessageType> {
     }
 
     protected async saveData(data: Map<string, MessageData>): Promise<void> {
-        const messageArray = Array.from(data.values());
-        const messageEntries = messageArray.map(e => {
-            return {
-                Id: e.id,
-                ChatId: e.chatId,
-                Timestamp: e.timestamp,
-                EncryptedContent: e.encryptedContent,
-                SenderId: e.sender.id
-            }
-        });
-        await database('Messages').insert(messageEntries).onConflict(['Id']).merge();
-    }
+        await database.transaction(async (trx) => {
 
-    private generateMessageFromDbRtn(message: any): MessageData {
-        return {
-            id: message.MessageId,
-            chatId: message.ChatId,
-            timestamp: message.Timestamp,
-            encryptedContent: message.EncryptedContent,
-            sender: {
-                id: message.UserId,
-                username: message.Username,
-                publicKey: message.PublicKey
+            const entries = {
+                entcryptedContent: [] as { Content: string, Fingerprint: string }[],
+                entcryptedContentId: [] as number[],
+                entcryptedKey: [] as {
+                    UserId: string,
+                    Key: string
+                }[][],
+                message: [] as {
+                    Id: string,
+                    Timestamp: number,
+                    SenderId: string,
+                    ChatId: string
+                }[],
             }
-        }
-    }
 
-    private getDefaultMessageQuery(select: string[] | null = null) {
-        return database('Messages')
-            .select(select || [
-                'Messages.Id as MessageId',
-                'ChatId',
-                'Timestamp',
-                'EncryptedContent',
-                'Users.Id as UserId',
-                'Username',
-                'PublicKey'
-            ])
-            .join('Users', 'SenderId', '=', 'Users.Id')
+            data.forEach((val, key) => {
+                entries.entcryptedContent.push({ Content: val.encryptedContent.encryptedContent, Fingerprint: val.encryptedContent.fingerPrint });
+                entries.entcryptedKey.push(
+                    Array.from(Object.entries(val.encryptedContent.keys)).map(([key, val]) => ({ UserId: key, Key: val }))
+                )
+                entries.message.push({
+                    Id: val.id,
+                    Timestamp: val.timestamp,
+                    SenderId: val.sender.id,
+                    ChatId: val.chatId
+                })
+            })
+            entries.entcryptedContentId = await trx('EncryptedContent')
+                .insert(entries.entcryptedContent)
+                .returning('Id')
+
+            const insertedEntcryptedKey = entries.entcryptedKey.map((e, i) => e.map(e2 => ({
+                ...e2,
+                EncryptedContentId: entries.entcryptedContentId[i]
+            }))).flat()
+
+            await trx('EncryptedContentKeys')
+                .insert(insertedEntcryptedKey)
+            await trx('Messages')
+                .insert(entries.message.map((e, i) => ({
+                    ...e,
+                    EncryptedContentId: entries.entcryptedContentId[i]
+                })))
+        })
     }
 }

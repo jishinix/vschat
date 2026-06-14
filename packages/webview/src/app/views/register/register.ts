@@ -48,7 +48,6 @@ export class Register {
         } else {
             const loginResult = await this.ebc.auth.login(username, password);
             if (loginResult.code !== AuthActionRtnCodes.success) {
-                console.log(loginResult);
                 this.navigation.switchView('login', { success: "Account wurde erfolgreich erstellt." })
             } else {
                 this.navigation.switchView('chatlist',)

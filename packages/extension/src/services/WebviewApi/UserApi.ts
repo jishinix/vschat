@@ -17,7 +17,6 @@ export class UserApi extends NamespaceHandler<typeof extension_webview_userComma
         getLogedInUser: async () => {
             const user = (await serverCommunication.userHandler.getLogedInUser())?.webviewData;
             if (!user) return { user: null };
-            console.log('USER', user);
             return { user };
         },
         sendFriendRequest: async (data) => {

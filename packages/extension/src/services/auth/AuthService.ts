@@ -1,5 +1,5 @@
 import { ApiService } from "./ApiService";
-import { CryptoService } from "./CryptoService";
+import { CryptoService } from '@vschat/shared/Utils/CryptoService'
 import { randomBytes } from 'crypto';
 import * as CryptoJS from 'crypto-js';
 import { AuthActionLoginWebViewRtn, AuthActionRegisterWebViewRtn, AuthActionRtnCodes } from "@vschat/shared/interfaces/ApiInterfaces"
@@ -24,11 +24,11 @@ class AuthService {
         const hashedPassword = await CryptoService.deriveHashes(password);
         const keypair = CryptoService.generateRSAKeys();
         const masterkey = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
-        const encryptedPrivatekey = CryptoService.encryptData(keypair.privateKey, masterkey);
+        const encryptedPrivatekey = CryptoService.encryptText(keypair.privateKey, masterkey);
         const backupCodes = this.generateBackupCodes();
         const encryptedMasterkeysPayloads: EncryptedMasterkeysPayload = {
-            mainSlot: CryptoService.encryptData(masterkey, password),
-            backupSlots: backupCodes.map(code => CryptoService.encryptData(masterkey, code)),
+            mainSlot: CryptoService.encryptText(masterkey, password),
+            backupSlots: backupCodes.map(code => CryptoService.encryptText(masterkey, code)),
             masterkeyProof: await CryptoService.deriveHashes(masterkey)
         };
         const apiResult = await ApiService.register(username, hashedPassword, keypair.publicKey, encryptedPrivatekey, encryptedMasterkeysPayloads)
@@ -80,7 +80,7 @@ class AuthService {
         if (challengeRtn.code !== 0) return challengeRtn;
         const challenge = challengeRtn.data;
         const solvedChallenge = await CryptoService.createAuthProof(hashedMasterkey, challenge);
-        const newMainSlot = CryptoService.encryptData(masterkey, newPassword);
+        const newMainSlot = CryptoService.encryptText(masterkey, newPassword);
 
         const succsess = await ApiService.resetPassword(solvedChallenge, challenge, username, hashedNewPassword, newMainSlot)
         return succsess;

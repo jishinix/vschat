@@ -1,3 +1,11 @@
 <app-chat-overlay>
-    <app-chat-log></app-chat-log>
+    @if (navigation.extradata.chatId()) {
+    <div #chatWrapper class="chatWrapper">
+        <app-chat-log [chat]="chat()" (initFetchComplete)="handleInitFetch($event)"></app-chat-log>
+
+        <app-chat-box (enterPressed)="sendMsg()" [(value)]="message"></app-chat-box>
+    </div>
+    } @else {
+    <p>Kein Chat ausgewählt</p>
+    }
 </app-chat-overlay>

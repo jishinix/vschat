@@ -1,11 +1,12 @@
-import { MessageData } from '../interfaces/Messages'
+import { DecrypredMessageData, MessageData } from '../interfaces/Messages'
 import { Cache } from '../Utils/Cache'
 
 export class Message<
+    MessageDataType extends MessageData | DecrypredMessageData = MessageData | DecrypredMessageData,
     ChatLoader extends Cache<any, any> = Cache<any, any>,
     UserLoader extends Cache<any, any> = Cache<any, any>
 > {
-    constructor(private _data: MessageData, private chatLoader: ChatLoader, private userLoader: UserLoader) {
+    constructor(private _data: MessageDataType, private chatLoader: ChatLoader, private userLoader: UserLoader) {
 
     }
 

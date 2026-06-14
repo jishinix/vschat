@@ -3,6 +3,8 @@ import { server_client_chatCommands, server_client_userCommands } from '@vschat/
 import { PrivateUser } from "../../models/PrivateUser";
 import { userLoader } from "../Loader/UserLoader";
 import { WebviewCommunication } from "../WebviewApi/WebviewCommunication";
+import { ChatCreateData } from '@vschat/shared/interfaces/Chat'
+import { MessageCreateData } from "@vschat/shared/interfaces/Messages";
 
 
 export class ApiChatController extends NamespaceHandler<typeof server_client_chatCommands> {
@@ -19,16 +21,20 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
         return await this.request('getChats', { chatIds })
     }
 
-    async getMessages(messageIds: string[]) {
-        return await this.request('getMessages', { messageIds })
-    }
-
-    async fetchMessages(chatId: string, max: number = 50, lastMessageId: string | null = null) {
-        return await this.request('fetchMessages', { chatId, max, lastMessageId })
+    async getMessages(chatId: string, messageIds: string[]) {
+        return await this.request('getMessages', { chatId, messageIds })
     }
 
     async fetchMessageIds(chatId: string, max: number = 50, lastMessageId: string | null = null) {
         return await this.request('fetchMessageIds', { chatId, max, lastMessageId })
+    }
+
+    async createChat(payload: ChatCreateData<string>) {
+        return await this.request('createChat', { chatCreateData: payload })
+    }
+
+    async sendMsg(message: MessageCreateData) {
+        return await this.request('sendMessage', { message: message });
     }
 
 }

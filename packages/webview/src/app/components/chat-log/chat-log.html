@@ -1,5 +1,21 @@
-<div class="editor-window">
-    @for (msg of activeChatMessages; track msg.id) {
-    <app-chat-message [messageData]=msg></app-chat-message>
+<div #scrollContainer class="editor-window">
+
+    @if (!hasMoreOlderMessages()) {
+    <div class="chat-status-info end-of-conversation">
+        <span>Ende der Konversation</span>
+    </div>
+    }
+
+    <div #topAnchor class="scroll-anchor"></div>
+
+    @if (isLoading && hasMoreOlderMessages()) {
+    <div class="chat-status-info loading-indicator">
+        <div class="spinner"></div>
+        <span>Nachrichten werden geladen...</span>
+    </div>
+    }
+
+    @for (msg of activeChatMessages(); track msg.id) {
+    <app-chat-message [messageData]="msg"></app-chat-message>
     }
 </div>

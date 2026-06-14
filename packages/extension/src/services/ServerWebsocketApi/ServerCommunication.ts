@@ -4,6 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { ApiCoreController } from './ApiCoreController';
 import { ApiUserController } from './ApiUserController';
 import { ApiChatController } from './ApiChatController';
+import { ApiAuthController } from './ApiAuthController';
 
 
 class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
@@ -12,6 +13,7 @@ class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
     coreHandler: ApiCoreController;
     userHandler: ApiUserController;
     chatHandler: ApiChatController;
+    authHander: ApiAuthController;
 
     constructor() {
         super('EXTENSION-SERVER')
@@ -19,12 +21,14 @@ class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
         this.coreHandler = new ApiCoreController();
         this.userHandler = new ApiUserController();
         this.chatHandler = new ApiChatController();
+        this.authHander = new ApiAuthController();
         //this.initReceive();
 
         this.initializeBaseHandlers([
             this.coreHandler,
             this.userHandler,
-            this.chatHandler
+            this.chatHandler,
+            this.authHander
         ])
     }
     protected async send(payload: CommandPayload): Promise<void> {

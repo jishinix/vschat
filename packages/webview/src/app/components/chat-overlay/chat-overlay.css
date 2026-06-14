@@ -1,7 +1,7 @@
 .chatOverlay {
     height: 100vh;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .chatOverlay header {
@@ -25,7 +25,6 @@
 
 .chatOverlay .chatOverlayContent {
     flex-grow: 1;
-    overflow: auto;
 }
 
 .chatOverlay footer {

@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { DecrypredMessageData } from '@vschat/shared/interfaces/Messages';
 
 @Component({
   selector: 'app-chat-message',
@@ -8,7 +9,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./chat-message.css']
 })
 export class ChatMessageComponent implements OnInit {
-  @Input() messageData!: any;
+  @Input() messageData!: DecrypredMessageData;
 
   constructor() {
     // Hier ist es IMMER undefined, da Angular die Inputs noch nicht gebunden hat
@@ -16,6 +17,5 @@ export class ChatMessageComponent implements OnInit {
 
   ngOnInit() {
     // HIER läuft es perfekt! Die Daten sind da.
-    console.log('Message empfangen im Hook:', this.messageData);
   }
 }

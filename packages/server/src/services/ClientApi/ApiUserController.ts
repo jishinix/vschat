@@ -4,10 +4,11 @@ import { User } from "../../models/User";
 import { Socket } from "socket.io";
 import { socketWithDataType } from "../WebsocketManager";
 import { userLoader } from "../Loader/UserLoader";
-import { Relationship } from "../../models/Relationship";
+import { Relationship as iRelationship } from "@vschat/shared/interfaces/User";
 import { Return } from "@vschat/shared/models/Return";
 import { UserActionReturnCodes, UserSendFriendRequestReturn } from "@vschat/shared/interfaces/UserActionInterfaces";
 import { PublicUser, RelationshipStatus } from "@vschat/shared/interfaces/User";
+import { Relationship } from "../../models/Relationship";
 
 
 export class ApiUserController extends NamespaceHandler<typeof server_client_userCommands, { socket: socketWithDataType }> {
@@ -61,21 +62,8 @@ export class ApiUserController extends NamespaceHandler<typeof server_client_use
         }
     } satisfies NamespaceHandler<typeof server_client_userCommands, { socket: socketWithDataType }>['handles'];
 
-    static async sendNewRelationship(relation: Relationship) {
-        const usersMap = await userLoader.getData([relation.data.userId, relation.data.relatedUserId]);
-        const users = [usersMap.get(relation.data.userId), usersMap.get(relation.data.relatedUserId)].filter(e => !!e);
-        if (users.length != 2) return false;
-        relation = { data: JSON.parse(JSON.stringify(relation.data)) } as any;
-        console.log(relation);
-        if (relation.data.status === RelationshipStatus.friendshipRequestIgnored) {
-            relation.data.status = RelationshipStatus.none
-        }
-        for (const [index, user] of users.entries()) {
-            user.send((protocol) => {
-                protocol.userHandler.emit('relationUpdate', { relation: relation.data })
-            })
-        }
-        return true;
+    async updateRelation(relation: iRelationship) {
+        this.emit('relationUpdate', { relation: relation })
     }
 
     constructor() {

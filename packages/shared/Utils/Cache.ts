@@ -1,6 +1,6 @@
 interface CacheElement<InputData> {
     id: string;
-    timeout: NodeJS.Timeout;
+    timeout: ReturnType<typeof setTimeout>;
     data: InputData;
 }
 /**
@@ -25,14 +25,14 @@ export abstract class Cache<InputData extends Object = any, Outputdata = InputDa
     protected expireTime: number = 1000 * 60 * 10;
     protected statusExpireTime: number = 1000 * 30;
     private dirtyKeys: Set<string> = new Set();
-    private proxyTimeout: NodeJS.Timeout | null = null;
+    private proxyTimeout: ReturnType<typeof setTimeout> | null = null;
     private proxyCache: WeakMap<InputData, any> = new WeakMap();
     private aliasPointer: Map<keyof InputData, Map<string, string>> = new Map();
     private WeakOutputCache: WeakMap<InputData, Outputdata> = new WeakMap();
     private persistendOutputCache: Map<InputData, Outputdata> = new Map();
 
 
-    constructor(pointerKeys: InputDataKeys, private noProxy: boolean = false, private usePersistendOutPutCache = false) {
+    constructor(pointerKeys: InputDataKeys, private noProxy: boolean = false, private usePersistendOutPutCache = false, private skipCaching: boolean = false) {
         for (const key of pointerKeys) {
             this.aliasPointer.set(key, new Map());
         }
@@ -182,6 +182,7 @@ export abstract class Cache<InputData extends Object = any, Outputdata = InputDa
      * erstellt einen proxy für das Persistente speichern und fügt die daten wirklich dem Cache hinzu.
      */
     protected cacheData(data: Map<string, InputData | null>) {
+        if (this.skipCaching) return;
         for (const [key, value] of data) {
 
             if (value == null) continue;
@@ -285,7 +286,6 @@ export abstract class Cache<InputData extends Object = any, Outputdata = InputDa
 
         const handler: ProxyHandler<any> = {
             set: (target, prop, value) => {
-                console.log('CACHE PROXY SET TRIGGERED', prop, value);
                 if (isStart && typeof prop == 'string') {
                     if (this.aliasPointer.has(prop as keyof InputData)) {
                         const pointer = this.aliasPointer.get(prop as keyof InputData);

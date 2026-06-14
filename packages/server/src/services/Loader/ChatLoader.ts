@@ -4,16 +4,18 @@ import { Cache } from "@vschat/shared/Utils/Cache";
 import { database } from "../DbService";
 import { userLoader } from "./UserLoader";
 import { LoaderMessageType, MessagesLoader } from "./MessagesLoader";
+import { UserReference } from "@vschat/shared/interfaces/User";
+import { ServerChat } from "../../models/Chat";
 
 
-class ChatLoader extends Cache<ChatData, Chat<MessagesLoader, typeof userLoader>> {
+class ChatLoader extends Cache<ChatData<UserReference>, ServerChat> {
     constructor() {
         super([], false, true);
     }
 
-    protected async loadData(key: Set<string>): Promise<Map<string, ChatData | null>> {
+    protected async loadData(key: Set<string>): Promise<Map<string, ChatData<UserReference> | null>> {
         const aKeys = Array.from(key);
-        const rtn = new Map<string, ChatData>();
+        const rtn = new Map<string, ChatData<UserReference>>();
         const chats = await database('Chats')
             .select(['Id', 'Name', 'Type'])
             .whereIn('Id', aKeys);
@@ -43,11 +45,11 @@ class ChatLoader extends Cache<ChatData, Chat<MessagesLoader, typeof userLoader>
         return rtn;
     }
 
-    protected async processData(rawData: ChatData): Promise<Chat<MessagesLoader, typeof userLoader>> {
-        return new Chat(rawData, MessagesLoader, userLoader);
+    protected async processData(rawData: ChatData<UserReference>): Promise<ServerChat> {
+        return new ServerChat(rawData, MessagesLoader, userLoader);
     }
 
-    protected async saveData(data: Map<string, ChatData>): Promise<void> {
+    protected async saveData(data: Map<string, ChatData<UserReference>>): Promise<void> {
         const chatsArray = Array.from(data.values());
         const participantsEntries: Record<string, any>[] = [];
         const chatsEntries = chatsArray.map(e => {

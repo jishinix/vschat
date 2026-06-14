@@ -1,0 +1,5 @@
+<div class="vscode-input-container">
+    <textarea #textareaRef class="vscode-textarea" [ngModel]="value" (ngModelChange)="onInputChange($event)"
+        (keydown)="onKeyDown($event)" [placeholder]="placeholder" rows="1">
+  </textarea>
+</div>

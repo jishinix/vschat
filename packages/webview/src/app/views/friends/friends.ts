@@ -6,6 +6,8 @@ import { ExtensionBackendCommunication } from '../../services/ExtensionApi/Exten
 import { UserReference } from '@vschat/shared/interfaces/User';
 import { CollapsibleTab } from '../../components/collapsible-tab/collapsible-tab';
 import { AccountStorage } from '../../services/AccountStorage';
+import { Utils } from '@vschat/shared/Utils/GenerlUtils'
+import { NavigationService } from '../../services/NavigationService';
 
 @Component({
     selector: 'app-friends',
@@ -20,7 +22,7 @@ import { AccountStorage } from '../../services/AccountStorage';
 })
 export class Friends {
     public uuid: string = '';
-    constructor(private ebc: ExtensionBackendCommunication, public accountStorage: AccountStorage) { }
+    constructor(private ebc: ExtensionBackendCommunication, public accountStorage: AccountStorage, public navigation: NavigationService) { }
 
     ngOnInit() {
     }
@@ -35,5 +37,15 @@ export class Friends {
 
     ignoreFriendRequest(userId: string) {
         this.ebc.user.ignoreFriendRequest(userId);
+    }
+
+    async selectFriendChat(userId: string) {
+        const user = await this.ebc.user.getLogedInUser();
+        if (!user || !user.user) return;
+        const chat = await this.ebc.chat.getFriendChat(userId);
+        if (chat && chat.chat?.id) {
+            this.navigation.extradata.chatId.set(chat.chat.id);
+            this.navigation.currentView.set('chat')
+        }
     }
 }

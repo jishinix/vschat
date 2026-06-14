@@ -29,9 +29,14 @@
     "@angular/forms": "^21.0.0",
     "@angular/platform-browser": "^21.0.0",
     "@angular/router": "^21.0.0",
+    "@tiptap/core": "^3.26.1",
+    "@tiptap/starter-kit": "^3.26.1",
+    "@vschat/shared": "*",
+    "marked": "^18.0.5",
+    "ngx-markdown": "^21.3.0",
+    "ngx-tiptap": "^14.0.1",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "@vschat/shared": "*"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^21.0.3",

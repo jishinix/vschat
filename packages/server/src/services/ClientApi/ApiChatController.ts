@@ -7,13 +7,16 @@ import { userLoader } from "../Loader/UserLoader";
 import { Relationship } from "../../models/Relationship";
 import { Return } from "@vschat/shared/models/Return";
 import { UserActionReturnCodes, UserSendFriendRequestReturn } from "@vschat/shared/interfaces/UserActionInterfaces";
-import { PublicUser, RelationshipStatus } from "@vschat/shared/interfaces/User";
+import { PublicUser, RelationshipStatus, UserReference } from "@vschat/shared/interfaces/User";
 import { MessagesLoader } from "../Loader/MessagesLoader";
 import { chatLoader } from "../Loader/ChatLoader";
 import { MessageData } from "@vschat/shared/interfaces/Messages";
+import { ChatActions } from "../ChatActions";
+import { ChatActionReturnCodes } from "@vschat/shared/interfaces/ChatActionInterfaces";
+import { ChatData } from "@vschat/shared/interfaces/Chat";
 
 
-export class ApiUserController extends NamespaceHandler<typeof server_client_chatCommands, { socket: socketWithDataType }> {
+export class ApiChatController extends NamespaceHandler<typeof server_client_chatCommands, { socket: socketWithDataType }> {
     handles = {
         'fetchMessageIds': async (data) => {
             return { messageIds: await MessagesLoader.getMessageIds(data.chatId, data.max, data.lastMessageId) };
@@ -29,6 +32,32 @@ export class ApiUserController extends NamespaceHandler<typeof server_client_cha
             });
             return { messages: Object.fromEntries(messageMap) }
         },
+        'getChats': async (data, extraData) => {
+            const user = await extraData.socket.data.getUser();
+            if (!user) return { chats: {} };
+
+            const arr = Array.from((await chatLoader.getData(data.chatIds)).entries())
+                .filter(e => e[1]?.checkUserIsAuthorized(user.data.id))
+                .map(([key, val]) => {
+                    return [key, val?.data]
+                }).filter(e => e)
+            return { chats: Object.fromEntries(arr) as Record<string, ChatData<UserReference>> };
+        },
+        'createChat': async (data, extraData) => {
+            const user = await extraData.socket.data.getUser();
+            if (!user) return { chat: new Return(ChatActionReturnCodes.noPermissions, undefined) }
+            const ca = new ChatActions();
+            const chat = await ca.createChat(user, data.chatCreateData);
+            return { chat }
+        },
+        'sendMessage': async (data, extraData) => {
+            const user = await extraData.socket.data.getUser();
+            const chat = (await chatLoader.getData([data.message.chatId])).get(data.message.chatId);
+            if (!user || !chat) return {};
+
+            chat.addMessage(data.message, user.data);
+
+        }
     } satisfies NamespaceHandler<typeof server_client_chatCommands, { socket: socketWithDataType }>['handles'];
 
     static async sendNewRelationship(relation: Relationship) {
@@ -36,7 +65,6 @@ export class ApiUserController extends NamespaceHandler<typeof server_client_cha
         const users = [usersMap.get(relation.data.userId), usersMap.get(relation.data.relatedUserId)].filter(e => !!e);
         if (users.length != 2) return false;
         relation = { data: JSON.parse(JSON.stringify(relation.data)) } as any;
-        console.log(relation);
         if (relation.data.status === RelationshipStatus.friendshipRequestIgnored) {
             relation.data.status = RelationshipStatus.none
         }
@@ -49,10 +77,14 @@ export class ApiUserController extends NamespaceHandler<typeof server_client_cha
     }
 
     constructor() {
-        super('user', server_client_chatCommands)
+        super('chat', server_client_chatCommands)
     }
 
     async getCurrentLogedInUser(): Promise<User> {
         return {} as User;
+    }
+
+    async sendMsg(message: MessageData) {
+        this.request('reciveMessage', { message: message })
     }
 }

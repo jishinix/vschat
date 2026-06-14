@@ -2,22 +2,40 @@ import { MessageData } from "./Messages";
 import { UserReference } from "./User";
 
 
-export type ChatList = ChatListItem[]
+export type ChatList = ChatListItem<UserReference>[]
 
 export enum chatTypes {
     direct,
     group
 }
 
-interface ChatBase {
+interface _ChatBase<participantsType> {
     id: string,
     type: chatTypes,
     name?: string,
-    participants: UserReference[],
+    participants: participantsType[],
 }
 
-export interface ChatListItem extends ChatBase {
-    lastMsg: MessageData
+interface ChatBaseDirect<participantsType> extends _ChatBase<participantsType> {
+    type: chatTypes.direct,
+    participants: [participantsType, participantsType]
 }
 
-export interface ChatData extends ChatBase { }
+interface ChatBaseGroup<participantsType> extends Omit<_ChatBase<participantsType>, 'type'> {
+    type: chatTypes.group,
+    name: string, // Bei Gruppen-Chats ist der Name meistens Pflicht
+    participants: participantsType[]
+}
+
+export type ChatBase<participantsType> = ChatBaseDirect<participantsType> | ChatBaseGroup<participantsType>;
+
+
+export type ChatListItem<participantsType> = ChatBase<participantsType> & {
+    lastMsg: MessageData;
+};
+
+export type ChatData<participantsType> = ChatBase<participantsType>
+
+type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
+
+export type ChatCreateData<participantsType> = DistributiveOmit<ChatData<participantsType>, 'id'>;

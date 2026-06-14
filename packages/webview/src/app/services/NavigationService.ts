@@ -13,6 +13,10 @@ export interface ViewSwitchMessage {
 export class NavigationService {
     currentView = signal<AppViews>('init-direct');
 
+    extradata = {
+        chatId: signal<string>('')
+    }
+
     generalSuccess = signal<string>('');
     generalError = signal<string>('');
 

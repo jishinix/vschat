@@ -1,8 +1,8 @@
 import { Return } from "@vschat/shared/models/Return";
 import { AuthActionLoginExtensionRtn, AuthActionRtnCodes } from "@vschat/shared/interfaces/ApiInterfaces"
 import { User } from "../models/User";
-import { CryptoService } from "./CryptService";
-import { userLoader } from "./UserLoader";
+import { CryptoService } from "@vschat/shared/Utils/CryptoService";
+import { userLoader } from "./Loader/UserLoader";
 import { generate } from 'short-uuid';
 import { sessionManager } from "./SessionManager";
 import { PrivateUser } from "@vschat/shared/interfaces/User";

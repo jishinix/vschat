@@ -29,7 +29,6 @@ export const route = (app: Express) => {
             !masterkeyPayload
         ) return res.sendStatus(400);
         const result = await authactions.register(username, hashedPassword, publicKey, encryptedPrivatekey, masterkeyPayload)
-        console.log(result);
         handleReturn(result, res);
     })
     app.get('/vsc/api/challenge/login/:username', async (req, res) => {

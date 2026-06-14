@@ -1,0 +1,11 @@
+.chatWrapper {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 1em;
+    height: 100%;
+}
+
+app-chat-box {
+    position: sticky;
+    bottom: 0;
+}

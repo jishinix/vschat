@@ -6,12 +6,14 @@ import { serverCommunication } from '../ServerWebsocketApi/ServerCommunication';
 import { ApiCoreController } from '../ServerWebsocketApi/ApiCoreController';
 import { UserApi } from './UserApi';
 import { UserFeedbackEmits } from './UserFeedbackEmits';
+import { ChatApi } from './ChatApi';
 
 
 export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
     public auth: AuthApi;
     public core: ApiCoreController;
     public user: UserApi;
+    public chat: ChatApi;
     public userFeedback: UserFeedbackEmits;
     private static instance: WebviewCommunication | null = null;
 
@@ -21,6 +23,7 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
         this.auth = new AuthApi();
         this.core = new ApiCoreController();
         this.user = new UserApi();
+        this.chat = new ChatApi();
         this.userFeedback = new UserFeedbackEmits();
 
         this.initReceive();
@@ -28,6 +31,7 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
             this.auth,
             this.core,
             this.user,
+            this.chat,
             this.userFeedback,
         ])
         //serverCommunication.connect('asd');

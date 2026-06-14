@@ -1,20 +1,44 @@
-:host {
-    display: block;
-    width: 100%;
+.editor-window {
     height: 100%;
+    /* WICHTIG: Muss eine feste Höhe oder 100% des Parents haben */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    scroll-snap-type: y mandatory;
 }
 
-.editor-window {
-    /* Nutzt den echten Editor-Hintergrund von VS Code */
-    background-color: var(--vscode-editor-background);
-    /* Nutzt die Standard-Textfarbe des Editors */
-    color: var(--vscode-editor-foreground);
-    font-family: var(--vscode-editor-font-family, 'Consolas', monospace);
-    font-size: var(--vscode-editor-font-size, 13px);
-    font-weight: var(--vscode-editor-font-weight, normal);
-    line-height: 1.6;
-    padding: 16px;
-    box-sizing: border-box;
-    min-height: 400px;
-    overflow-y: auto;
+.scroll-anchor {
+    height: 5px;
+    /* Minimal vergrößert, damit der Observer stabiler reagiert */
+    width: 100%;
+    pointer-events: none;
+    background: transparent;
+}
+
+.chat-status-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 0;
+    width: 100%;
+    color: var(--vscode-descriptionForeground, #888888);
+    font-size: 0.85em;
+    flex-shrink: 0;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: var(--vscode-progressBar-background, #007acc);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
