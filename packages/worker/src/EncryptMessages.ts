@@ -11,5 +11,5 @@ if (!parentPort) {
 
 // Nachricht vom Haupt-Thread empfangen
 parentPort.on('message', (data: { messages: EncryptedContent[], userId: string, privateKey: string }) => {
-    parentPort!.postMessage(CryptoService.encryptMultibleContent(data.messages, data.privateKey, data.userId));
+    parentPort!.postMessage(CryptoService.decryptMultibleContent(data.messages, data.privateKey, data.userId));
 });

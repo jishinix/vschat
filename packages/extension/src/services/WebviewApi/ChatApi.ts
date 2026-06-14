@@ -13,6 +13,7 @@ import { chatTypes } from "@vschat/shared/interfaces/Chat";
 import { ChatActionReturnCodes } from "@vschat/shared/interfaces/ChatActionInterfaces";
 import { chatLoader } from "../Loader/ChatLoader";
 import { CryptoService } from '@vschat/shared/Utils/CryptoService'
+import { DecrypredMessageData } from '@vschat/shared/interfaces/Messages'
 
 export class ChatApi extends NamespaceHandler<typeof extension_webview_chatCommands> {
     constructor() {
@@ -57,4 +58,8 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
             return {}
         }
     } satisfies NamespaceHandler<typeof extension_webview_chatCommands>['handles'];
+
+    reciveMessage(msg: DecrypredMessageData) {
+        this.emit('reciveMessage', { message: msg });
+    }
 }

@@ -110,7 +110,7 @@ export class CryptoService {
         return { content: this.decryptText(payload.encryptedContent, key), key };
     }
 
-    static encryptMultibleContent(contents: EncryptedContent[], privateKey: string, userId: string) {
+    static decryptMultibleContent(contents: EncryptedContent[], privateKey: string, userId: string) {
         const decryptedKeysMap = new Map<string, string>();
 
         const rtn = contents.map(e => {

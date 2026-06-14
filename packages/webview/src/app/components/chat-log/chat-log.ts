@@ -4,6 +4,7 @@ import { DecrypredMessageData } from '@vschat/shared/interfaces/Messages';
 import { UserReference } from '@vschat/shared/interfaces/User';
 import { ChatData } from '@vschat/shared/interfaces/Chat';
 import { ExtensionBackendCommunication } from '../../services/ExtensionApi/ExtensionBackendCommunication';
+import { NavigationService } from '../../services/NavigationService';
 
 @Component({
     selector: 'app-chat-log',
@@ -31,8 +32,21 @@ export class ChatLogComponent implements AfterViewInit, OnDestroy {
 
     constructor(
         private ebc: ExtensionBackendCommunication,
-        private cdr: ChangeDetectorRef
-    ) { }
+        private cdr: ChangeDetectorRef,
+        private navigation: NavigationService
+    ) {
+    }
+
+    ngOnInit() {
+        this.navigation.extradata.addMsg = (msg: DecrypredMessageData) => {
+            if (msg.chatId === this.chat?.id) {
+                this.activeChatMessages.set([...this.activeChatMessages(), msg]);
+                setTimeout(() => {
+                    this.scrollToBottom();
+                }, 10)
+            }
+        }
+    }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['chat'] && this.chat) {

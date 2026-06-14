@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { DecrypredMessageData } from '@vschat/shared/interfaces/Messages';
 
 export type AppViews = 'init-direct' | 'login' | 'register' | 'chatlist' | 'chat' | 'friends';
 
@@ -14,7 +15,8 @@ export class NavigationService {
     currentView = signal<AppViews>('init-direct');
 
     extradata = {
-        chatId: signal<string>('')
+        chatId: signal<string>(''),
+        addMsg: undefined as (((msg: DecrypredMessageData) => void) | undefined)
     }
 
     generalSuccess = signal<string>('');

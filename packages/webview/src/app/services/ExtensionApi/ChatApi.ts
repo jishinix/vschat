@@ -5,6 +5,7 @@ import { NamespaceHandler } from '@vschat/shared/Utils/BidirectionalMessageProto
 import { extension_webview_chatCommands } from '@vschat/shared/constants/protocolCommands'
 import { ExtensionBackendCommunication } from './ExtensionBackendCommunication';
 import { DecrypredMessageCreateData, MessageData } from '@vschat/shared/interfaces/Messages';
+import { NavigationService } from '../NavigationService';
 
 @Injectable({
     providedIn: 'root'
@@ -17,10 +18,16 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
 
     }
     handles = {
-        resiveMessage: async (data) => {
-
+        reciveMessage: async (data) => {
+            const nav = this.navigation;
+            if (nav.extradata.addMsg) {
+                nav.extradata.addMsg(data.message)
+            }
         }
     } satisfies NamespaceHandler<typeof extension_webview_chatCommands>['handles'];
+    private get navigation() {
+        return this.injector.get(NavigationService)
+    }
     private get ebc() {
         return this.injector.get(ExtensionBackendCommunication);
     }

@@ -20,7 +20,7 @@ export class Chat<
 
     async getParticipants(): Promise<ReturnType<UserLoader['getData']>> {
         const participants = await this.userLoader.getData(this.data.participants.map(e => e.id));
-        return participants;
+        return participants as ReturnType<UserLoader['getData']>;
     }
 
     async getMessages(messagIds: string[]) {

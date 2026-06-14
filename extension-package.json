@@ -13,9 +13,9 @@
     "onView:vschat-sidebar"
   ],
   "files": [
-    "../../out/extension/**/*"
+    "./**/*"
   ],
-  "main": "../../out/extension/extension.js",
+  "main": "./extension.js",
   "contributes": {
     "viewsContainers": {
       "activitybar": [

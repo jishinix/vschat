@@ -39,9 +39,10 @@ export class MessagesLoader extends Cache<DecrypredMessageData, MessageType> {
         return new Map<string, DecrypredMessageData>(decryptedMessage);
     }
 
+
     private async encryptMultibleMessageContents(encryptedContents: EncryptedContent[]) {
         if (encryptedContents.length < 500) {
-            return CryptoService.encryptMultibleContent(encryptedContents, authService.privateKey || '', serverCommunication.userHandler.logedInUser?.data.id || '') as string[];
+            return CryptoService.decryptMultibleContent(encryptedContents, authService.privateKey || '', serverCommunication.userHandler.logedInUser?.data.id || '') as string[];
         } else {
             const worker = new Worker(path.join(ExtensionState.getContext().extensionPath, 'worker', 'EncryptMessages.js'));
             const contents = await new Promise((res, rej) => {
@@ -80,5 +81,14 @@ export class MessagesLoader extends Cache<DecrypredMessageData, MessageType> {
             .sort((a: MessageType, b: MessageType) => {
                 return a!.data.timestamp - b!.data.timestamp
             })
+    }
+
+    cacheMessage(msg: MessageData) {
+        const content = CryptoService.decryptContent(msg.encryptedContent, serverCommunication.userHandler.logedInUser?.data.id || '', authService.privateKey || '');
+        if (!content) return false;
+        const map = new Map<string, DecrypredMessageData>();
+        map.set(msg.id, { ...msg, content: content?.content })
+        this.cacheData(map);
+        return true;
     }
 }

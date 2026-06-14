@@ -5,12 +5,23 @@ import { userLoader } from "../Loader/UserLoader";
 import { WebviewCommunication } from "../WebviewApi/WebviewCommunication";
 import { ChatCreateData } from '@vschat/shared/interfaces/Chat'
 import { MessageCreateData } from "@vschat/shared/interfaces/Messages";
+import { MessagesLoader } from "../Loader/MessagesLoader";
+import { chatLoader } from "../Loader/ChatLoader";
 
 
 export class ApiChatController extends NamespaceHandler<typeof server_client_chatCommands> {
     logedInUser: PrivateUser | null = null;
     handles = {
-
+        'reciveMessage': async (data) => {
+            const chat = (await chatLoader.getData([data.message.chatId])).get(data.message.chatId);
+            if (chat) {
+                const success = chat.messageLoader.cacheMessage(data.message);
+                const msg = (await chat.messageLoader.getData([data.message.id])).get(data.message.id)
+                if (success && msg) {
+                    WebviewCommunication.getInstance().chat.reciveMessage(msg.data)
+                }
+            }
+        }
     } satisfies NamespaceHandler<typeof server_client_chatCommands>['handles'];
 
     constructor() {

@@ -63,7 +63,6 @@ export const server_client_chatCommands = {
     TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
     SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as MessageCreateData }, returnType: {} },
     RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as MessageData }, returnType: {} },
-    RESIVE_MESSAGE: { name: 'resiveMessage', datatype: { message: {} as MessageData }, returnType: {} },
 } as const
 
 export const extension_webview_chatCommands = {
@@ -76,6 +75,4 @@ export const extension_webview_chatCommands = {
     TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
     SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as DecrypredMessageCreateData }, returnType: {} },
     RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as DecrypredMessageData }, returnType: {} },
-
-    RESIVE_MESSAGE: { name: 'resiveMessage', dataType: { message: {} as MessageData }, returnType: {} },
 } as const
