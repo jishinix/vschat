@@ -5,6 +5,7 @@ import { ApiCoreController } from './ApiCoreController';
 import { ApiUserController } from './ApiUserController';
 import { ApiChatController } from './ApiChatController';
 import { ApiAuthController } from './ApiAuthController';
+import { ApiUpdateController } from './ApiUpdateController';
 
 
 
@@ -13,6 +14,7 @@ export class ClientCommunication extends BidirectionalMessageProtocolNamespaceWr
     userHandler: ApiUserController;
     chatHandler: ApiChatController;
     authHandler: ApiAuthController;
+    updateHandler: ApiUpdateController;
 
     constructor(private socket: Socket) {
         super('SERVER');
@@ -21,13 +23,15 @@ export class ClientCommunication extends BidirectionalMessageProtocolNamespaceWr
         this.userHandler = new ApiUserController();
         this.chatHandler = new ApiChatController();
         this.authHandler = new ApiAuthController();
+        this.updateHandler = new ApiUpdateController();
         this.initReceive();
 
         this.initializeBaseHandlers([
             this.coreHandler,
             this.userHandler,
             this.chatHandler,
-            this.authHandler
+            this.authHandler,
+            this.updateHandler
         ])
     }
 

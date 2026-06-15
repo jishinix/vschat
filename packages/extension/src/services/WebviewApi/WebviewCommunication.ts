@@ -7,6 +7,7 @@ import { ApiCoreController } from '../ServerWebsocketApi/ApiCoreController';
 import { UserApi } from './UserApi';
 import { UserFeedbackEmits } from './UserFeedbackEmits';
 import { ChatApi } from './ChatApi';
+import { UpdateApi } from './UpdateApi';
 
 
 export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
@@ -15,6 +16,7 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
     public user: UserApi;
     public chat: ChatApi;
     public userFeedback: UserFeedbackEmits;
+    public update: UpdateApi;
     private static instance: WebviewCommunication | null = null;
 
     private constructor(private webview: vscode.Webview) {
@@ -25,6 +27,7 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
         this.user = new UserApi();
         this.chat = new ChatApi();
         this.userFeedback = new UserFeedbackEmits();
+        this.update = new UpdateApi();
 
         this.initReceive();
         this.initializeBaseHandlers([
@@ -33,6 +36,7 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
             this.user,
             this.chat,
             this.userFeedback,
+            this.update
         ])
         //serverCommunication.connect('asd');
     }

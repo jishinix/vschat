@@ -6,6 +6,18 @@
   "engines": {
     "vscode": "^1.115.0"
   },
+  "author": {
+    "name": "Jishinix"
+  },
+  "publisher": "jishinix",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jishinix/vschat"
+  },
+  "config": {
+    "authDomain": "http://localhost:7010",
+    "wsDomain": "http://localhost:7011"
+  },
   "categories": [
     "Other"
   ],

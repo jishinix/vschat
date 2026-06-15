@@ -1,22 +1,27 @@
 import { AuthActionChallangeExtensionRtn, AuthActionLoginExtensionRtn, AuthActionRtnCodes, loginPayload } from "@vschat/shared/interfaces/ApiInterfaces";
 import { iReturn, Return } from "@vschat/shared/models/Return";
 import { EncryptedMasterkeysPayload } from "./AuthService";
+import { ExtensionState } from "../ExtensionState";
+import * as vscode from 'vscode';
 
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 export class ApiService {
-    private static baseUrl = "http://localhost:7010/vsc/api"; // "https://jinx-rp.site/vsc/api";
 
     private static async request<T>(path: string, method: "GET" | "POST", body?: any): Promise<T> {
         try {
             const identifyer = Math.random().toString(36).substring(7);
-            console.log('[serverRESTApi][extension] send:', identifyer, `${this.baseUrl}${path}`, method, body)
+            const url = `${this.baseUrl}${path}`;
+            console.log('[serverRESTApi][extension] send:', identifyer, url, method, body)
             const response = await fetch(`${this.baseUrl}${path}`, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: body ? JSON.stringify(body) : undefined
+            }).catch(e => {
+                vscode.window.showErrorMessage(`Oops! Something went wrong. Cannot connect to "${url}"`);
             });
+            if (!response) throw new Error(`Cannot connect to "${url}"`);
 
             const result = await response.json()
             console.log('[serverRESTApi][extension] resive:', identifyer, result)
@@ -25,6 +30,10 @@ export class ApiService {
             console.log(e);
         }
         return false as T;
+    }
+
+    static get baseUrl() {
+        return `${ExtensionState.getPackage().config?.authDomain}/vsc/api`;
     }
 
     static async register(username: string, hashedPassword: string, publicKey: string, encryptedPrivatekey: string, encryptedMasterkeyPayloads: EncryptedMasterkeysPayload): Promise<Return<AuthActionRtnCodes.userNameAlreadyExists | AuthActionRtnCodes.success, undefined>> {

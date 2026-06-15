@@ -16,6 +16,10 @@ export const ExtensionState = {
         return currentContext;
     },
 
+    getPackage() {
+        return this.getContext().extension.packageJSON;
+    },
+
     // Bequeme Shorthands, damit du nicht immer .getContext() tippen musst
     get extensionPath(): string {
         return this.getContext().extensionPath;

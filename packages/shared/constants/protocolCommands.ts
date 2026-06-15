@@ -26,6 +26,14 @@ export const server_client_authCommands = {
     GET_CHAT_SESSION: { name: 'getChatSession', dataType: {}, returnType: { session: '' as string } }
 } as const
 
+export const server_client_updateCommands = {
+    GET_VERSION: { name: 'getVersion', dataType: {}, returnType: { version: '' as string } },
+    DOWNLOAD_VERSION: { name: 'downloadVersion', dataType: {}, returnType: {} as Buffer<ArrayBuffer> }
+} as const
+
+export const extension_webview_updateCommands = {
+    DOWNLOAD: { name: 'download', dataType: {}, returnType: {} }
+}
 export const extension_webview_authCommands = {
     RECOVER: { name: 'recover', dataType: { username: "" as string, backupcode: "" as string, newPassword: "" as string }, returnType: {} as any },
     LOGIN: { name: 'login', dataType: { username: "" as string, password: "" as string }, returnType: {} as AuthActionLoginWebViewRtn },
@@ -54,25 +62,29 @@ export const extension_webview_userFeedbackEmits = {
 
 
 export const server_client_chatCommands = {
-    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
     GET_CHATS: { name: 'getChats', dataType: { chatIds: [] as string[] }, returnType: { chats: {} as Record<string, ChatData<UserReference>> } },
     CREATE_CHAT: { name: 'createChat', dataType: { chatCreateData: {} as ChatCreateData<string> }, returnType: { chat: {} as CreateChatRequestReturn } },
     FETCH_MESSAGEIDS: { name: 'fetchMessageIds', dataType: { chatId: '' as string, max: 50 as number, lastMessageId: '' as string | null }, returnType: { messageIds: [] as string[] } },
     GET_MESSAGES: { name: 'getMessages', dataType: { chatId: '' as string, messageIds: [] as string[] }, returnType: { messages: {} as Record<string, MessageData> } },
-
-    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
     SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as MessageCreateData }, returnType: {} },
     RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as MessageData }, returnType: {} },
+
+    //todo
+    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
+    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
+    MARK_CHATS_AS_READ: { name: 'markChatsAsRead', dataType: { chats: [] as string[] }, returnType: {} },
 } as const
 
 export const extension_webview_chatCommands = {
-    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
     GET_CHATS: { name: 'getChats', dataType: { chatIds: [] as string[] }, returnType: { chats: {} as Record<string, ChatData<UserReference>> } },
     GET_FRIEND_CHAT: { name: 'getFriendChat', dataType: { userId: '' as string }, returnType: { chat: null as ChatData<UserReference> | null } },
     FETCH_MESSAGES: { name: 'fetchMessages', dataType: { chatId: '' as string, max: 50 as number, lastMessageId: '' as string | null }, returnType: { messages: [] as DecrypredMessageData[] } },
     GET_MESSAGES: { name: 'getMessages', dataType: { chatId: '' as string, messageIds: [] as string[] }, returnType: { messages: {} as Record<string, DecrypredMessageData> } },
-
-    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
     SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as DecrypredMessageCreateData }, returnType: {} },
     RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as DecrypredMessageData }, returnType: {} },
+
+    //todo
+    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
+    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
+    MARK_CHATS_AS_READ: { name: 'markChatsAsRead', dataType: { chats: [] as string[] }, returnType: {} },
 } as const

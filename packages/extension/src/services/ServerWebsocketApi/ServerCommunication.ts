@@ -5,6 +5,8 @@ import { ApiCoreController } from './ApiCoreController';
 import { ApiUserController } from './ApiUserController';
 import { ApiChatController } from './ApiChatController';
 import { ApiAuthController } from './ApiAuthController';
+import { ExtensionState } from '../ExtensionState';
+import { ApiUpdateController } from './ApiUpdateController';
 
 
 class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
@@ -14,6 +16,7 @@ class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
     userHandler: ApiUserController;
     chatHandler: ApiChatController;
     authHander: ApiAuthController;
+    updateHandler: ApiUpdateController;
 
     constructor() {
         super('EXTENSION-SERVER')
@@ -22,13 +25,15 @@ class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
         this.userHandler = new ApiUserController();
         this.chatHandler = new ApiChatController();
         this.authHander = new ApiAuthController();
+        this.updateHandler = new ApiUpdateController();
         //this.initReceive();
 
         this.initializeBaseHandlers([
             this.coreHandler,
             this.userHandler,
             this.chatHandler,
-            this.authHander
+            this.authHander,
+            this.updateHandler
         ])
     }
     protected async send(payload: CommandPayload): Promise<void> {
@@ -62,9 +67,8 @@ class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
             this._socket.disconnect();
         }
 
-        const url = `http://localhost:7011`;
-
-        this._socket = io(url, {
+        console.log(this.baseUrl);
+        this._socket = io(this.baseUrl, {
             autoConnect: true,
             reconnection: true,
             auth: {
@@ -73,6 +77,12 @@ class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
         });
 
         this.initReceive();
+    }
+
+
+
+    get baseUrl() {
+        return `${ExtensionState.getPackage().config?.wsDomain}`;
     }
 }
 

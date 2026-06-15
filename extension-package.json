@@ -1,10 +1,22 @@
 {
-  "name": "extension",
-  "displayName": "vschat",
+  "name": "vschat",
+  "displayName": "Visual Studio Chat",
   "description": "",
-  "version": "0.0.1",
+  "version": "1.6.1",
   "engines": {
     "vscode": "^1.115.0"
+  },
+  "config": {
+    "authDomain": "http://localhost:7010",
+    "wsDomain": "http://localhost:7011"
+  },
+  "author": {
+    "name": "Jishinix"
+  },
+  "publisher": "jishinix",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jishinix/vschat"
   },
   "categories": [
     "Other"
@@ -42,30 +54,5 @@
         "title": "Hello World"
       }
     ]
-  },
-  "scripts": {
-    "build": "npm run bundle && npm run copy-assets",
-    "bundle": "esbuild src/extension.ts --sourcemap --bundle --outfile=../../out/extension/extension.js --external:vscode --format=cjs --platform=node",
-    "copy-assets": "shx mkdir -p ../../out/extension/resources && shx cp package.json ../../out/extension/ && shx cp -r resources/* ../../out/extension/resources/",
-    "watch": "npm run bundle -- --watch",
-    "compile": "tsc -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
-    "test": "vscode-test",
-    "vscode:prepublish": "cd ../.. && npm run execute"
-  },
-  "dependencies": {
-    "@vschat/shared": "*",
-    "socket.io-client": "^4.8.3"
-  },
-  "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
-    "@types/vscode": "^1.120.0",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.39.3",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1"
   }
 }

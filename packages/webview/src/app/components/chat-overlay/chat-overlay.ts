@@ -25,4 +25,8 @@ export class ChatOverlay {
         navigator.clipboard.writeText(`${this.logedInUser?.id}`);
         this.ebc.userFeedback.uuidCopied();
     }
+
+    update() {
+        this.ebc.update.update()
+    }
 }
