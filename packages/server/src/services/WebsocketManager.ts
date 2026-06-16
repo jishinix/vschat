@@ -51,7 +51,7 @@ class WebsocketManager {
             socket.data.getUser = async () => {
                 const user = (await userLoader.getData([userId])).get(userId)!;
                 if (!user) {
-                    socket.data.protocol?.coreHandler.userNotFound().then(() => {
+                    socket.data.protocol?.coreHandler.userNotFound().finally(() => {
                         socket.disconnect();
                     })
                     return null

@@ -6,6 +6,9 @@
   "engines": {
     "vscode": "^1.115.0"
   },
+  "extensionKind": [
+    "ui"
+  ],
   "config": {
     "authDomain": "http://localhost:7010",
     "wsDomain": "http://localhost:7011"

@@ -1,5 +1,9 @@
 <app-chat-overlay>
-    @for(chat of chats; track chat.id) {
+    @for(chat of chats(); track chat.id) {
+    <div class="chatListItem" (click)="openChat(chat)">
+        {{ chat.name }}
+        <span class="unreadetMessages">{{chat.unreadedMsgs}}</span>
+    </div>
 
     } @empty {
     <div class="chat-list-add-friends-button-wrapper">

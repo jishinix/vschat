@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/find-config": "^1.0.4",
+    "@types/node": "^25.9.3",
     "esbuild": "^0.28.0",
     "shx": "^0.4.0"
   }

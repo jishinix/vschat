@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { ChatList } from '@vschat/shared/interfaces/Chat';
 import { DecrypredMessageData } from '@vschat/shared/interfaces/Messages';
 
 export type AppViews = 'init-direct' | 'login' | 'register' | 'chatlist' | 'chat' | 'friends';
@@ -16,7 +17,14 @@ export class NavigationService {
 
     extradata = {
         chatId: signal<string>(''),
-        addMsg: undefined as (((msg: DecrypredMessageData) => void) | undefined)
+        addMsg: undefined as (((msg: DecrypredMessageData) => void) | undefined),
+        gotChatLookup: undefined as (((chats: ChatList) => void) | undefined)
+    }
+
+    switchChat(chatId: string) {
+        this.extradata.chatId.set(chatId);
+        this.extradata.addMsg = undefined;
+        this.switchView('chat');
     }
 
     generalSuccess = signal<string>('');

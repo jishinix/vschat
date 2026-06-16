@@ -7,9 +7,6 @@ import { ExtensionBackendCommunication } from './ExtensionBackendCommunication';
 import { DecrypredMessageCreateData, MessageData } from '@vschat/shared/interfaces/Messages';
 import { NavigationService } from '../NavigationService';
 
-@Injectable({
-    providedIn: 'root'
-})
 export class ChatApi extends NamespaceHandler<typeof extension_webview_chatCommands> {
     private injector = inject(Injector);
 
@@ -23,6 +20,10 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
             if (nav.extradata.addMsg) {
                 nav.extradata.addMsg(data.message)
             }
+        },
+        'sendChatListLookup': async (data) => {
+            if (this.navigation.extradata.gotChatLookup) this.navigation.extradata.gotChatLookup(data)
+            return {}
         }
     } satisfies NamespaceHandler<typeof extension_webview_chatCommands>['handles'];
     private get navigation() {
@@ -33,7 +34,6 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
     }
     async getChatList() {
         const chatList = [...(await this.request('getChatList'))]
-            .sort((a, b) => b.lastMsg.timestamp - a.lastMsg.timestamp)
         return chatList;
     }
 

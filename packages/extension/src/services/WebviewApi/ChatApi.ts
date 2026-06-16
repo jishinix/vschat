@@ -9,11 +9,13 @@ import { serverCommunication } from "../ServerWebsocketApi/ServerCommunication";
 import { UserActionReturnCodes } from "@vschat/shared/interfaces/UserActionInterfaces";
 import { lookuptypes } from '@vschat/shared/interfaces/RelationLookuptypes'
 import { Utils } from '@vschat/shared/Utils/GenerlUtils'
-import { chatTypes } from "@vschat/shared/interfaces/Chat";
+import { ChatList, ChatListItem, chatTypes } from "@vschat/shared/interfaces/Chat";
 import { ChatActionReturnCodes } from "@vschat/shared/interfaces/ChatActionInterfaces";
 import { chatLoader } from "../Loader/ChatLoader";
 import { CryptoService } from '@vschat/shared/Utils/CryptoService'
 import { DecrypredMessageData } from '@vschat/shared/interfaces/Messages'
+import { generalInfosLoader } from "../Loader/GeneralInfosLoader";
+import { UserReference } from "@vschat/shared/interfaces/User";
 
 export class ChatApi extends NamespaceHandler<typeof extension_webview_chatCommands> {
     constructor() {
@@ -56,10 +58,17 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
             console.log('ENCRYPTED', encryptedContent.keys)
             serverCommunication.chatHandler.sendMsg({ ...data.message, encryptedContent })
             return {}
+        },
+        'getChatList': async (data) => {
+            return await generalInfosLoader.getChatList();
         }
     } satisfies NamespaceHandler<typeof extension_webview_chatCommands>['handles'];
 
     reciveMessage(msg: DecrypredMessageData) {
         this.emit('reciveMessage', { message: msg });
+    }
+
+    sendChatListLookup(chats: ChatList) {
+        this.emit('sendChatListLookup', chats)
     }
 }

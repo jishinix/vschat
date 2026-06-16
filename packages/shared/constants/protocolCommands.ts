@@ -1,6 +1,6 @@
 import { Relationship, PublicUser, PrivateUser, PrivateWebviewUser, UserReference } from '../interfaces/User'
 import { AuthActionLoginWebViewRtn, AuthActionRegisterWebViewRtn } from '../interfaces/ApiInterfaces'
-import { ChatCreateData, ChatList } from '../interfaces/Chat'
+import { ChatCreateData, ChatList, RawChatListInfos } from '../interfaces/Chat'
 import { UserSendFriendRequestReturn } from '../interfaces/UserActionInterfaces'
 import { lookuptypes } from '../interfaces/RelationLookuptypes'
 import { DecrypredMessageCreateData, DecrypredMessageData, MessageCreateData, MessageData } from '../interfaces/Messages'
@@ -68,9 +68,11 @@ export const server_client_chatCommands = {
     GET_MESSAGES: { name: 'getMessages', dataType: { chatId: '' as string, messageIds: [] as string[] }, returnType: { messages: {} as Record<string, MessageData> } },
     SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as MessageCreateData }, returnType: {} },
     RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as MessageData }, returnType: {} },
+    GET_RAW_CHAT_LIST_BASE_INFOS: { name: 'getChatListBaseInfos', dataType: {}, returnType: { chats: {} as Record<string, RawChatListInfos> } },
+    GET_LAST_READERMESSAGE: { name: 'getLastReadedMessage', dataType: { chatId: '' as string }, returnType: { messageId: '' as string } },
+    MARK_CHAT_AS_READED: { name: 'markChatAsReaded', dataType: { chatId: '' as string, messageId: '' as string }, returnType: {} },
 
     //todo
-    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
     TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
     MARK_CHATS_AS_READ: { name: 'markChatsAsRead', dataType: { chats: [] as string[] }, returnType: {} },
 } as const
@@ -82,9 +84,10 @@ export const extension_webview_chatCommands = {
     GET_MESSAGES: { name: 'getMessages', dataType: { chatId: '' as string, messageIds: [] as string[] }, returnType: { messages: {} as Record<string, DecrypredMessageData> } },
     SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as DecrypredMessageCreateData }, returnType: {} },
     RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as DecrypredMessageData }, returnType: {} },
+    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
+    SEND_CHAT_LIST_LOOKUP: { name: 'sendChatListLookup', dataType: {} as ChatList, returnType: {} },
 
     //todo
-    GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
     TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
     MARK_CHATS_AS_READ: { name: 'markChatsAsRead', dataType: { chats: [] as string[] }, returnType: {} },
 } as const

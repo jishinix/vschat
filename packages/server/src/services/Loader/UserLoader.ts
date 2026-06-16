@@ -1,7 +1,6 @@
 import { database } from "../DbService";
 import { User } from "../../models/User";
 import { PrivateUser, Relationship, RelationshipStatus } from '@vschat/shared/interfaces/User'
-import { AutosaveObserver } from "../../Utils/AutosaveObserver";
 import { Cache } from "@vschat/shared/Utils/Cache";
 
 

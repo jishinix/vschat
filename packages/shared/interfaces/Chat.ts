@@ -31,7 +31,9 @@ export type ChatBase<participantsType> = ChatBaseDirect<participantsType> | Chat
 
 
 export type ChatListItem<participantsType> = ChatBase<participantsType> & {
-    lastMsg: MessageData;
+    unreadedMsgs: number;
+    lastMsgTimestamp: number;
+    lastReadedMessageId: string
 };
 
 export type ChatData<participantsType> = ChatBase<participantsType>
@@ -39,3 +41,5 @@ export type ChatData<participantsType> = ChatBase<participantsType>
 type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
 
 export type ChatCreateData<participantsType> = DistributiveOmit<ChatData<participantsType>, 'id'>;
+
+export interface RawChatListInfos { unreadedMessages: number, lastMsgTimestamp: number, lastReadedMessageId: string }

@@ -13,7 +13,7 @@ import { chatLoader } from "../Loader/ChatLoader";
 import { MessageData } from "@vschat/shared/interfaces/Messages";
 import { ChatActions } from "../ChatActions";
 import { ChatActionReturnCodes } from "@vschat/shared/interfaces/ChatActionInterfaces";
-import { ChatData } from "@vschat/shared/interfaces/Chat";
+import { ChatData, RawChatListInfos } from "@vschat/shared/interfaces/Chat";
 
 
 export class ApiChatController extends NamespaceHandler<typeof server_client_chatCommands, { socket: socketWithDataType }> {
@@ -28,7 +28,7 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
                 return { messages: {} as Record<string, MessageData> };
             }
             const messageMap = Array.from(await chat.getMessages(data.messageIds)).map(([key, val]) => {
-                return [key, val.data]
+                return [key, val?.data]
             });
             return { messages: Object.fromEntries(messageMap) }
         },
@@ -56,8 +56,17 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
             if (!user || !chat) return {};
 
             chat.addMessage(data.message, user.data);
-
+        },
+        'getChatListBaseInfos': async (data, extraData) => {
+            if (!extraData.socket.data.userId) return { chats: {} as Record<string, RawChatListInfos> };
+            return { chats: await chatLoader.getRawChatList(extraData.socket.data.userId) }
+        },
+        'getLastReadedMessage': async (data, extraData) => {
+            if (!extraData.socket.data.userId) return { messageId: '' };
+            const messageId = await chatLoader.getLastReadedMessageId(extraData.socket.data.userId, data.chatId)
+            return { messageId: messageId }
         }
+
     } satisfies NamespaceHandler<typeof server_client_chatCommands, { socket: socketWithDataType }>['handles'];
 
     static async sendNewRelationship(relation: Relationship) {
@@ -86,5 +95,9 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
 
     async sendMsg(message: MessageData) {
         this.request('reciveMessage', { message: message })
+    }
+
+    async markChatAsReaded(chatId: string, messageId: string) {
+        this.emit('markChatAsReaded', { chatId, messageId })
     }
 }

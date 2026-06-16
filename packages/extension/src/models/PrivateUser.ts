@@ -24,7 +24,6 @@ export class PrivateUser extends PublicUser<IPrivateUser> {
         return Object.freeze(webviewData);
     }
 
-    // Delegation
     isFriend(userId: string) { return this.relationships.isFriend(userId); }
     isBlockedBy(userId: string) { return this.relationships.isBlockedBy(userId); }
     hasBlocked(userId: string) { return this.relationships.hasBlocked(userId); }

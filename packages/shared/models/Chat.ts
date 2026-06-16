@@ -23,8 +23,8 @@ export class Chat<
         return participants as ReturnType<UserLoader['getData']>;
     }
 
-    async getMessages(messagIds: string[]) {
-        return await this.messageLoader.getData(messagIds);
+    async getMessages(messagIds: string[]): Promise<ReturnType<MessageLoader['getData']>> {
+        return await this.messageLoader.getData(messagIds) as ReturnType<MessageLoader['getData']>;
     }
 
     checkUserIsAuthorized(userId: string) {

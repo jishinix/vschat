@@ -170,7 +170,7 @@ export abstract class Cache<InputData extends Object = any, Outputdata = InputDa
             if (element) {
                 this.outputCache.delete(element.data);
                 for (const [prop, map] of this.aliasPointer) {
-                    const aliasValue = String(element.data[prop]);
+                    const aliasValue = String(element.data[prop]).toLocaleLowerCase();
                     map.delete(aliasValue); // Pointer entfernen
                 }
             }

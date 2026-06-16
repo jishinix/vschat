@@ -7,14 +7,17 @@ import { execSync } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const isServerMode = process.argv.includes('--server');
+
 async function release() {
     try {
-        // 1. npm run build
+        if (isServerMode) {
+            console.log('--- Starte: Pull github...');
+            execSync('git pull', { stdio: 'inherit' });
+        }
         console.log('--- Starte: npm run build...');
-        // stdio: 'inherit' sorgt dafür, dass du den Output des Builds direkt im Terminal siehst
         execSync('npm run build', { stdio: 'inherit' });
 
-        // 2. ./build.sh
         console.log('--- Starte: ./build.sh...');
         execSync('./build.sh', { stdio: 'inherit' });
 
@@ -24,7 +27,6 @@ async function release() {
         latestVersion[2] = Number(latestVersion[2]) + 1;
         const newVersion = latestVersion.join('.');
 
-        // Pfade für das Kopieren definieren
         const sourceFile = path.join(__dirname, 'out/vschat-local.vsix');
         const relPath = path.join('versions', `vschat-${newVersion}.vsix`)
         const targetFile = path.join(__dirname, 'release', relPath);
@@ -34,9 +36,14 @@ async function release() {
         versions.versions[newVersion] = relPath;
         fs.writeFileSync(jsonPath, JSON.stringify(versions, null, 2));
 
-        // 3. cp -R out/vschat-local.vsix release/versions/vschat-local.vsix
         console.log('--- Kopiere VSIX in den Release-Ordner...');
-        await fs.copyFileSync(sourceFile, targetFile);
+        fs.copyFileSync(sourceFile, targetFile);
+
+
+        if (isServerMode) {
+            console.log('--- Starte: restart server...');
+            execSync('pm2 restart vschatServer', { stdio: 'inherit' });
+        }
 
         console.log('🎉 Release-Prozess erfolgreich abgeschlossen!');
 

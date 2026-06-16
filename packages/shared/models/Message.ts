@@ -14,12 +14,12 @@ export class Message<
         return this._data;
     }
 
-    async getSender() {
+    async getSender(): Promise<ReturnType<UserLoader['getData']>> {
         const author = await this.userLoader.getData([this.data.sender.id]);
         return author.get(this.data.sender.id);
     }
 
-    async getChat() {
+    async getChat(): Promise<ReturnType<ChatLoader['getData']>> {
         const chat = await this.chatLoader.getData([this.data.chatId]);
         return chat.get(this.data.chatId);
     }

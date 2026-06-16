@@ -7,6 +7,8 @@ import { ChatCreateData } from '@vschat/shared/interfaces/Chat'
 import { MessageCreateData } from "@vschat/shared/interfaces/Messages";
 import { MessagesLoader } from "../Loader/MessagesLoader";
 import { chatLoader } from "../Loader/ChatLoader";
+import { serverCommunication } from "./ServerCommunication";
+import { generalInfosLoader } from "../Loader/GeneralInfosLoader";
 
 
 export class ApiChatController extends NamespaceHandler<typeof server_client_chatCommands> {
@@ -18,9 +20,19 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
                 const success = chat.messageLoader.cacheMessage(data.message);
                 const msg = (await chat.messageLoader.getData([data.message.id])).get(data.message.id)
                 if (success && msg) {
+                    const logedInUser = await serverCommunication.userHandler.getLogedInUser();
+                    if (msg.data.sender.id !== logedInUser?.data.id) {
+                        generalInfosLoader.newIncommingMessage(msg)
+                    }
                     WebviewCommunication.getInstance().chat.reciveMessage(msg.data)
                 }
             }
+        },
+        'markChatAsReaded': async (data) => {
+            generalInfosLoader.readChat(data.chatId, data.messageId);
+            const chats = await generalInfosLoader.getChatList();
+            await WebviewCommunication.getInstance().chat.sendChatListLookup(chats);
+            return {}
         }
     } satisfies NamespaceHandler<typeof server_client_chatCommands>['handles'];
 
@@ -46,6 +58,14 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
 
     async sendMsg(message: MessageCreateData) {
         return await this.request('sendMessage', { message: message });
+    }
+
+    async getChatListBaseInfos() {
+        return this.request('getChatListBaseInfos');
+    }
+
+    async getLastReadedMessage(chatId: string) {
+        return this.request('getLastReadedMessage', { chatId })
     }
 
 }
