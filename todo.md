@@ -14,11 +14,12 @@
     - [ ] new chat bzw generell chatList
 
  - [ ] **Readet confirmation wird noch nicht geschickt:**
+    - [ ] **mark chat as readet beim runterscrollen (technik an sich existiert schon)**
     - [ ] system ausdenken wann ein chat >gelesen< wurde
+      - Chat zählt als gelesen wenn man manuell nach unten scrollt, oder eine nachricht schickt.
 
  - [ ] **new message indikator in chat direkt**
 
- - [ ] **mark chat as readet beim runterscrollen (technik an sich existiert schon)**
 
 ### Relationships
  - [ ] **Block user**
