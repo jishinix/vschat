@@ -27,12 +27,14 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
                     WebviewCommunication.getInstance().chat.reciveMessage(msg.data)
                 }
             }
+            return null
         },
         'markChatAsReaded': async (data) => {
             generalInfosLoader.readChat(data.chatId, data.messageId);
             const chats = await generalInfosLoader.getChatList();
             await WebviewCommunication.getInstance().chat.sendChatListLookup(chats);
-            return {}
+            await WebviewCommunication.getInstance().chat.markChatAsReaded(data.chatId, data.messageId);
+            return null;
         }
     } satisfies NamespaceHandler<typeof server_client_chatCommands>['handles'];
 
@@ -66,6 +68,10 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
 
     async getLastReadedMessage(chatId: string) {
         return this.request('getLastReadedMessage', { chatId })
+    }
+
+    async markChatsAsRead(chatId: string) {
+        return this.request('requestChatMarkingRead', { chatId })
     }
 
 }

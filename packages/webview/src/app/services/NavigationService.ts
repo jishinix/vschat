@@ -15,15 +15,12 @@ export interface ViewSwitchMessage {
 export class NavigationService {
     currentView = signal<AppViews>('init-direct');
 
-    extradata = {
-        chatId: signal<string>(''),
-        addMsg: undefined as (((msg: DecrypredMessageData) => void) | undefined),
-        gotChatLookup: undefined as (((chats: ChatList) => void) | undefined)
+    navigationData = {
+        chatId: signal<string>('')
     }
 
     switchChat(chatId: string) {
-        this.extradata.chatId.set(chatId);
-        this.extradata.addMsg = undefined;
+        this.navigationData.chatId.set(chatId);
         this.switchView('chat');
     }
 

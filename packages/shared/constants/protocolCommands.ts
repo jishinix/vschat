@@ -9,7 +9,7 @@ import { CreateChatRequestReturn } from '../interfaces/ChatActionInterfaces'
 
 
 export const server_client_coreCommands = {
-    USER_NOT_FOUND: { name: 'userNotFound', dataType: {}, returnType: {} }
+    USER_NOT_FOUND: { name: 'userNotFound', dataType: {}, returnType: null }
 } as const
 
 export const server_client_userCommands = {
@@ -19,7 +19,7 @@ export const server_client_userCommands = {
     GET_USERS: { name: 'getUsers', dataType: { userIds: [] as string[] }, returnType: { user: {} as Record<string, PublicUser> } },
     SEND_FRIEND_REQUEST: { name: 'sendFriendRequest', dataType: { userId: '' as string }, returnType: {} as UserSendFriendRequestReturn },
     IGNORE_FRIEND_REQUEST: { name: 'ignoreFriendRequest', dataType: { userId: '' as string }, returnType: {} as UserSendFriendRequestReturn },
-    CLIENT_RELATIONUPDATE: { name: 'relationUpdate', dataType: { relation: {} as Relationship }, returnType: {} },
+    CLIENT_RELATIONUPDATE: { name: 'relationUpdate', dataType: { relation: {} as Relationship }, returnType: null },
 } as const
 
 export const server_client_authCommands = {
@@ -32,7 +32,7 @@ export const server_client_updateCommands = {
 } as const
 
 export const extension_webview_updateCommands = {
-    DOWNLOAD: { name: 'download', dataType: {}, returnType: {} }
+    DOWNLOAD: { name: 'download', dataType: {}, returnType: null }
 }
 export const extension_webview_authCommands = {
     RECOVER: { name: 'recover', dataType: { username: "" as string, backupcode: "" as string, newPassword: "" as string }, returnType: {} as any },
@@ -50,14 +50,14 @@ export const extension_webview_userCommands = {
     SEND_FRIEND_REQUEST: { name: 'sendFriendRequest', dataType: { userId: '' as string }, returnType: {} as UserSendFriendRequestReturn },
     IGNORE_FRIEND_REQUEST: { name: 'ignoreFriendRequest', dataType: { userId: '' as string }, returnType: {} as UserSendFriendRequestReturn },
 
-    UPDATE_RELATIONSHIP_LOOKUP: { name: 'updateRelationshipLookup', dataType: { lookuptype: '' as lookuptypes, lookup: [] as string[] }, returnType: {} },
+    UPDATE_RELATIONSHIP_LOOKUP: { name: 'updateRelationshipLookup', dataType: { lookuptype: '' as lookuptypes, lookup: [] as string[] }, returnType: null },
     GET_RELATIONSHIP_LOOKUP: { name: 'getRelationshipLookup', dataType: { lookuptype: '' as lookuptypes }, returnType: { lookup: [] as string[] } },
 
 } as const
 
 export const extension_webview_userFeedbackEmits = {
-    UUID_COPIED: { name: 'UUIDCopied', dataType: {}, returnType: {} },
-    UUID_INFO: { name: 'UUIDInfo', dataType: {}, returnType: {} }
+    UUID_COPIED: { name: 'UUIDCopied', dataType: {}, returnType: null },
+    UUID_INFO: { name: 'UUIDInfo', dataType: {}, returnType: null }
 } as const
 
 
@@ -66,15 +66,17 @@ export const server_client_chatCommands = {
     CREATE_CHAT: { name: 'createChat', dataType: { chatCreateData: {} as ChatCreateData<string> }, returnType: { chat: {} as CreateChatRequestReturn } },
     FETCH_MESSAGEIDS: { name: 'fetchMessageIds', dataType: { chatId: '' as string, max: 50 as number, lastMessageId: '' as string | null }, returnType: { messageIds: [] as string[] } },
     GET_MESSAGES: { name: 'getMessages', dataType: { chatId: '' as string, messageIds: [] as string[] }, returnType: { messages: {} as Record<string, MessageData> } },
-    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as MessageCreateData }, returnType: {} },
-    RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as MessageData }, returnType: {} },
+    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as MessageCreateData }, returnType: null },
+    RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as MessageData }, returnType: null },
     GET_RAW_CHAT_LIST_BASE_INFOS: { name: 'getChatListBaseInfos', dataType: {}, returnType: { chats: {} as Record<string, RawChatListInfos> } },
     GET_LAST_READERMESSAGE: { name: 'getLastReadedMessage', dataType: { chatId: '' as string }, returnType: { messageId: '' as string } },
-    MARK_CHAT_AS_READED: { name: 'markChatAsReaded', dataType: { chatId: '' as string, messageId: '' as string }, returnType: {} },
+    MARK_CHAT_AS_READED: { name: 'markChatAsReaded', dataType: { chatId: '' as string, messageId: '' as string }, returnType: null },
+    REQUEST_CHAT_MARKING_READ: { name: 'requestChatMarkingRead', dataType: { chatId: '' as string }, returnType: null },
+
+
 
     //todo
-    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
-    MARK_CHATS_AS_READ: { name: 'markChatsAsRead', dataType: { chats: [] as string[] }, returnType: {} },
+    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: null },
 } as const
 
 export const extension_webview_chatCommands = {
@@ -82,12 +84,14 @@ export const extension_webview_chatCommands = {
     GET_FRIEND_CHAT: { name: 'getFriendChat', dataType: { userId: '' as string }, returnType: { chat: null as ChatData<UserReference> | null } },
     FETCH_MESSAGES: { name: 'fetchMessages', dataType: { chatId: '' as string, max: 50 as number, lastMessageId: '' as string | null }, returnType: { messages: [] as DecrypredMessageData[] } },
     GET_MESSAGES: { name: 'getMessages', dataType: { chatId: '' as string, messageIds: [] as string[] }, returnType: { messages: {} as Record<string, DecrypredMessageData> } },
-    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as DecrypredMessageCreateData }, returnType: {} },
-    RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as DecrypredMessageData }, returnType: {} },
+    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as DecrypredMessageCreateData }, returnType: null },
+    RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as DecrypredMessageData }, returnType: null },
     GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
-    SEND_CHAT_LIST_LOOKUP: { name: 'sendChatListLookup', dataType: {} as ChatList, returnType: {} },
+    SEND_CHAT_LIST_LOOKUP: { name: 'sendChatListLookup', dataType: {} as ChatList, returnType: null },
+    REQUEST_CHAT_MARKING_READ: { name: 'requestChatMarkingRead', dataType: { chatId: '' as string }, returnType: null },
+    GET_LAST_READERMESSAGE: { name: 'getLastReadedMessage', dataType: { chatId: '' as string }, returnType: { messageId: '' as string } },
+    MARK_CHAT_AS_READED: { name: 'markChatAsReaded', dataType: { chatId: '' as string, messageId: '' as string }, returnType: null },
 
     //todo
-    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: {} },
-    MARK_CHATS_AS_READ: { name: 'markChatsAsRead', dataType: { chats: [] as string[] }, returnType: {} },
+    TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: null },
 } as const

@@ -52,15 +52,22 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
         },
         'sendMessage': async (data) => {
             const chat = (await chatLoader.getData([data.message.chatId])).get(data.message.chatId);
-            if (!chat) return;
+            if (!chat) return null;
             const chatSessionKey = CryptoService.generateKeyFromContent(await serverCommunication.authHander.getChatSession() + chat.data.id);
             const encryptedContent = CryptoService.createEncryptedContent(data.message.content, Object.fromEntries(chat.data.participants.map(e => [e.id, e])), chatSessionKey)
             console.log('ENCRYPTED', encryptedContent.keys)
             serverCommunication.chatHandler.sendMsg({ ...data.message, encryptedContent })
-            return {}
+            return null
         },
         'getChatList': async (data) => {
             return await generalInfosLoader.getChatList();
+        },
+        'requestChatMarkingRead': async (data) => {
+            serverCommunication.chatHandler.markChatsAsRead(data.chatId);
+            return null;
+        },
+        'getLastReadedMessage': async (data) => {
+            return await serverCommunication.chatHandler.getLastReadedMessage(data.chatId)
         }
     } satisfies NamespaceHandler<typeof extension_webview_chatCommands>['handles'];
 
@@ -70,5 +77,9 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
 
     sendChatListLookup(chats: ChatList) {
         this.emit('sendChatListLookup', chats)
+    }
+
+    markChatAsReaded(chatId: string, messageId: string) {
+        this.emit('markChatAsReaded', { chatId, messageId })
     }
 }

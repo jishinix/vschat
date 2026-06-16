@@ -3,6 +3,7 @@ import { serverCommunication } from "../ServerWebsocketApi/ServerCommunication";
 import { MessageData } from "@vschat/shared/interfaces/Messages";
 import { Message } from "@vschat/shared/models/Message";
 import { chatLoader } from "./ChatLoader";
+import { WebviewCommunication } from "../WebviewApi/WebviewCommunication";
 
 
 class GeneralInfosLoader {
@@ -31,6 +32,7 @@ class GeneralInfosLoader {
                 lastReadedMessageId: lastReadedMessage.messageId
             }
         }
+        WebviewCommunication.getInstance().chat.sendChatListLookup(await this.getChatList());
     }
 
     async readChat(chatId: string, lastReadedMessageId: string) {

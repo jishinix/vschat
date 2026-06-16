@@ -14,7 +14,7 @@ export class UserFeedbackEmits extends NamespaceHandler<typeof extension_webview
     handles = {
         UUIDCopied: () => {
             vscode.window.showInformationMessage('UUID wurde in die zwichenablage Kopiert.');
-            return {}
+            return null
         }
     } satisfies NamespaceHandler<typeof extension_webview_userFeedbackEmits>['handles'];
 

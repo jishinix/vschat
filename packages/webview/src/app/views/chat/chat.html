@@ -1,5 +1,5 @@
 <app-chat-overlay>
-    @if (navigation.extradata.chatId()) {
+    @if (navigation.navigationData.chatId()) {
     <div #chatWrapper class="chatWrapper">
         <app-chat-log [chat]="chat()" (initFetchComplete)="handleInitFetch($event)"></app-chat-log>
 

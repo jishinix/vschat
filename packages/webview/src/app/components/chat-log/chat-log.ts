@@ -5,6 +5,7 @@ import { UserReference } from '@vschat/shared/interfaces/User';
 import { ChatData } from '@vschat/shared/interfaces/Chat';
 import { ExtensionBackendCommunication } from '../../services/ExtensionApi/ExtensionBackendCommunication';
 import { NavigationService } from '../../services/NavigationService';
+import { extension_webview_chatCommands } from '@vschat/shared/constants/protocolCommands'
 
 @Component({
     selector: 'app-chat-log',
@@ -33,6 +34,8 @@ export class ChatLogComponent implements AfterViewInit, OnDestroy {
     private isInitialLoad = true;
     private isAutoScrolling = false;
 
+    private lastReadedMsgId = signal<string | null>(null);
+
     constructor(
         private ebc: ExtensionBackendCommunication,
         private cdr: ChangeDetectorRef,
@@ -41,16 +44,35 @@ export class ChatLogComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.navigation.extradata.addMsg = (msg: DecrypredMessageData) => {
-            if (msg.chatId === this.chat?.id) {
-                this.activeChatMessages.set([...this.activeChatMessages(), msg]);
+        this.ebc.chat.eventDispatcher.addEventListener('reciveMessage', this.onReciveMessage)
+        this.ebc.chat.eventDispatcher.addEventListener('markChatAsReaded', this.onMarkChatAsReaded)
+    }
 
-                this.isAutoScrolling = true;
-                setTimeout(() => {
-                    this.scrollToBottom();
-                    setTimeout(() => this.isAutoScrolling = false, 100);
-                }, 10);
-            }
+    ngOnDestroy() {
+        if (this.topObserver) this.topObserver.disconnect();
+        if (this.bottomObserver) this.bottomObserver.disconnect();
+
+        this.ebc.chat.eventDispatcher.removeEventListener('reciveMessage', this.onReciveMessage);
+        this.ebc.chat.eventDispatcher.removeEventListener('markChatAsReaded', this.onMarkChatAsReaded);
+    }
+
+    private onMarkChatAsReaded = (data: typeof extension_webview_chatCommands['MARK_CHAT_AS_READED']['dataType']) => {
+        const { chatId, messageId } = data;
+        if (chatId === this.chat?.id) {
+            this.lastReadedMsgId.set(messageId);
+        }
+    }
+
+    private onReciveMessage = (data: typeof extension_webview_chatCommands['RECIVE_MESSAGE']['dataType']) => {
+        const msg = data.message;
+        if (msg.chatId === this.chat?.id) {
+            this.activeChatMessages.set([...this.activeChatMessages(), msg]);
+
+            this.isAutoScrolling = true;
+            setTimeout(() => {
+                this.scrollToBottom();
+                setTimeout(() => this.isAutoScrolling = false, 100);
+            }, 10);
         }
     }
 
@@ -61,16 +83,26 @@ export class ChatLogComponent implements AfterViewInit, OnDestroy {
             this.isInitialLoad = true;
             this.isAutoScrolling = false;
             this.loadInitialMessages();
+            this.loadLastReadedMsgId();
         }
+    }
+
+    loadLastReadedMsgId() {
+        if (this.chat)
+            this.ebc.chat.getLastReadedMessage(this.chat.id).then(e => {
+                this.lastReadedMsgId.set(e.messageId);
+            })
+    }
+
+    isLastReadetMsg(msg: DecrypredMessageData) {
+        console.log(msg, this.activeChatMessages(), this.lastReadedMsgId())
+        const lastMsg = this.activeChatMessages().slice(-1);
+        if (!lastMsg) return false;
+        return msg.id === this.lastReadedMsgId() && msg.id !== lastMsg[0].id;
     }
 
     ngAfterViewInit() {
         this.setupIntersectionObservers();
-    }
-
-    ngOnDestroy() {
-        if (this.topObserver) this.topObserver.disconnect();
-        if (this.bottomObserver) this.bottomObserver.disconnect();
     }
 
     private loadInitialMessages() {
@@ -119,13 +151,10 @@ export class ChatLogComponent implements AfterViewInit, OnDestroy {
             this.topObserver.observe(this.topAnchor.nativeElement);
         }
 
-        // --- NEU: OBSERVER FÜR UNTEN (Als gelesen markieren) ---
-        // rootMargin '0px 0px 10px 0px' triggert, sobald das Ende fast exakt erreicht ist
         const bottomOptions = { root: rootContainer, rootMargin: '0px 0px 10px 0px', threshold: 1.0 };
         this.bottomObserver = new IntersectionObserver((entries) => {
             const entry = entries[0];
 
-            // Nur feuern, wenn sichtbar AND nicht im InitialLoad AND nicht im automatischen Nachrichtenscrollen
             if (entry.isIntersecting && !this.isInitialLoad && !this.isAutoScrolling && this.chat) {
                 this.markChatAsRead();
             }
@@ -138,7 +167,7 @@ export class ChatLogComponent implements AfterViewInit, OnDestroy {
 
     private markChatAsRead() {
         if (!this.chat) return;
-        console.log(`🤖 Chat ${this.chat.id} wurde manuell ganz nach unten gescrollt -> Als gelesen markieren!`);
+        this.ebc.chat.markAsReadedChat(this.chat.id);
     }
 
     private fetchOlderMessages() {

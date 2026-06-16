@@ -5,6 +5,7 @@ import { ChatOverlay } from '../../components/chat-overlay/chat-overlay';
 import { NavigationService } from '../../services/NavigationService';
 import { UserReference } from '@vschat/shared/interfaces/User';
 import { ExtensionBackendCommunication } from '../../services/ExtensionApi/ExtensionBackendCommunication';
+import { extension_webview_chatCommands } from '@vschat/shared/constants/protocolCommands';
 
 @Component({
     selector: 'app-chatlist',
@@ -26,12 +27,17 @@ export class Chatlist {
             this.chats.set(chatList);
             console.log(this.chats())
         })
-        this.navigation.extradata.gotChatLookup = async (chats: ChatList) => {
-            console.log(chats, this.chats);
-            const user = await this.ebc.user.getLogedInUser();
-            chats.map(async e => await this.getChatName(e, user.user?.id || ''))
-            this.chats.set(chats);
-        }
+        this.ebc.chat.eventDispatcher.addEventListener('sendChatListLookup', this.onSendChatListLookup);
+    }
+
+    ngOnDestroy() {
+        this.ebc.chat.eventDispatcher.removeEventListener('sendChatListLookup', this.onSendChatListLookup);
+    }
+
+    private onSendChatListLookup = async (chats: typeof extension_webview_chatCommands['SEND_CHAT_LIST_LOOKUP']['dataType']) => {
+        const user = await this.ebc.user.getLogedInUser();
+        chats.map(async e => await this.getChatName(e, user.user?.id || ''))
+        this.chats.set(chats);
     }
 
     async getChatName(chat: ChatListItem<UserReference>, userId: string) {

@@ -53,9 +53,10 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
         'sendMessage': async (data, extraData) => {
             const user = await extraData.socket.data.getUser();
             const chat = (await chatLoader.getData([data.message.chatId])).get(data.message.chatId);
-            if (!user || !chat) return {};
+            if (!user || !chat) return null;
 
             chat.addMessage(data.message, user.data);
+            return null
         },
         'getChatListBaseInfos': async (data, extraData) => {
             if (!extraData.socket.data.userId) return { chats: {} as Record<string, RawChatListInfos> };
@@ -65,6 +66,13 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
             if (!extraData.socket.data.userId) return { messageId: '' };
             const messageId = await chatLoader.getLastReadedMessageId(extraData.socket.data.userId, data.chatId)
             return { messageId: messageId }
+        },
+        'requestChatMarkingRead': async (data, extraData) => {
+            if (!extraData.socket.data.userId) return null;
+            const chat = (await chatLoader.getData([data.chatId])).get(data.chatId);
+            if (!chat) return null;
+            await chat.markChatAsReaded(extraData.socket.data.userId);
+            return null
         }
 
     } satisfies NamespaceHandler<typeof server_client_chatCommands, { socket: socketWithDataType }>['handles'];

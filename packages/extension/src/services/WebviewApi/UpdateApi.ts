@@ -23,7 +23,7 @@ export class UpdateApi extends NamespaceHandler<typeof extension_webview_updateC
     handles = {
         'download': (data) => {
             UpdateManager.installUpdate()
-            return {};
+            return null
         }
     } satisfies NamespaceHandler<typeof extension_webview_updateCommands>['handles'];
 }

@@ -16,7 +16,7 @@ export class UserApi extends NamespaceHandler<typeof extension_webview_userComma
         updateRelationshipLookup: async (data) => {
             const as = this.injector.get(AccountStorage);
             as.addRelationship(data.lookuptype, data.lookup);
-            return {};
+            return null;
         }
     } satisfies NamespaceHandler<typeof extension_webview_userCommands>['handles'];
 

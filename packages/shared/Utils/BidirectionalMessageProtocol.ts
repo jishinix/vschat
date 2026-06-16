@@ -56,7 +56,7 @@ export abstract class BidirectionalMessageProtocol<ExtraDataType extends Record<
 
     protected abstract initReceive(): void;
     protected abstract send(payload: CommandPayload): Promise<void>;
-    protected abstract handleMessage(payload: CommandPayload, extraData: ExtraDataType): Promise<void>;
+    protected abstract handleMessage(payload: CommandPayload, extraData: ExtraDataType, isEmit: boolean): Promise<void>;
 
 
     protected async receive(payload: CommandPayload, extraData?: ExtraDataType) {
@@ -86,7 +86,7 @@ export abstract class BidirectionalMessageProtocol<ExtraDataType extends Record<
         this.handlingRequests.add(payload.requestId);
         console.log(`[${this.instance}] receive: [${payload.requestId}] ${payload.command}`, payload.data);
         try {
-            await this.handleMessage(payload, extraData);
+            await this.handleMessage(payload, extraData, false);
         } catch (error) {
             console.error(`Fehler beim Verarbeiten von [${payload.requestId}] ${payload.command}:`, error);
         }
@@ -127,7 +127,7 @@ export abstract class BidirectionalMessageProtocol<ExtraDataType extends Record<
         const { requestId, data } = payload;
 
         if (!this.emitedRequestIds.has(payload.requestId)) {
-            this.handleMessage(payload, extraData);
+            this.handleMessage(payload, extraData, true);
             this.emitedRequestIds.add(payload.requestId);
             setTimeout(() => {
                 this.releaseId(payload.requestId)

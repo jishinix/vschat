@@ -31,7 +31,7 @@ export class Chat {
     }
 
     ngOnInit() {
-        this.ebc.chat.getChat(this.navigation.extradata.chatId()).then(e => {
+        this.ebc.chat.getChat(this.navigation.navigationData.chatId()).then(e => {
             this.chat.set(e);
         })
     }

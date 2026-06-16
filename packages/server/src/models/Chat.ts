@@ -28,8 +28,8 @@ export class ServerChat extends Chat<MessagesLoader, typeof userLoader> {
                 })
         }
 
-        this.messageLoader.addData(msg.id, msg);
-        this.markChatAsReaded(msg.sender.id);
+        await this.messageLoader.addData(msg.id, msg);
+        await this.markChatAsReaded(msg.sender.id);
     }
 
     async markChatAsReaded(userId: string) {

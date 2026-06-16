@@ -7,6 +7,8 @@ import { ExtensionBackendCommunication } from './ExtensionBackendCommunication';
 import { DecrypredMessageCreateData, MessageData } from '@vschat/shared/interfaces/Messages';
 import { NavigationService } from '../NavigationService';
 
+// hier wird viel mit dem eventdispatcher gearbeitet die views und componenten hängen sich einfach ran statt alles durch zu hangeln
+
 export class ChatApi extends NamespaceHandler<typeof extension_webview_chatCommands> {
     private injector = inject(Injector);
 
@@ -15,16 +17,6 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
 
     }
     handles = {
-        reciveMessage: async (data) => {
-            const nav = this.navigation;
-            if (nav.extradata.addMsg) {
-                nav.extradata.addMsg(data.message)
-            }
-        },
-        'sendChatListLookup': async (data) => {
-            if (this.navigation.extradata.gotChatLookup) this.navigation.extradata.gotChatLookup(data)
-            return {}
-        }
     } satisfies NamespaceHandler<typeof extension_webview_chatCommands>['handles'];
     private get navigation() {
         return this.injector.get(NavigationService)
@@ -64,8 +56,14 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
         return (await this.request('getChats', { chatIds: [chatId] })).chats[chatId]
     }
 
+    async markAsReadedChat(chatId: string) {
+        this.request('requestChatMarkingRead', { chatId });
+    }
+
     async getMessages(chatId: string, messageIds: string[]) { return await this.request('getMessages', { chatId, messageIds }); }
     async fetchMessages(chatId: string, max: number = 50, lastMessageId: string | null = null) { return await this.request('fetchMessages', { chatId, max, lastMessageId }); }
 
     async sendMsg(message: DecrypredMessageCreateData) { this.emit('sendMessage', { message }) }
+
+    async getLastReadedMessage(chatId: string) { return this.request('getLastReadedMessage', { chatId }) }
 }

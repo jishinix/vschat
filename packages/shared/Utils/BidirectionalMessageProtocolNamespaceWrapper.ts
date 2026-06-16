@@ -1,8 +1,9 @@
 import { BidirectionalMessageProtocol, CommandPayload } from './BidirectionalMessageProtocol'
 import { ActionPayload, CommandNames, GetDataType, GetReturnType } from '../constants/bidirectionamMessageProtocollNamespaceWrapperHelperTypes'
 import { Return } from '../models/Return';
+import { EventDispatcher } from './EventDispatcher' // Bleibt drin
 
-export type NamespaceHandlerFunc = (command: string, data?: Record<string, any>, extraData?: any) => any | Promise<any>;
+export type NamespaceHandlerFunc = (command: string, data?: Record<string, any>, extraData?: any, isEmit?: boolean) => any | Promise<any>;
 
 export abstract class BidirectionalMessageProtocolNamespaceWrapper<ExtraDataType extends Record<string, any> = {}> extends BidirectionalMessageProtocol<ExtraDataType> {
     private nameSpaceFuncWrapper = new Map<string, NamespaceHandlerFunc>;
@@ -14,10 +15,11 @@ export abstract class BidirectionalMessageProtocolNamespaceWrapper<ExtraDataType
     ) {
         super(instance);
     }
-    initializeBaseHandlers(namespaceHandler: NamespaceHandler<any, ExtraDataType>[], testFunction?: () => string | Promise<string>) {
+    // Wir erlauben hier im Array explizit "any", damit PingPongTestHandler und deine anderen Handler matchen
+    initializeBaseHandlers(namespaceHandler: NamespaceHandler<any, any>[], testFunction?: () => string | Promise<string>) {
         const allHandlers = [...namespaceHandler];
         if (!this.pingPongTest) {
-            this.pingPongTest = new PingPongTestHandler(testFunction);;
+            this.pingPongTest = new PingPongTestHandler(testFunction);
             allHandlers.splice(0, 0, this.pingPongTest)
         }
 
@@ -27,7 +29,7 @@ export abstract class BidirectionalMessageProtocolNamespaceWrapper<ExtraDataType
             handler.setBidirectionalMessageProtocol(this);
         }
     }
-    protected async handleMessage(payload: CommandPayload, extraData: ExtraDataType = {} as ExtraDataType): Promise<void> {
+    protected async handleMessage(payload: CommandPayload, extraData: ExtraDataType = {} as ExtraDataType, isEmit?: boolean): Promise<void> {
         if (!payload.command) {
             this.answer(payload.requestId, {});
             return
@@ -36,14 +38,14 @@ export abstract class BidirectionalMessageProtocolNamespaceWrapper<ExtraDataType
         const handler = this.nameSpaceFuncWrapper.get(namespace);
 
         if (!handler) {
-            // 418 I'm a teapot – feiert man immer gern, aber verpacken wir es als sauberes Fehlerobjekt
             console.log(`[${this.instance}] Unknown namespace "${namespace}"`, this.nameSpaceFuncWrapper)
             this.answer(payload.requestId, { error: "Unknown namespace", code: 418 } as any);
             return;
         }
 
         try {
-            const data = await handler(command, payload.data || {}, extraData);
+            // isEmit wird nach hinten durchgereicht
+            const data = await handler(command, payload.data || {}, extraData, isEmit);
             this.answer(payload.requestId, data);
         } catch (error) {
             console.error(`[Namespace-Fehler] Fehler im Handler für [${payload.command}]:`, error);
@@ -55,8 +57,22 @@ export abstract class BidirectionalMessageProtocolNamespaceWrapper<ExtraDataType
     }
 }
 
-export abstract class NamespaceHandler<CommandsRecord extends Record<string, any> = Record<string, any>, ExtraDataType extends Record<string, any> = Record<string, any>> {
-    private _protocol!: BidirectionalMessageProtocolNamespaceWrapper<ExtraDataType>;
+// Der Dispatcher bleibt flexibel
+class NameSpaceEventDispatcher<CommandsRecord extends Record<string, any> = Record<string, any>, ExtraDataType extends (Record<string, any> | undefined) = undefined> extends EventDispatcher {
+    constructor() {
+        super()
+    }
+    override addEventListener<Cmd extends CommandNames<CommandsRecord>>(
+        eventName: Cmd,
+        callback: (data: GetDataType<Cmd, CommandsRecord>, extradata: ExtraDataType) => void
+    ): void {
+        super.addEventListener(eventName, callback);
+    }
+}
+
+export abstract class NamespaceHandler<CommandsRecord extends Record<string, any> = Record<string, any>, ExtraDataType extends (Record<string, any> | undefined) = undefined> {
+    private _protocol!: BidirectionalMessageProtocolNamespaceWrapper<any>; // Hier "any" erlaubt maximale Flexibilität bei der Zuweisung
+    public eventDispatcher = new NameSpaceEventDispatcher<CommandsRecord, ExtraDataType>();
 
     abstract handles: {
         [Cmd in CommandNames<CommandsRecord>]?: (data: GetDataType<Cmd, CommandsRecord>, extradata: ExtraDataType) => GetReturnType<Cmd, CommandsRecord> | Promise<GetReturnType<Cmd, CommandsRecord>>
@@ -89,10 +105,15 @@ export abstract class NamespaceHandler<CommandsRecord extends Record<string, any
         return true
     }
 
-    public async handle<T extends CommandNames<CommandsRecord>>(command: T, data: GetDataType<T, CommandsRecord>, extraData: ExtraDataType): Promise<any> {
+    public async handle<T extends CommandNames<CommandsRecord>>(command: T, data: GetDataType<T, CommandsRecord>, extraData: ExtraDataType, isEmit?: boolean): Promise<any> {
         const handlerFunc = this.handles[command] as (data: any, extraData: ExtraDataType) => any;
 
+        if (isEmit) {
+            this.eventDispatcher.dispatchEvent(command, [data, extraData]);
+        }
+
         if (!handlerFunc) {
+            if (isEmit) return;
             throw new Error(`No handler registered for command: ${this.namespace}.${command}`);
         }
 
@@ -109,16 +130,32 @@ export abstract class NamespaceHandler<CommandsRecord extends Record<string, any
         return null;
     };
 
-    protected get protocol(): BidirectionalMessageProtocolNamespaceWrapper<ExtraDataType> {
+    protected get protocol(): BidirectionalMessageProtocolNamespaceWrapper<any> {
         if (!this._protocol) throw new Error('PROTOCOL NOT SET YET');
         return this._protocol;
     }
 
-    setBidirectionalMessageProtocol(protocol: BidirectionalMessageProtocolNamespaceWrapper<ExtraDataType>) {
+    setBidirectionalMessageProtocol(protocol: BidirectionalMessageProtocolNamespaceWrapper<any>) {
         this._protocol = protocol;
     }
 
-    async request<T extends CommandNames<CommandsRecord>>(command: T, data?: GetDataType<T, CommandsRecord>, timeoutMs?: number): Promise<GetReturnType<T, CommandsRecord>> {
+    async request<T extends CommandNames<CommandsRecord>>(
+        command: T,
+        data?: GetDataType<T, CommandsRecord>,
+        timeoutMs?: number
+    ): Promise<GetReturnType<T, CommandsRecord>> {
+
+        const commandConfig = this.commandsConfig
+            ? (Object.values(this.commandsConfig).find((cfg: any) => cfg.name === command) as any)
+            : null;
+
+        if (commandConfig && commandConfig.returnType !== undefined && commandConfig.returnType === null) {
+
+
+            await this.emit(command, data, timeoutMs);
+            return {} as any;
+
+        }
         return await this.protocol.request<GetReturnType<T, CommandsRecord>>(`${this.namespace}.${command}`, data, timeoutMs);
     }
 

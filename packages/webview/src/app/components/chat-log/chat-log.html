@@ -17,6 +17,16 @@
 
     @for (msg of activeChatMessages(); track msg.id) {
     <app-chat-message [messageData]="msg"></app-chat-message>
+    @if(isLastReadetMsg(msg)){
+    <div class="code-block">
+        <div class="code-line">
+            <div class="token-error">
+                <span class="token-keyword">Import</span>&nbsp;<span class="token-class-name">*</span>&nbsp;<span
+                    class="token-keyword">from</span>&nbsp;<span class="token-string">'NEW'</span>
+            </div>
+        </div>
+    </div>
+    }
     }
 
     <div #bottomAnchor class="scroll-anchor" style="height: 1px;"></div>

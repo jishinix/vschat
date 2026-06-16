@@ -2,7 +2,9 @@
     @for(chat of chats(); track chat.id) {
     <div class="chatListItem" (click)="openChat(chat)">
         {{ chat.name }}
+        @if(chat.unreadedMsgs > 0){
         <span class="unreadetMessages">{{chat.unreadedMsgs}}</span>
+        }
     </div>
 
     } @empty {
