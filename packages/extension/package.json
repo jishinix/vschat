@@ -15,8 +15,8 @@
     "url": "https://github.com/jishinix/vschat"
   },
   "config": {
-    "authDomain": "http://localhost:7010",
-    "wsDomain": "http://localhost:7011",
+    "authDomain": "http://localhost:7050",
+    "wsDomain": "http://localhost:42161",
     "isDev": true
   },
   "categories": [

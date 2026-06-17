@@ -110,7 +110,7 @@ function createExtensionBundle(version) {
             if (pkg.config) {
                 pkg.config.isDev = false;
                 pkg.config.authDomain = 'https://jinx-rp.site';
-                pkg.config.wsDomain = 'https://jinx-rp.site:7011';
+                pkg.config.wsDomain = 'https://jinx-rp.site:42161';
             }
 
             pkg.activationEvents = pkg.activationEvents.map(event =>

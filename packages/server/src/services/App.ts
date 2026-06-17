@@ -65,8 +65,8 @@ export class App {
 
 
         var httpServer = http.createServer(this.app);
-        httpServer.listen(7010, () => {
-            console.log(`🚀 Server läuft auf url localhost:7010`);
+        httpServer.listen(7050, () => {
+            console.log(`🚀 Server läuft auf url localhost:7050`);
         });
     }
 }

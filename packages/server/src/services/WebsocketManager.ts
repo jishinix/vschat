@@ -91,8 +91,8 @@ class WebsocketManager {
         });
 
 
-        this.httpServer.listen(7011, () => {
-            console.log("Server läuft auf Port 3000");
+        this.httpServer.listen(42161, () => {
+            console.log("Server läuft auf Port 42161");
         });
     }
 
