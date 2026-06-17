@@ -55,7 +55,6 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
             if (!chat) return null;
             const chatSessionKey = CryptoService.generateKeyFromContent(await serverCommunication.authHander.getChatSession() + chat.data.id);
             const encryptedContent = CryptoService.createEncryptedContent(data.message.content, Object.fromEntries(chat.data.participants.map(e => [e.id, e])), chatSessionKey)
-            console.log('ENCRYPTED', encryptedContent.keys)
             serverCommunication.chatHandler.sendMsg({ ...data.message, encryptedContent })
             return null
         },
@@ -81,5 +80,9 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
 
     markChatAsReaded(chatId: string, messageId: string) {
         this.emit('markChatAsReaded', { chatId, messageId })
+    }
+
+    openChat(chatId: string) {
+        this.emit('openChat', { chatId })
     }
 }

@@ -1,8 +1,8 @@
 {
-  "name": "vschat",
-  "displayName": "Visual Studio Chat",
+  "name": "vschat-dev",
+  "displayName": "Visual Studio Chat (Dev)",
   "description": "",
-  "version": "1.6.1",
+  "version": "",
   "engines": {
     "vscode": "^1.115.0"
   },
@@ -11,7 +11,8 @@
   ],
   "config": {
     "authDomain": "http://localhost:7010",
-    "wsDomain": "http://localhost:7011"
+    "wsDomain": "http://localhost:7011",
+    "isDev": true
   },
   "author": {
     "name": "Jishinix"
@@ -25,7 +26,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:vschat-sidebar"
+    "onView:vschat-sidebar-dev"
   ],
   "files": [
     "./**/*"
@@ -35,27 +36,21 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "vschat-sidebar-container",
-          "title": "Visual Studio Chat",
-          "icon": "resources/chat-icon.svg"
+          "id": "vschat-sidebar-container-dev",
+          "title": "Visual Studio Chat (DEV)",
+          "icon": "resources/chat-icon-dev.svg"
         }
       ]
     },
     "views": {
-      "vschat-sidebar-container": [
+      "vschat-sidebar-container-dev": [
         {
           "type": "webview",
-          "id": "vschat-sidebar",
-          "name": "Chat",
-          "icon": "resources/chat-icon.svg"
+          "id": "vschat-sidebar-dev",
+          "name": "Chat (DEV)",
+          "icon": "resources/chat-icon-dev.svg"
         }
       ]
-    },
-    "commands": [
-      {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    }
   }
 }

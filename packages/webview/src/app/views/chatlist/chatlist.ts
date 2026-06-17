@@ -49,6 +49,6 @@ export class Chatlist {
     }
 
     async openChat(chat: ChatListItem<UserReference>) {
-        this.navigation.switchChat(chat.id)
+        this.navigation.switchView('chat', {}, { chatId: chat.id })
     }
 }

@@ -20,6 +20,10 @@ export const ExtensionState = {
         return this.getContext().extension.packageJSON;
     },
 
+    isDev() {
+        return !!this.getPackage().config?.isDev;
+    },
+
     // Bequeme Shorthands, damit du nicht immer .getContext() tippen musst
     get extensionPath(): string {
         return this.getContext().extensionPath;

@@ -1,6 +1,6 @@
 {
-  "name": "extension",
-  "displayName": "vschat",
+  "name": "vschat-dev",
+  "displayName": "Visual Studio Chat (Dev)",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -16,13 +16,14 @@
   },
   "config": {
     "authDomain": "http://localhost:7010",
-    "wsDomain": "http://localhost:7011"
+    "wsDomain": "http://localhost:7011",
+    "isDev": true
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onView:vschat-sidebar"
+    "onView:vschat-sidebar-dev"
   ],
   "files": [
     "../../out/extension/**/*"
@@ -32,28 +33,22 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "vschat-sidebar-container",
-          "title": "Visual Studio Chat",
-          "icon": "resources/chat-icon.svg"
+          "id": "vschat-sidebar-container-dev",
+          "title": "Visual Studio Chat (DEV)",
+          "icon": "resources/chat-icon-dev.svg"
         }
       ]
     },
     "views": {
-      "vschat-sidebar-container": [
+      "vschat-sidebar-container-dev": [
         {
           "type": "webview",
-          "id": "vschat-sidebar",
-          "name": "Chat",
-          "icon": "resources/chat-icon.svg"
+          "id": "vschat-sidebar-dev",
+          "name": "Chat (DEV)",
+          "icon": "resources/chat-icon-dev.svg"
         }
       ]
-    },
-    "commands": [
-      {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    }
   },
   "scripts": {
     "build": "npm run bundle && npm run copy-assets",

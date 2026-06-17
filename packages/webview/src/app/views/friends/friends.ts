@@ -44,7 +44,7 @@ export class Friends {
         if (!user || !user.user) return;
         const chat = await this.ebc.chat.getFriendChat(userId);
         if (chat && chat.chat?.id) {
-            this.navigation.switchChat(chat.chat.id)
+            this.navigation.switchView('chat', {}, { chatId: chat.chat.id })
         }
     }
 }

@@ -9,6 +9,7 @@ import { MessagesLoader } from "../Loader/MessagesLoader";
 import { chatLoader } from "../Loader/ChatLoader";
 import { serverCommunication } from "./ServerCommunication";
 import { generalInfosLoader } from "../Loader/GeneralInfosLoader";
+import { NotifivationManager } from "../NotificationManager";
 
 
 export class ApiChatController extends NamespaceHandler<typeof server_client_chatCommands> {
@@ -22,6 +23,7 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
                 if (success && msg) {
                     const logedInUser = await serverCommunication.userHandler.getLogedInUser();
                     if (msg.data.sender.id !== logedInUser?.data.id) {
+                        new NotifivationManager().newMessage(msg);
                         generalInfosLoader.newIncommingMessage(msg)
                     }
                     WebviewCommunication.getInstance().chat.reciveMessage(msg.data)

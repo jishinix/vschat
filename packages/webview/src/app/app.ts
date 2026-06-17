@@ -26,4 +26,8 @@ import { InitDirect } from './init-direct/init-direct';
 })
 export class App {
 	constructor(public navigation: NavigationService) { }
+
+	ngOnDestroy() {
+		console.log('asd');
+	}
 }

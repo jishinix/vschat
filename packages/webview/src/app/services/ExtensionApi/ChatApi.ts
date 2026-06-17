@@ -17,6 +17,10 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
 
     }
     handles = {
+        'openChat': (data) => {
+            this.navigation.openChatCommand(data.chatId)
+            return null;
+        }
     } satisfies NamespaceHandler<typeof extension_webview_chatCommands>['handles'];
     private get navigation() {
         return this.injector.get(NavigationService)

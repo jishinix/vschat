@@ -1,12 +1,16 @@
 import * as vscode from 'vscode';
 import { WebviewCommunication } from '../services/WebviewApi/WebviewCommunication';
+import { webViewNavigationStorage } from '../services/WebViewNavigationStorage';
+import { ExtensionState } from '../services/ExtensionState';
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'vschat-sidebar';
+    public static viewType = ``;
     private _view?: vscode.WebviewView;
     private _themeListener?: vscode.Disposable;
 
-    constructor(private readonly _extensionUri: vscode.Uri) { }
+    constructor(private readonly _extensionUri: vscode.Uri) {
+        ChatViewProvider.viewType = `vschat-sidebar${ExtensionState.isDev() ? '-dev' : ''}`
+    }
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -39,6 +43,17 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
                 this._themeListener.dispose();
             }
         });
+
+
+        webviewView.onDidChangeVisibility(() => {
+            if (!webviewView.visible) {
+                console.log('Sidebar wurde versteckt/verlassen');
+                webViewNavigationStorage.setOpenState(false);
+            } else {
+                console.log('Sidebar ist wieder sichtbar');
+                webViewNavigationStorage.setOpenState(true);
+            }
+        }, null, ExtensionState.getContext().subscriptions)
     }
 
     /**

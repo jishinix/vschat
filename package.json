@@ -13,6 +13,7 @@
     "clean": "rm -rf out && npm run clean --workspaces --if-present"
   },
   "dependencies": {
+    "adm-zip": "^0.5.17",
     "archiver": "^8.0.0",
     "crypto": "^1.0.1",
     "crypto-js": "^4.2.0",

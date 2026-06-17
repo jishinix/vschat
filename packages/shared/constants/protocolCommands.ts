@@ -6,6 +6,7 @@ import { lookuptypes } from '../interfaces/RelationLookuptypes'
 import { DecrypredMessageCreateData, DecrypredMessageData, MessageCreateData, MessageData } from '../interfaces/Messages'
 import { ChatData } from '../interfaces/Chat'
 import { CreateChatRequestReturn } from '../interfaces/ChatActionInterfaces'
+import { AppViews, NavigationData } from '../interfaces/WebViewNavigation'
 
 
 export const server_client_coreCommands = {
@@ -57,7 +58,8 @@ export const extension_webview_userCommands = {
 
 export const extension_webview_userFeedbackEmits = {
     UUID_COPIED: { name: 'UUIDCopied', dataType: {}, returnType: null },
-    UUID_INFO: { name: 'UUIDInfo', dataType: {}, returnType: null }
+    UUID_INFO: { name: 'UUIDInfo', dataType: {}, returnType: null },
+    VIEW_UPDATE: { name: 'ViewUpdate', dataType: { view: '' as AppViews, navigationData: {} as NavigationData }, returnType: null }
 } as const
 
 
@@ -91,6 +93,7 @@ export const extension_webview_chatCommands = {
     REQUEST_CHAT_MARKING_READ: { name: 'requestChatMarkingRead', dataType: { chatId: '' as string }, returnType: null },
     GET_LAST_READERMESSAGE: { name: 'getLastReadedMessage', dataType: { chatId: '' as string }, returnType: { messageId: '' as string } },
     MARK_CHAT_AS_READED: { name: 'markChatAsReaded', dataType: { chatId: '' as string, messageId: '' as string }, returnType: null },
+    OPEN_CHAT: { name: 'openChat', dataType: { chatId: '' as string }, returnType: null },
 
     //todo
     TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: null },
