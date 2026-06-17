@@ -47,7 +47,7 @@ export class UpdateManager {
             vscodeExe = path.join(vscode.env.appRoot, 'bin', 'code');
         } else {
             // Windows und Linux Standard-Pfad relativ zum appRoot
-            vscodeExe = path.join(vscode.env.appRoot, '..', '..', 'bin', 'code');
+            vscodeExe = path.join(vscode.env.appRoot, '..', '..', '..', 'bin', 'code');
         }
 
         const command = `"${vscodeExe}" --install-extension "${vsixPath}"`;
