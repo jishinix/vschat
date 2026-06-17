@@ -59,7 +59,8 @@ export const extension_webview_userCommands = {
 export const extension_webview_userFeedbackEmits = {
     UUID_COPIED: { name: 'UUIDCopied', dataType: {}, returnType: null },
     UUID_INFO: { name: 'UUIDInfo', dataType: {}, returnType: null },
-    VIEW_UPDATE: { name: 'ViewUpdate', dataType: { view: '' as AppViews, navigationData: {} as NavigationData }, returnType: null }
+    VIEW_UPDATE: { name: 'ViewUpdate', dataType: { view: '' as AppViews, navigationData: {} as NavigationData }, returnType: null },
+    UPDATE_VIEW: { name: 'updateView', dataType: { view: '' as AppViews, navigationData: {} as Partial<NavigationData> }, returnType: null },
 } as const
 
 
@@ -93,7 +94,6 @@ export const extension_webview_chatCommands = {
     REQUEST_CHAT_MARKING_READ: { name: 'requestChatMarkingRead', dataType: { chatId: '' as string }, returnType: null },
     GET_LAST_READERMESSAGE: { name: 'getLastReadedMessage', dataType: { chatId: '' as string }, returnType: { messageId: '' as string } },
     MARK_CHAT_AS_READED: { name: 'markChatAsReaded', dataType: { chatId: '' as string, messageId: '' as string }, returnType: null },
-    OPEN_CHAT: { name: 'openChat', dataType: { chatId: '' as string }, returnType: null },
 
     //todo
     TYPING: { name: 'typing', dataType: { userId: '' as string, state: true as boolean }, returnType: null },

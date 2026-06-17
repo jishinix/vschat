@@ -4,7 +4,7 @@ import { generate } from 'short-uuid'
 
 
 class SessionManager {
-    private readonly expirationLimit = 1000 * 60 * 60 * 24;
+    private readonly expirationLimit = 1000 * 60 * 60 * 24 * 7;
 
     async generateSession(userId: string) {
         const token = generate();

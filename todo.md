@@ -30,6 +30,7 @@
  - [ ] **Code Livestreaming**
  - [ ] **online state**
  - [ ] **Verschlüsselter Medienversand**
+ - [ ] **messages bundeln**
 
 ### notifications
  - [ ] **new Message**
@@ -38,5 +39,5 @@
 
 ### bugs
  - [ ] **neue freunde wenn man selbst in eine freind request geschickt, haben werden nicht angezeigt nach angenommen (schätzungsweißer localer extension test)**
- - [ ] **neue freunde (bzw keine nachrihcten bis jetzt) create chat funktioniert nicht.**
+ - [ ] **neue freunde (bzw keine nachrihcten bis jetzt) create chat direkt nach annehmen funktioniert nicht. (erst nach restart schätzungsweiße hängt noch die falsche relationship in einem cache)**
  - [x] **Log by message input**

@@ -62,6 +62,11 @@ export class ApiService {
         return res;
     }
 
+    static async validateToken(token: string) {
+        const res = await this.request<{ valid: boolean }>('/validateToken', "POST", { token });
+        return res.valid;
+    }
+
     static async resetPassword(solvedChallenge: string, challenge: string, username: string, hashedNewPassword: string, newMainSlot: string): Promise<boolean> {
         const res: any = await this.request("/resetpassword", "POST", {
             solvedChallenge,

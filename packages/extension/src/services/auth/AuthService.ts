@@ -6,6 +6,8 @@ import { AuthActionLoginWebViewRtn, AuthActionRegisterWebViewRtn, AuthActionRtnC
 import { Return } from "@vschat/shared/models/Return";
 import { WebviewCommunication } from "../WebviewApi/WebviewCommunication";
 import { serverCommunication } from "../ServerWebsocketApi/ServerCommunication";
+import { TokenStorage } from "./TokenStorage";
+import { ExtensionState } from "../ExtensionState";
 
 export interface EncryptedMasterkeysPayload {
     mainSlot: string,
@@ -18,6 +20,22 @@ class AuthService {
     sessionToken?: string;
     privateKey?: string;
     masterkey?: string;
+
+    constructor() {
+        const checkToken = () => {
+            if (ExtensionState.isDev()) return;
+            this.validateToken().then(e => {
+                if (e) {
+                    WebviewCommunication.getInstance().userFeedback.updateView('init-direct', {})
+                }
+            })
+        }
+        if (ExtensionState.contextExists()) {
+            checkToken();
+        } else {
+            ExtensionState.eventDispatcher.addEventListener('initContext', checkToken);
+        }
+    }
 
     async register(username: string, password: string): Promise<AuthActionRegisterWebViewRtn> {
 
@@ -66,7 +84,22 @@ class AuthService {
         this.masterkey = CryptoService.decryptText(loginPayload.encryptedMasterkeyMainSlot, password);
         this.privateKey = CryptoService.decryptText(loginPayload.encryptedPrivatekey, this.masterkey);
         serverCommunication.connect(this.sessionToken);
+        await TokenStorage.saveToken(this.sessionToken, this.masterkey, this.privateKey);
         return new Return(AuthActionRtnCodes.success, undefined);
+    }
+
+    async validateToken() {
+        const token = await TokenStorage.getToken();
+        if (!token) return false;
+
+        const validation = await ApiService.validateToken(token.token);
+        if (validation) {
+            this.sessionToken = token.token;
+            this.masterkey = token.masterKey;
+            this.privateKey = token.privateKey;
+            serverCommunication.connect(this.sessionToken);
+        }
+        return validation;
     }
 
     async recover(username: string, backupcode: string, newPassword: string) {

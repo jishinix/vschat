@@ -81,8 +81,4 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
     markChatAsReaded(chatId: string, messageId: string) {
         this.emit('markChatAsReaded', { chatId, messageId })
     }
-
-    openChat(chatId: string) {
-        this.emit('openChat', { chatId })
-    }
 }

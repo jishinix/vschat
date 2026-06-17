@@ -6,7 +6,7 @@ class WebViewNavigationStorage {
     private currentNavigationData: NavigationData = { chatId: '' };
     private isOpen: boolean = false;
 
-    public eventDispatcher = new EventDispatcher();
+    public eventDispatcher = new EventDispatcher<'updateView'>();
     constructor() {
 
     }

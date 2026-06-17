@@ -7,6 +7,7 @@ import { extension_webview_authCommands, extension_webview_userCommands, extensi
 import { userLoader } from "../Loader/UserLoader";
 import { serverCommunication } from "../ServerWebsocketApi/ServerCommunication";
 import { webViewNavigationStorage } from "../WebViewNavigationStorage";
+import { AppViews, NavigationData } from "@vschat/shared/interfaces/WebViewNavigation";
 
 export class UserFeedbackEmits extends NamespaceHandler<typeof extension_webview_userFeedbackEmits> {
     constructor() {
@@ -25,5 +26,9 @@ export class UserFeedbackEmits extends NamespaceHandler<typeof extension_webview
 
     handleIncompleteInformations(command: string, missing: string[]) {
         return new Return(AuthActionRtnCodes.incompleatInformations, missing);
+    }
+
+    updateView(view: AppViews, navigationData: Partial<NavigationData>) {
+        this.emit('updateView', { view, navigationData })
     }
 }

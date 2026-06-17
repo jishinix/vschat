@@ -41,13 +41,6 @@ export class NavigationService {
         }
     }
 
-    async openChatCommand(chatId: string) {
-        const user = await this.ebc.user.getLogedInUser();
-        if (user) {
-            this.switchView('chat', {}, { chatId })
-        }
-    }
-
     generalSuccess = signal<string>('');
     generalError = signal<string>('');
 

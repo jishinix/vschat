@@ -1,14 +1,20 @@
+import { EventDispatcher } from '@vschat/shared/Utils/EventDispatcher';
 import * as vscode from 'vscode';
 
 let currentContext: vscode.ExtensionContext | null = null;
 
 export const ExtensionState = {
-    // Wird einmalig in der activate() aufgerufen
+
+    eventDispatcher: new EventDispatcher<'initContext'>(),
     setContext(context: vscode.ExtensionContext) {
         currentContext = context;
+        this.eventDispatcher.dispatchEvent('initContext');
     },
 
-    // Damit holst du dir den Context überall ab
+    contextExists() {
+        return !!currentContext;
+    },
+
     getContext(): vscode.ExtensionContext {
         if (!currentContext) {
             throw new Error('ExtensionState: Context wurde noch nicht initialisiert!');

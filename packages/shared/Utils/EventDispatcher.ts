@@ -4,7 +4,7 @@ interface event {
 
 }
 
-export class EventDispatcher {
+export class EventDispatcher<T extends string = string> {
     events: { [key: string]: event } = {};
     constructor() {
 
@@ -13,7 +13,7 @@ export class EventDispatcher {
 
     // public start
 
-    addEventListener(eventName: string, callback: Function) {
+    addEventListener(eventName: T, callback: Function) {
         this.#ensureEvent(eventName);
 
         let insertIndex;
@@ -28,7 +28,7 @@ export class EventDispatcher {
 
     };
 
-    addSingleUseEventListener(name: string, cb: Function) {
+    addSingleUseEventListener(name: T, cb: Function) {
         const discardCallback = (...args: any[]) => {
             this.removeEventListener(name, discardCallback);
             cb(...args);
@@ -36,9 +36,9 @@ export class EventDispatcher {
         this.addEventListener(name, discardCallback);
     }
 
-    dispatchEvent(eventName: string, args?: any[], sync?: true): void;
-    dispatchEvent(eventName: string, args?: any[], sync?: false): Promise<undefined>;
-    dispatchEvent(eventName: string, args?: any[], sync: boolean = false): void | Promise<undefined> {
+    dispatchEvent(eventName: T, args?: any[], sync?: true): void;
+    dispatchEvent(eventName: T, args?: any[], sync?: false): Promise<undefined>;
+    dispatchEvent(eventName: T, args?: any[], sync: boolean = false): void | Promise<undefined> {
         if (!args) args = [];
         if (this.#eventDoesNotExist(eventName)) {
             return;
@@ -52,12 +52,12 @@ export class EventDispatcher {
         if (!sync) return new Promise(async res => { await Promise.all(promises); res(undefined) });
     }
 
-    ensureLastCallback(eventName: string, callback: Function) {
+    ensureLastCallback(eventName: T, callback: Function) {
         this.addEventListener(eventName, callback);
         this.events[eventName].lastEvent = callback;
     }
 
-    removeEventListener(eventName: string, callback: Function) {
+    removeEventListener(eventName: T, callback: Function) {
         if (this.#eventDoesNotExist(eventName)) {
             return false;
         }
@@ -73,7 +73,7 @@ export class EventDispatcher {
 
     // public end
 
-    #ensureEvent(eventName: string) {
+    #ensureEvent(eventName: T) {
         if (this.#eventDoesNotExist(eventName)) {
             this.events[eventName] = {
                 callbacks: [],
@@ -82,19 +82,19 @@ export class EventDispatcher {
         }
     }
 
-    #eventDoesNotExist(eventName: string) {
+    #eventDoesNotExist(eventName: T) {
         return this.events[eventName] === undefined;
     }
 
-    #LastEventExists(eventName: string) {
+    #LastEventExists(eventName: T) {
         return this.events[eventName].lastEvent !== null;
     }
 
-    #getEventLength(eventName: string) {
+    #getEventLength(eventName: T) {
         return this.events[eventName].callbacks.length;
     }
 
-    #deleteEventListenerByIndex(eventName: string, index: number) {
+    #deleteEventListenerByIndex(eventName: T, index: number) {
         this.events[eventName].callbacks.splice(index, 1)
     }
 }

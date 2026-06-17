@@ -47,6 +47,12 @@ export const route = (app: Express) => {
         const result = await authactions.login(solvedChallenge, challenge, username);
         handleReturn<AuthActionLoginExtensionRtn>(result, res);
     })
+    app.post('/vsc/api/validateToken', async (req, res) => {
+        const { token } = req.body;
+        if (!token) return res.sendStatus(400);
+        const result = await authactions.validateToken(token);
+        return res.status(200).json({ valid: result });
+    })
     app.post('/vsc/api/resetpassword', async (req, res) => {
         const { solvedChallenge, challenge, username, hashedNewPassword, newMainSlot } = req.body;
         if (!solvedChallenge || !challenge || !username || !hashedNewPassword || !newMainSlot) return res.sendStatus(400);

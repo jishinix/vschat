@@ -147,6 +147,11 @@ class AuthActions {
             masterkeyProof: user.privateData.masterKeyProof
         });
     }
+
+    async validateToken(token: string) {
+        const user = await sessionManager.getUserIdByToken(token);
+        return !!user;
+    }
 }
 
 export const authactions = new AuthActions();
