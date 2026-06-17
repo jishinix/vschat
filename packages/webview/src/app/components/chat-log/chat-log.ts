@@ -95,7 +95,6 @@ export class ChatLogComponent implements AfterViewInit, OnDestroy {
     }
 
     isLastReadetMsg(msg: DecrypredMessageData) {
-        console.log(msg, this.activeChatMessages(), this.lastReadedMsgId())
         const lastMsg = this.activeChatMessages().slice(-1);
         if (!lastMsg) return false;
         return msg.id === this.lastReadedMsgId() && msg.id !== lastMsg[0].id;

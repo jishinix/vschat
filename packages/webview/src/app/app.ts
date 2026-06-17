@@ -28,6 +28,5 @@ export class App {
 	constructor(public navigation: NavigationService) { }
 
 	ngOnDestroy() {
-		console.log('asd');
 	}
 }

@@ -38,7 +38,7 @@ class WebsocketManager {
 
         this.io = new Server(this.httpServer, {
             cors: {
-                origin: "*" // In der Produktion spezifischer konfigurieren!
+                origin: "*"
             }
         });
 

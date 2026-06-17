@@ -39,3 +39,4 @@
 ### bugs
  - [ ] **neue freunde wenn man selbst in eine freind request geschickt, haben werden nicht angezeigt nach angenommen (schätzungsweißer localer extension test)**
  - [ ] **neue freunde (bzw keine nachrihcten bis jetzt) create chat funktioniert nicht.**
+ - [x] **Log by message input**

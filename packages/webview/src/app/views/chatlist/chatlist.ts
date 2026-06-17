@@ -25,7 +25,6 @@ export class Chatlist {
             const user = await this.ebc.user.getLogedInUser();
             chatList.map(async e => await this.getChatName(e, user.user?.id || ''))
             this.chats.set(chatList);
-            console.log(this.chats())
         })
         this.ebc.chat.eventDispatcher.addEventListener('sendChatListLookup', this.onSendChatListLookup);
     }
