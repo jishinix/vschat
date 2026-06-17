@@ -1,10 +1,12 @@
 import express from 'express';
-import { createServer, Server as HttpServer } from 'http';
+import { createServer as createHttpServer, Server as HttpServer } from 'http';
+import { createServer as createHttpsServer } from 'https';
 import { Server, Socket } from 'socket.io';
 import { ClientCommunication } from './ClientApi/ClientCommunication';
 import { userLoader } from './Loader/UserLoader';
 import { User } from '../models/User';
 import { sessionManager } from './SessionManager';
+import fs from 'fs';
 
 interface SocketData {
     getUser: () => Promise<User | null>;
@@ -22,7 +24,18 @@ class WebsocketManager {
 
     constructor() {
         this.app = express();
-        this.httpServer = createServer(this.app);
+
+        if (fs.existsSync('/home/scripts/ssl/private.key')) {
+            const privateKey = fs.readFileSync('/home/scripts/ssl/private.key', 'utf8');
+            const certificate = fs.readFileSync('/home/scripts/ssl/jinx-rp.site2027.crt', 'utf8');
+            const intermediate = fs.readFileSync('/home/scripts/ssl/intermediate.crt', 'utf8');
+
+            const credentials = { key: privateKey, cert: certificate, ca: intermediate };
+            this.httpServer = createHttpsServer(credentials, this.app);
+        } else {
+            this.httpServer = createHttpServer(this.app);
+        }
+
         this.io = new Server(this.httpServer, {
             cors: {
                 origin: "*" // In der Produktion spezifischer konfigurieren!
