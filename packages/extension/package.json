@@ -23,7 +23,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:vschat-sidebar-dev"
+    "*"
   ],
   "files": [
     "../../out/extension/**/*"

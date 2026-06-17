@@ -5,7 +5,7 @@
   Aktuell werden alle samt Masterkey-Hash an den User geschickt. Es sollten nur die Masterkeys an den Nutzer geschickt werden. Der Client sollte einen Backupcode eingeben, alle Backupslots entschlüsseln/hashen und der Server kontrolliert den Hash des Masterkeys. So bekommen unautorisierte Personen keine Backupslots und Proof.
 
  - [ ] **Passwort vergessen ist noch nicht eingebaut.**
- - [ ] **Save Login**
+ - [x] **Save Login**
 
 ### Chat
  - [ ] **typpig indikator**

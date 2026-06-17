@@ -22,6 +22,7 @@ class AuthService {
     masterkey?: string;
 
     constructor() {
+        console.log('INIT');
         const checkToken = () => {
             if (ExtensionState.isDev()) return;
             this.validateToken().then(e => {
