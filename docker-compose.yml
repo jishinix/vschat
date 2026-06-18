@@ -4,9 +4,9 @@ services:
   # 1. SERVER
   vsc_backend:
     volumes:
-      - ${SSL_KEY_PATH}:${SSL_KEY_PATH}:ro
-      - ${SSL_CERT_PATH}:${SSL_CERT_PATH}:ro
-      - ${SSL_INTERMEDIATE_PATH}:${SSL_INTERMEDIATE_PATH}:ro
+      - ${SSL_KEY_PATH:-/dev/null}:${SSL_KEY_PATH:-/dev/null}:ro
+      - ${SSL_CERT_PATH:-/dev/null}:${SSL_CERT_PATH:-/dev/null}:ro
+      - ${SSL_INTERMEDIATE_PATH:-/dev/null}:${SSL_INTERMEDIATE_PATH:-/dev/null}:ro
     build: .
     container_name: vsc_chat_backend
     ports:

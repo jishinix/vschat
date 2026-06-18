@@ -33,7 +33,13 @@ async function release() {
 
         const sourceFile = path.join(__dirname, 'out/vschat-local.vsix');
         const relPath = path.join('versions', `vschat-${newVersion}.vsix`)
-        const targetFile = path.join(__dirname, 'release', relPath);
+        const releasePath = path.join(__dirname, 'release')
+        const releasePresetPath = path.join(__dirname, 'release-preset');
+        const targetFile = path.join(releasePath, relPath);
+        if(!fs.existsSync(releasePath) && fs.existsSync(releasePresetPath)){
+            fs.copyFileSync(releasePresetPath, releasePath)
+            fs.mkdirSync(path.join(releasePresetPath, 'versions'))
+        }
 
 
         versions.latestVersion = newVersion;
