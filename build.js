@@ -143,7 +143,7 @@ function createExtensionBundle(version) {
         console.error('Fehler während des Ablaufs:', error);
     } finally {
         if (fs.existsSync(tempDir)) {
-            //fs.rmSync(tempDir, { recursive: true, force: true });
+            fs.rmSync(tempDir, { recursive: true, force: true });
             console.log('Temp-Ordner erfolgreich aufgeräumt.');
         }
     }

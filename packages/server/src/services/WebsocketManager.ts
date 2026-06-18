@@ -24,6 +24,11 @@ class WebsocketManager {
 
     constructor() {
         this.app = express();
+        // 1. GLOBALER HTTP-LOGGER: Loggt jede eingehende HTTP-Anfrage
+        this.app.use((req, res, next) => {
+            console.log(`[HTTP INCOMING] ${req.method} ${req.url} - IP: ${req.ip}`);
+            next();
+        });
 
         if (fs.existsSync('/home/scripts/ssl/private.key')) {
             const privateKey = fs.readFileSync('/home/scripts/ssl/private.key', 'utf8');
