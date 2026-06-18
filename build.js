@@ -8,6 +8,7 @@ import AdmZip from 'adm-zip';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 const isServerMode = process.argv.includes('--server');
 const isLiveServerMode = process.argv.includes('--liveserver');
 
@@ -46,7 +47,7 @@ async function release() {
 
         if (isServerMode) {
             console.log('--- Starte: restart server...');
-            execSync('pm2 restart vschatServer', { stdio: 'inherit' });
+            execSync('docker compose up --build -d', { stdio: 'inherit' });
         }
 
         console.log('🎉 Release-Prozess erfolgreich abgeschlossen!');
@@ -148,4 +149,12 @@ function createExtensionBundle(version) {
     }
 }
 
-release();
+function start() {
+    if (isServerMode) {
+        release();
+    } else {
+        createExtensionBundle('1.0.0');
+    }
+}
+
+start();

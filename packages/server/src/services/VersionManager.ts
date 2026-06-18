@@ -7,7 +7,7 @@ interface versionsJson {
 }
 
 export class VersionManager {
-    private static versionDirPath = process.env.VERSION_DIR_PATH as string;
+    private static versionDirPath = process.env.VERSION_DIR_PATH as string || '/app/release';
 
     private static loadJson() {
         const versionJson = path.join(this.versionDirPath, 'versions.json');

@@ -24,11 +24,20 @@ class WebsocketManager {
 
     constructor() {
         this.app = express();
+        // 1. GLOBALER HTTP-LOGGER: Loggt jede eingehende HTTP-Anfrage
+        this.app.use((req, res, next) => {
+            console.log(`[HTTP INCOMING] ${req.method} ${req.url} - IP: ${req.ip}`);
+            next();
+        });
 
-        if (fs.existsSync('/home/scripts/ssl/private.key')) {
-            const privateKey = fs.readFileSync('/home/scripts/ssl/private.key', 'utf8');
-            const certificate = fs.readFileSync('/home/scripts/ssl/jinx-rp.site2027.crt', 'utf8');
-            const intermediate = fs.readFileSync('/home/scripts/ssl/intermediate.crt', 'utf8');
+        const sslKeyPath = process.env.SSL_KEY_PATH;
+        const sslCertPath = process.env.SSL_CERT_PATH;
+        const sslIntermediatePath = process.env.SSL_INTERMEDIATE_PATH;
+
+        if (sslKeyPath && sslCertPath && sslIntermediatePath && fs.existsSync('/home/scripts/ssl/private.key')) {
+            const privateKey = fs.readFileSync(sslKeyPath, 'utf8');
+            const certificate = fs.readFileSync(sslCertPath, 'utf8');
+            const intermediate = fs.readFileSync(sslIntermediatePath, 'utf8');
 
             const credentials = { key: privateKey, cert: certificate, ca: intermediate };
             this.httpServer = createHttpsServer(credentials, this.app);
@@ -104,8 +113,8 @@ class WebsocketManager {
         });
 
 
-        this.httpServer.listen(42161, () => {
-            console.log("Server läuft auf Port 42161");
+        this.httpServer.listen(process.env.SOCKET_PORT, () => {
+            console.log(`WebsocketServer läuft auf Port ${process.env.SOCKET_PORT}`);
         });
     }
 

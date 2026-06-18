@@ -1,3 +1,6 @@
+import { debug } from 'debug'; // Wenn nicht installiert: npm install debug
+
+
 import { CommandPayload } from '@vschat/shared/Utils/BidirectionalMessageProtocol';
 import { BidirectionalMessageProtocolNamespaceWrapper } from '@vschat/shared/Utils/BidirectionalMessageProtocolNamespaceWrapper';
 import { io, Socket } from 'socket.io-client';
@@ -50,6 +53,10 @@ class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
             console.log('[websocket][extensionbackend] connected successfully');
         });
 
+        this.socket.on('error', (e) => {
+            console.log('[websocket][extensionbackend] error ', e);
+        })
+
         this.socket.on("disconnect", (reason) => {
             console.warn('[websocket][extensionbackend] disconnected:', reason);
         });
@@ -69,11 +76,9 @@ class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
 
         console.log(this.baseUrl);
         this._socket = io(this.baseUrl, {
-            autoConnect: true,
-            reconnection: true,
-            auth: {
-                token: sessionToken
-            }
+            transports: ['websocket', 'polling'], // Erlaube beides, beginne mit websocket
+            upgrade: true,                        // Erlaube das Upgrade
+            auth: { token: sessionToken }
         });
 
         this.initReceive();
