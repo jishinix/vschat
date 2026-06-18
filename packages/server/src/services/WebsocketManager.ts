@@ -32,7 +32,7 @@ class WebsocketManager {
 
         const sslKeyPath = process.env.SSL_KEY_PATH;
         const sslCertPath = process.env.SSL_CERT_PATH;
-        const sslIntermediatePath = process.env.SSL_CERT_PATH;
+        const sslIntermediatePath = process.env.SSL_INTERMEDIATE_PATH;
 
         if (sslKeyPath && sslCertPath && sslIntermediatePath && fs.existsSync('/home/scripts/ssl/private.key')) {
             const privateKey = fs.readFileSync(sslKeyPath, 'utf8');

@@ -10,7 +10,6 @@ import { ApiChatController } from './ApiChatController';
 import { ApiAuthController } from './ApiAuthController';
 import { ExtensionState } from '../ExtensionState';
 import { ApiUpdateController } from './ApiUpdateController';
-debug.enable('socket.io-client:*');
 
 
 class ServerCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
