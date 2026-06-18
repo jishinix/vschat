@@ -17,7 +17,8 @@
   "config": {
     "authDomain": "http://localhost:7050",
     "wsDomain": "http://localhost:42161",
-    "isDev": true
+    "isDev": true,
+    "saveAuth": false
   },
   "categories": [
     "Other"
@@ -35,7 +36,8 @@
         {
           "id": "vschat-sidebar-container-dev",
           "title": "Visual Studio Chat (DEV)",
-          "icon": "resources/chat-icon-dev.svg"
+          "icon": "resources/chat-icon-dev.svg",
+          "badge": "new-messages-badge"
         }
       ]
     },
@@ -47,8 +49,21 @@
           "name": "Chat (DEV)",
           "icon": "resources/chat-icon-dev.svg"
         }
+      ],
+      "explorer": [
+        {
+          "id": "nodeDependencies",
+          "name": "Node Dependencies",
+          "icon": "resources/chat-icon-dev.svg"
+        }
       ]
-    }
+    },
+    "commands": [
+      {
+        "command": "new-messages-badge",
+        "title": "Neue Nachrichten"
+      }
+    ]
   },
   "scripts": {
     "build": "npm run bundle && npm run copy-assets",

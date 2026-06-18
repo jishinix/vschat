@@ -24,7 +24,7 @@ class AuthService {
     constructor() {
         console.log('INIT');
         const checkToken = () => {
-            // if (ExtensionState.isDev()) return;
+            if (!ExtensionState.getPackage().config?.saveAuth) return;
             this.validateToken().then(e => {
                 if (e) {
                     WebviewCommunication.getInstance()?.userFeedback.updateView('init-direct', {})

@@ -11,6 +11,7 @@ const __dirname = path.dirname(__filename);
 
 const isServerMode = process.argv.includes('--server');
 const isLiveServerMode = process.argv.includes('--liveserver');
+const saveAuth = process.argv.includes('--saveauth');
 
 async function release() {
     try {
@@ -18,8 +19,6 @@ async function release() {
             console.log('--- Starte: Pull github...');
             execSync('git pull', { stdio: 'inherit' });
         }
-        console.log('--- Starte: npm run build...');
-        execSync('npm run build', { stdio: 'inherit' });
 
 
         const jsonPath = path.join(__dirname, 'release', 'versions.json');
@@ -66,6 +65,11 @@ function createExtensionBundle(version) {
     const zipOutputPath = path.join(outDir, 'vschat-local.vsix');
 
     try {
+
+
+        console.log('--- Starte: npm run build...');
+        execSync('npm run build', { stdio: 'inherit' });
+
         if (!fs.existsSync(tempExtensionDir)) {
             fs.mkdirSync(tempExtensionDir, { recursive: true });
         }
@@ -122,8 +126,15 @@ function createExtensionBundle(version) {
 
         if (isServerMode || isLiveServerMode) {
             if (pkg.config) {
+                console.log('domain wird auf live server umgestellt');
                 pkg.config.authDomain = 'https://jinx-rp.site';
                 pkg.config.wsDomain = 'https://jinx-rp.site:42161';
+            }
+        }
+        if (isServerMode || saveAuth) {
+            if (pkg.config) {
+                console.log('login wird gespeichert');
+                pkg.config.saveAuth = true
             }
         }
 
@@ -156,5 +167,6 @@ function start() {
         createExtensionBundle('1.0.0');
     }
 }
+
 
 start();
