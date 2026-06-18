@@ -3,12 +3,17 @@ version: '3.8'
 services:
   # 1. SERVER
   vsc_backend:
+    volumes:
+      - ./ssl:/etc/ssl/app:ro
     build: .
     container_name: vsc_chat_backend
     ports:
       - "${HTTP_PORT}:${HTTP_PORT}"
       - "${SOCKET_PORT}:${SOCKET_PORT}"
     environment:
+      - SSL_KEY_PATH=${SSL_KEY_PATH}
+      - SSL_CERT_PATH=${SSL_CERT_PATH}
+      - SSL_INTERMEDIATE_PATH=${SSL_INTERMEDIATE_PATH}
       - HTTP_PORT=${HTTP_PORT}
       - SOCKET_PORT=${SOCKET_PORT}
       - DB_HOST=${DB_HOST}

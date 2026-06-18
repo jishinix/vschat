@@ -30,10 +30,14 @@ class WebsocketManager {
             next();
         });
 
-        if (fs.existsSync('/home/scripts/ssl/private.key')) {
-            const privateKey = fs.readFileSync('/home/scripts/ssl/private.key', 'utf8');
-            const certificate = fs.readFileSync('/home/scripts/ssl/jinx-rp.site2027.crt', 'utf8');
-            const intermediate = fs.readFileSync('/home/scripts/ssl/intermediate.crt', 'utf8');
+        const sslKeyPath = process.env.SSL_KEY_PATH;
+        const sslCertPath = process.env.SSL_CERT_PATH;
+        const sslIntermediatePath = process.env.SSL_CERT_PATH;
+
+        if (sslKeyPath && sslCertPath && sslIntermediatePath && fs.existsSync('/home/scripts/ssl/private.key')) {
+            const privateKey = fs.readFileSync(sslKeyPath, 'utf8');
+            const certificate = fs.readFileSync(sslCertPath, 'utf8');
+            const intermediate = fs.readFileSync(sslIntermediatePath, 'utf8');
 
             const credentials = { key: privateKey, cert: certificate, ca: intermediate };
             this.httpServer = createHttpsServer(credentials, this.app);
