@@ -8,6 +8,7 @@ import { UserApi } from './UserApi';
 import { UserFeedbackEmits } from './UserFeedbackEmits';
 import { ChatApi } from './ChatApi';
 import { UpdateApi } from './UpdateApi';
+import { EventDispatcher } from '@vschat/shared/Utils/EventDispatcher';
 
 
 export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceWrapper {
@@ -18,6 +19,8 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
     public userFeedback: UserFeedbackEmits;
     public update: UpdateApi;
     private static instance: WebviewCommunication | null = null;
+
+    public static eventDispatcher = new EventDispatcher<'initWebviewCommunication'>()
 
     private constructor(private webview: vscode.Webview) {
 
@@ -43,14 +46,19 @@ export class WebviewCommunication extends BidirectionalMessageProtocolNamespaceW
 
     static getInstance(webview?: vscode.Webview) {
         if (!this.instance) {
-            if (!webview) throw new Error('in construct WebviewCommunication you need a webview');
+            if (!webview) return null;
             this.instance = new WebviewCommunication(webview);
+            WebviewCommunication.eventDispatcher.dispatchEvent('initWebviewCommunication', [this.instance])
         }
         return this.instance;
     }
 
     protected async send(payload: CommandPayload): Promise<void> {
-        await this.webview.postMessage(payload);
+        try {
+            await this.webview.postMessage(payload);
+        } catch (e) {
+
+        }
     }
     protected initReceive(): void {
         this.webview.onDidReceiveMessage(async (data) => {

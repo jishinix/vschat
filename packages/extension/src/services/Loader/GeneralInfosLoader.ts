@@ -32,7 +32,7 @@ class GeneralInfosLoader {
                 lastReadedMessageId: lastReadedMessage.messageId
             }
         }
-        WebviewCommunication.getInstance().chat.sendChatListLookup(await this.getChatList());
+        WebviewCommunication.getInstance()?.chat.sendChatListLookup(await this.getChatList());
     }
 
     async readChat(chatId: string, lastReadedMessageId: string) {

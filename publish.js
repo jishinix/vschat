@@ -9,6 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const isServerMode = process.argv.includes('--server');
+const isLiveServerMode = process.argv.includes('--liveserver');
 
 async function release() {
     try {
@@ -107,15 +108,22 @@ function createExtensionBundle(version) {
                 }
             }
 
+
             if (pkg.config) {
                 pkg.config.isDev = false;
-                pkg.config.authDomain = 'https://jinx-rp.site';
-                pkg.config.wsDomain = 'https://jinx-rp.site:42161';
             }
+
 
             pkg.activationEvents = pkg.activationEvents.map(event =>
                 event === 'onView:vschat-sidebar-dev' ? 'onView:vschat-sidebar' : event
             );
+        }
+
+        if (isServerMode || isLiveServerMode) {
+            if (pkg.config) {
+                pkg.config.authDomain = 'https://jinx-rp.site';
+                pkg.config.wsDomain = 'https://jinx-rp.site:42161';
+            }
         }
 
         const destPackageJson = path.join(tempExtensionDir, 'package.json');

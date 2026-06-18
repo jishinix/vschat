@@ -83,8 +83,11 @@ export class MessagesLoader extends Cache<DecrypredMessageData, MessageType> {
             })
     }
 
-    cacheMessage(msg: MessageData) {
-        const content = CryptoService.decryptContent(msg.encryptedContent, serverCommunication.userHandler.logedInUser?.data.id || '', authService.privateKey || '');
+    async cacheMessage(msg: MessageData) {
+        const user = await serverCommunication.userHandler.getLogedInUser();
+        console.log('HIER', msg.encryptedContent, user, authService.privateKey);
+        if (!user || !authService.privateKey) return false;
+        const content = CryptoService.decryptContent(msg.encryptedContent, user.data.id, authService.privateKey);
         if (!content) return false;
         const map = new Map<string, DecrypredMessageData>();
         map.set(msg.id, { ...msg, content: content?.content })
