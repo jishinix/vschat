@@ -2,7 +2,7 @@ import knex from 'knex';
 
 console.log(process.env);
 export const database = knex({
-    client: process.env.DB_TYPE === 'mssql' ? 'mssql' : 'mysql2',
+    client: 'mysql2',
     connection: {
         host: process.env.DB_HOST,
         user: process.env.DB_USER,

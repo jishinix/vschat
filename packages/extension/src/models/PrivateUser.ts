@@ -11,7 +11,14 @@ export class PrivateUser extends PublicUser<IPrivateUser> {
 
     constructor(_data: IPrivateUser) {
         super(_data);
-        this.relationships = new RelationshipLookupManager(_data.id, _data.relations, WebviewCommunication.getInstance().user.updateRelationLookup)
+        const instance = WebviewCommunication.getInstance();
+
+        this.relationships = new RelationshipLookupManager(_data.id, _data.relations, instance ? instance.user.updateRelationLookup : null);
+        if (!instance) {
+            WebviewCommunication.eventDispatcher.addEventListener('initWebviewCommunication', (instance: WebviewCommunication) => {
+                this.relationships
+            })
+        }
     }
 
     get data(): Readonly<Omit<IPrivateUser, 'relations'>> {

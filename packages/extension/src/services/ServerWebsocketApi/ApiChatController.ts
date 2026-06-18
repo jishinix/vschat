@@ -18,7 +18,7 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
         'reciveMessage': async (data) => {
             const chat = (await chatLoader.getData([data.message.chatId])).get(data.message.chatId);
             if (chat) {
-                const success = chat.messageLoader.cacheMessage(data.message);
+                const success = await chat.messageLoader.cacheMessage(data.message);
                 const msg = (await chat.messageLoader.getData([data.message.id])).get(data.message.id)
                 if (success && msg) {
                     const logedInUser = await serverCommunication.userHandler.getLogedInUser();
@@ -26,7 +26,7 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
                         new NotifivationManager().newMessage(msg);
                         generalInfosLoader.newIncommingMessage(msg)
                     }
-                    WebviewCommunication.getInstance().chat.reciveMessage(msg.data)
+                    WebviewCommunication.getInstance()?.chat.reciveMessage(msg.data)
                 }
             }
             return null
@@ -34,8 +34,8 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
         'markChatAsReaded': async (data) => {
             generalInfosLoader.readChat(data.chatId, data.messageId);
             const chats = await generalInfosLoader.getChatList();
-            await WebviewCommunication.getInstance().chat.sendChatListLookup(chats);
-            await WebviewCommunication.getInstance().chat.markChatAsReaded(data.chatId, data.messageId);
+            await WebviewCommunication.getInstance()?.chat.sendChatListLookup(chats);
+            await WebviewCommunication.getInstance()?.chat.markChatAsReaded(data.chatId, data.messageId);
             return null;
         }
     } satisfies NamespaceHandler<typeof server_client_chatCommands>['handles'];

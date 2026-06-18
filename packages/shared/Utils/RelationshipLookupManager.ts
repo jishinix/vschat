@@ -16,6 +16,10 @@ export class RelationshipLookupManager {
         }
     }
 
+    setSendLookupCb(cb: ((i: lookuptypes, v: string[]) => void)) {
+        this.sendLookupCb = cb;
+    }
+
     private preClearOldRelation(rel: Relationship) {
         for (const [index, val] of Object.entries(this.lookups)) {
             const sendNew = val.has(rel.userId) || val.has(rel.relatedUserId);

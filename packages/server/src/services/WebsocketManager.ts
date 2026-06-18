@@ -104,8 +104,8 @@ class WebsocketManager {
         });
 
 
-        this.httpServer.listen(42161, () => {
-            console.log("Server läuft auf Port 42161");
+        this.httpServer.listen(process.env.SOCKET_PORT, () => {
+            console.log(`WebsocketServer läuft auf Port ${process.env.SOCKET_PORT}`);
         });
     }
 

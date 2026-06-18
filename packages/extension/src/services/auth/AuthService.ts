@@ -24,10 +24,10 @@ class AuthService {
     constructor() {
         console.log('INIT');
         const checkToken = () => {
-            if (ExtensionState.isDev()) return;
+            // if (ExtensionState.isDev()) return;
             this.validateToken().then(e => {
                 if (e) {
-                    WebviewCommunication.getInstance().userFeedback.updateView('init-direct', {})
+                    WebviewCommunication.getInstance()?.userFeedback.updateView('init-direct', {})
                 }
             })
         }

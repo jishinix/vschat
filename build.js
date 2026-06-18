@@ -8,7 +8,9 @@ import AdmZip from 'adm-zip';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 const isServerMode = process.argv.includes('--server');
+const isLiveServerMode = process.argv.includes('--liveserver');
 
 async function release() {
     try {
@@ -45,7 +47,7 @@ async function release() {
 
         if (isServerMode) {
             console.log('--- Starte: restart server...');
-            execSync('pm2 restart vschatServer', { stdio: 'inherit' });
+            execSync('docker compose up --build -d', { stdio: 'inherit' });
         }
 
         console.log('🎉 Release-Prozess erfolgreich abgeschlossen!');
@@ -107,15 +109,22 @@ function createExtensionBundle(version) {
                 }
             }
 
+
             if (pkg.config) {
                 pkg.config.isDev = false;
-                pkg.config.authDomain = 'https://jinx-rp.site';
-                pkg.config.wsDomain = 'https://jinx-rp.site:42161';
             }
+
 
             pkg.activationEvents = pkg.activationEvents.map(event =>
                 event === 'onView:vschat-sidebar-dev' ? 'onView:vschat-sidebar' : event
             );
+        }
+
+        if (isServerMode || isLiveServerMode) {
+            if (pkg.config) {
+                pkg.config.authDomain = 'https://jinx-rp.site';
+                pkg.config.wsDomain = 'https://jinx-rp.site:42161';
+            }
         }
 
         const destPackageJson = path.join(tempExtensionDir, 'package.json');
@@ -134,10 +143,18 @@ function createExtensionBundle(version) {
         console.error('Fehler während des Ablaufs:', error);
     } finally {
         if (fs.existsSync(tempDir)) {
-            fs.rmSync(tempDir, { recursive: true, force: true });
+            //fs.rmSync(tempDir, { recursive: true, force: true });
             console.log('Temp-Ordner erfolgreich aufgeräumt.');
         }
     }
 }
 
-release();
+function start() {
+    if (isServerMode) {
+        release();
+    } else {
+        createExtensionBundle('1.0.0');
+    }
+}
+
+start();

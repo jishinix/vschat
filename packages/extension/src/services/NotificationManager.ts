@@ -18,7 +18,7 @@ export class NotifivationManager {
             if (selection === 'Antworten') {
                 vscode.commands.executeCommand(`workbench.view.extension.vschat-sidebar-container${ExtensionState.isDev() ? '-dev' : ''}`);
                 setTimeout(() => {
-                    WebviewCommunication.getInstance().userFeedback.updateView('chat', { chatId: message.data.chatId });
+                    WebviewCommunication.getInstance()?.userFeedback.updateView('chat', { chatId: message.data.chatId });
                 }, 200)
             }
         });

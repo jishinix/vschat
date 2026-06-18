@@ -2,6 +2,16 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "stop-server",
+            "type": "shell",
+            "command": "docker compose down",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "silent",
+                "close": true
+            }
+        },
+        {
             "label": "build-all",
             "type": "shell",
             "command": "npm run build",
@@ -10,23 +20,20 @@
         {
             "label": "Start Server",
             "type": "shell",
-            "command": "node out/server/index.js",
-            "isBackground": true,
-            "problemMatcher": {
-                "pattern": {
-                    "regexp": "."
-                },
-                "background": {
-                    "activeOnStart": true,
-                    "beginsPattern": ".",
-                    "endsPattern": "."
-                }
-            }
+            "command": "docker compose up --build -d", // 👈 Startet jetzt sauber im Hintergrund
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [] // 👈 Kein komplexer Background-Matcher mehr nötig
         },
         {
             "label": "execute",
             "dependsOrder": "sequence",
             "dependsOn": [
+                "stop-server",
                 "build-all",
                 "Start Server"
             ],

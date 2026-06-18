@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # 1. SERVER
+  vsc_backend:
+    build: .
+    container_name: vsc_chat_backend
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+      - "${SOCKET_PORT}:${SOCKET_PORT}"
+    environment:
+      - HTTP_PORT=${HTTP_PORT}
+      - SOCKET_PORT=${SOCKET_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - STORAGE_ENDPOINT=http://${STORAGE_ENDPOINT}:${MINIO_PORT}
+      - STORAGE_ACCESS_KEY=${MINIO_ADMIN_USER}
+      - STORAGE_SECRET_KEY=${MINIO_ADMIN_PASSWORD}
+    depends_on:
+      vsc_datenbank:
+        condition: service_healthy # 👈 Wartet, bis der Healthcheck der DB "green" ist
+      vsc_storage:
+        condition: service_started
+
+  # 2. DEINE DATENBANK
+  vsc_datenbank:
+    image: mysql:8.0
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER}", "-p${DB_PASSWORD}"]
+      timeout: 5s
+      retries: 5
+      interval: 5s
+    container_name: vschat_db
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_local_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+    # HIER IST DIE MAGIE:
+    networks:
+      default:
+        aliases:
+          - ${DB_HOST}
+
+  # 3. MINIO STORAGE
+  vsc_storage:
+    image: minio/minio:latest
+    container_name: vsc_chat_minio
+    ports:
+      - "${MINIO_PORT}:${MINIO_PORT}"
+      - "${MINIO_CONSOLE_PORT}:${MINIO_CONSOLE_PORT}"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ADMIN_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ADMIN_PASSWORD}
+    volumes:
+      - minio_local_data:/data
+    command: server /data --console-address :${MINIO_CONSOLE_PORT}
+    # HIER EBENSO:
+    networks:
+      default:
+        aliases:
+          - ${STORAGE_ENDPOINT} # Docker hört AUCH auf diesen Namen!
+
+volumes:
+  mysql_local_data:
+  minio_local_data:
