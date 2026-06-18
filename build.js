@@ -17,9 +17,16 @@ async function release() {
     try {
         if (isServerMode) {
             console.log('--- Starte: Pull github...');
-            execSync('git pull', { stdio: 'inherit' });
+            //execSync('git pull', { stdio: 'inherit' });
         }
 
+
+        const releasePath = path.join(__dirname, 'release')
+        const releasePresetPath = path.join(__dirname, 'release-preset');
+        if(!fs.existsSync(releasePath) && fs.existsSync(releasePresetPath)){
+            fs.cpSync(releasePresetPath, releasePath, { recursive: true })
+            fs.mkdirSync(path.join(releasePath, 'versions'))
+        }
 
         const jsonPath = path.join(__dirname, 'release', 'versions.json');
         const versions = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
@@ -27,19 +34,16 @@ async function release() {
         latestVersion[2] = Number(latestVersion[2]) + 1;
         const newVersion = latestVersion.join('.');
 
+
+        
+        const sourceFile = path.join(__dirname, 'out/vschat-local.vsix');
+        const relPath = path.join('versions', `vschat-${newVersion}.vsix`)
+        const targetFile = path.join(releasePath, relPath);
+
         console.log('--- Starte: ./build...');
         createExtensionBundle(newVersion)
 
 
-        const sourceFile = path.join(__dirname, 'out/vschat-local.vsix');
-        const relPath = path.join('versions', `vschat-${newVersion}.vsix`)
-        const releasePath = path.join(__dirname, 'release')
-        const releasePresetPath = path.join(__dirname, 'release-preset');
-        const targetFile = path.join(releasePath, relPath);
-        if(!fs.existsSync(releasePath) && fs.existsSync(releasePresetPath)){
-            fs.copyFileSync(releasePresetPath, releasePath)
-            fs.mkdirSync(path.join(releasePresetPath, 'versions'))
-        }
 
 
         versions.latestVersion = newVersion;
