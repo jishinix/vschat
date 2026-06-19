@@ -6,6 +6,7 @@ import { NavigationService } from '../../services/NavigationService';
 import { ChatData } from '@vschat/shared/interfaces/Chat';
 import { UserReference } from '@vschat/shared/interfaces/User';
 import { ChatBox } from '../../components/chat-box/chat-box';
+import { RawAttachment } from '@vschat/shared/interfaces/Messages';
 
 @Component({
     selector: 'app-chat',
@@ -25,7 +26,14 @@ export class Chat {
         if (chat == null) return;
         this.ebc.chat.sendMsg({
             content: this.message,
-            chatId: chat.id
+            chatId: chat.id,
+            attachments: [
+                {
+                    mineType: "txt/text",
+                    data: "tets",
+                    fileName: 'testFile.txt'
+                }
+            ]
         })
         this.message = '';
     }

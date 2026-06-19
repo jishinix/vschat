@@ -23,13 +23,17 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-      - STORAGE_ENDPOINT=http://${STORAGE_ENDPOINT}:${MINIO_PORT}
+      - PUBLIC_STORAGE_HOST=${PUBLIC_STORAGE_HOST}
+      - PUBLIC_STORAGE_PORT=${PUBLIC_STORAGE_PORT}
+      - PUBLIC_STORAGE_SSL=${PUBLIC_STORAGE_SSL}
+      - STORAGE_ENDPOINT=${STORAGE_ENDPOINT}
+      - STORAGE_PORT=${MINIO_PORT}
       - STORAGE_ACCESS_KEY=${MINIO_ADMIN_USER}
       - STORAGE_SECRET_KEY=${MINIO_ADMIN_PASSWORD}
     depends_on:
       vsc_datenbank:
         condition: service_healthy # 👈 Wartet, bis der Healthcheck der DB "green" ist
-      vsc_storage:
+      vsc-storage:
         condition: service_started
 
   # 2. DEINE DATENBANK
@@ -57,24 +61,29 @@ services:
         aliases:
           - ${DB_HOST}
 
-  # 3. MINIO STORAGE
-  vsc_storage:
+
+  vsc-storage:
     image: minio/minio:latest
     container_name: vsc_chat_minio
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${MINIO_PORT}/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
-      - "${MINIO_PORT}:${MINIO_PORT}"
-      - "${MINIO_CONSOLE_PORT}:${MINIO_CONSOLE_PORT}"
+      - "${MINIO_PORT}:9000"
+      - "${MINIO_CONSOLE_PORT}:9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ADMIN_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ADMIN_PASSWORD}
-    volumes:
+      MINIO_API_CORS_ALLOW_ORIGIN: '*'
+    volumes: 
       - minio_local_data:/data
     command: server /data --console-address :${MINIO_CONSOLE_PORT}
-    # HIER EBENSO:
     networks:
       default:
         aliases:
-          - ${STORAGE_ENDPOINT} # Docker hört AUCH auf diesen Namen!
+          - ${STORAGE_ENDPOINT}
 
 volumes:
   mysql_local_data:

@@ -14,20 +14,29 @@
         {
             "label": "build-all",
             "type": "shell",
-            "command": "npm run build",
-            "problemMatcher": []
+            "command": "node build.js",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true
+            }
         },
         {
             "label": "Start Server",
             "type": "shell",
-            "command": "docker compose up --build -d", // 👈 Startet jetzt sauber im Hintergrund
+            "command": "docker compose up --build -d",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
                 "focus": false,
                 "panel": "shared"
             },
-            "problemMatcher": [] // 👈 Kein komplexer Background-Matcher mehr nötig
+            "problemMatcher": []
+        },
+        {
+            "label": "copy-workspace",
+            "type": "shell",
+            "command": "mkdir -p ./out/extension-temp && cp -r ./out/extension/ ./out/extension-temp/",
+            "problemMatcher": []
         },
         {
             "label": "execute",
@@ -35,6 +44,7 @@
             "dependsOn": [
                 "stop-server",
                 "build-all",
+                "copy-workspace",
                 "Start Server"
             ],
             "problemMatcher": []

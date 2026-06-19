@@ -49,47 +49,71 @@ export class MessagesLoader extends Cache<MessageData, LoaderMessageType> {
                     username: message.Username,
                     publicKey: message.PublicKey
                 },
-                attachments: attachments.map(e=>({
-
-                }))
+                attachments: []
             })
         }
-        
-        
+
+
         const attachmentRtn = await database('MessageAttachments')
             .select([
-                'Id',
-                'EncryptedContentId',
+                'MessageAttachments.Id as Id',
+                'Fingerprint',
                 'MineType',
                 'FileName',
                 'MessageId'
             ])
             .join('EncryptedContent', 'EncryptedContentId', '=', 'EncryptedContent.Id')
-            .where('MessageId', 'in', messages.map(e=>e.MessageId))
-            
+            .where('MessageId', 'in', messages.map(e => e.MessageId))
+
         const attachments = new Map<string, Attachment>();
-        for(const attachment of attachmentRtn){
-            attachments.set(attachment.Id, {
+        for (const attachment of attachmentRtn) {
+            const attachmentData = {
                 id: attachment.Id,
                 fileName: attachment.FileName,
-                mineType: attachment.mineType
-            })
+                mineType: attachment.mineType,
+                decryptCollection: {
+                    keys: {},
+                    fingerPrint: attachment.Fingerprint
+                }
+            };
+            attachments.set(attachment.Id, attachmentData)
+            rtn.get(attachment.MessageId)?.attachments.push(attachmentData)
         }
 
-        const encryptionKeys = await database('EncryptedContentKeys')
-            .select([
-                'Messages.Id as MessageId',
-                'UserId',
-                'Key'
-            ])
-            .join('EncryptedContent', 'EncryptedContentKeys.EncryptedContentId', '=', 'EncryptedContent.Id')
-            .join('Messages', 'Messages.EncryptedContentId', '=', 'EncryptedContent.Id')
-            .whereIn('Messages.Id', Array.from(key))
+        const encryptionKeys = await database.transaction(trx => {
+            const messageIds = Array.from(key);
+            const rtn = trx('EncryptedContentKeys')
+                .select([
+                    trx.raw(`
+                        CASE
+                            WHEN Messages.Id IS not NULL THEN 'message'
+                            ELSE 'attachment'
+                        END as Type
+                    `),
+                    'Messages.Id as MessageId',
+                    'MessageAttachments.Id as AttachmentId',
+                    'UserId',
+                    'Key'
+                ])
+                .join('EncryptedContent', 'EncryptedContentKeys.EncryptedContentId', '=', 'EncryptedContent.Id')
+                .leftOuterJoin('Messages', 'Messages.EncryptedContentId', '=', 'EncryptedContent.Id')
+                .leftOuterJoin('MessageAttachments', 'MessageAttachments.EncryptedContentId', '=', 'EncryptedContent.Id')
+                .whereIn('Messages.Id', messageIds)
+                .orWhereIn('MessageAttachments.MessageId', messageIds);
+            return rtn;
+        })
 
         for (const key of encryptionKeys) {
-            const msg = rtn.get(key.MessageId);
-            if (msg)
-                msg.encryptedContent.keys[key.UserId] = key.Key
+            console.log(key, key.type)
+            if (key.Type === 'message') {
+                const msg = rtn.get(key.MessageId);
+                if (msg)
+                    msg.encryptedContent.keys[key.UserId] = key.Key
+            } else {
+                const atm = attachments.get(key.AttachmentId);
+                if (atm)
+                    atm.decryptCollection.keys[key.UserId] = key.Key
+            }
         }
 
         return rtn;
@@ -141,6 +165,13 @@ export class MessagesLoader extends Cache<MessageData, LoaderMessageType> {
                     SenderId: string,
                     ChatId: string
                 }[],
+                attachments: [] as {
+                    Id: string,
+                    EncryptedContentId: string,
+                    MineType: string,
+                    FileName: string,
+                    MessageId: string
+                }[]
             }
 
             data.forEach((val, key) => {
@@ -153,6 +184,9 @@ export class MessagesLoader extends Cache<MessageData, LoaderMessageType> {
                     Timestamp: val.timestamp,
                     SenderId: val.sender.id,
                     ChatId: val.chatId
+                })
+                val.attachments.forEach((atmVal, atmKey) => {
+
                 })
             })
             entries.entcryptedContentId = await trx('EncryptedContent')

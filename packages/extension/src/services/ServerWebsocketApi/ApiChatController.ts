@@ -10,6 +10,7 @@ import { chatLoader } from "../Loader/ChatLoader";
 import { serverCommunication } from "./ServerCommunication";
 import { generalInfosLoader } from "../Loader/GeneralInfosLoader";
 import { NotifivationManager } from "../NotificationManager";
+import { messageEncrypter } from "../MessageEncrypter";
 
 
 export class ApiChatController extends NamespaceHandler<typeof server_client_chatCommands> {
@@ -37,6 +38,16 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
             await WebviewCommunication.getInstance()?.chat.sendChatListLookup(chats);
             await WebviewCommunication.getInstance()?.chat.markChatAsReaded(data.chatId, data.messageId);
             return null;
+        },
+        'uploadAttachmentsRequest': async (data) => {
+            try {
+                console.log('HIER1');
+                return { uploaded: await messageEncrypter.uploadAttachments(data.attachmentIdUrlMap) }
+            } catch (e) {
+                console.log('error while AttachmentUploadRequest')
+                console.error(e);
+            }
+            return { uploaded: false }
         }
     } satisfies NamespaceHandler<typeof server_client_chatCommands>['handles'];
 
@@ -61,7 +72,10 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
     }
 
     async sendMsg(message: MessageCreateData) {
-        return await this.request('sendMessage', { message: message });
+        const success = await this.request('sendMessage', { message: message });
+        if (!success.successs)
+            new NotifivationManager().sendMessageError();
+        return success
     }
 
     async getChatListBaseInfos() {

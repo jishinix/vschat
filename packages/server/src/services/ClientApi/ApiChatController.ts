@@ -53,10 +53,15 @@ export class ApiChatController extends NamespaceHandler<typeof server_client_cha
         'sendMessage': async (data, extraData) => {
             const user = await extraData.socket.data.getUser();
             const chat = (await chatLoader.getData([data.message.chatId])).get(data.message.chatId);
-            if (!user || !chat) return null;
+            if (!user || !chat) return { successs: false };
 
-            chat.addMessage(data.message, user.data);
-            return null
+            try {
+                await chat.addMessage(data.message, extraData.socket);
+            } catch (e) {
+                console.log('sending, message error', e)
+                return { successs: false };
+            }
+            return { successs: true }
         },
         'getChatListBaseInfos': async (data, extraData) => {
             if (!extraData.socket.data.userId) return { chats: {} as Record<string, RawChatListInfos> };

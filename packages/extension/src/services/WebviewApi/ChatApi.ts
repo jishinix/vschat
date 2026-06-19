@@ -16,6 +16,7 @@ import { CryptoService } from '@vschat/shared/Utils/CryptoService'
 import { DecrypredMessageData } from '@vschat/shared/interfaces/Messages'
 import { generalInfosLoader } from "../Loader/GeneralInfosLoader";
 import { UserReference } from "@vschat/shared/interfaces/User";
+import { messageEncrypter } from "../MessageEncrypter";
 
 export class ChatApi extends NamespaceHandler<typeof extension_webview_chatCommands> {
     constructor() {
@@ -52,11 +53,8 @@ export class ChatApi extends NamespaceHandler<typeof extension_webview_chatComma
         },
         'sendMessage': async (data) => {
             const chat = (await chatLoader.getData([data.message.chatId])).get(data.message.chatId);
-            if (!chat) return null;
-            const chatSessionKey = CryptoService.generateKeyFromContent(await serverCommunication.authHander.getChatSession() + chat.data.id);
-            const encryptedContent = CryptoService.createEncryptedContent(data.message.content, Object.fromEntries(chat.data.participants.map(e => [e.id, e])), chatSessionKey)
-            serverCommunication.chatHandler.sendMsg({ ...data.message, encryptedContent })
-            return null
+            if (!chat) return { successs: false };
+            return serverCommunication.chatHandler.sendMsg(await messageEncrypter.prepareMessage(chat, data.message))
         },
         'getChatList': async (data) => {
             return await generalInfosLoader.getChatList();

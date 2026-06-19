@@ -23,4 +23,8 @@ export class NotifivationManager {
             }
         });
     }
+
+    sendMessageError() {
+        vscode.window.showErrorMessage('Es ist ein fehler beim senden der nachricht aufgetreten.')
+    }
 }

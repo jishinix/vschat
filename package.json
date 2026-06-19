@@ -22,7 +22,8 @@
     "debug": "^4.4.3",
     "electron": "^42.3.3",
     "find-config": "^1.0.0",
-    "install": "^0.13.0"
+    "install": "^0.13.0",
+    "minio": "^8.0.7"
   },
   "devDependencies": {
     "@types/debug": "^4.1.13",

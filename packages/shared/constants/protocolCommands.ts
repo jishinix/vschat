@@ -53,7 +53,6 @@ export const extension_webview_userCommands = {
 
     UPDATE_RELATIONSHIP_LOOKUP: { name: 'updateRelationshipLookup', dataType: { lookuptype: '' as lookuptypes, lookup: [] as string[] }, returnType: null },
     GET_RELATIONSHIP_LOOKUP: { name: 'getRelationshipLookup', dataType: { lookuptype: '' as lookuptypes }, returnType: { lookup: [] as string[] } },
-
 } as const
 
 export const extension_webview_userFeedbackEmits = {
@@ -69,12 +68,13 @@ export const server_client_chatCommands = {
     CREATE_CHAT: { name: 'createChat', dataType: { chatCreateData: {} as ChatCreateData<string> }, returnType: { chat: {} as CreateChatRequestReturn } },
     FETCH_MESSAGEIDS: { name: 'fetchMessageIds', dataType: { chatId: '' as string, max: 50 as number, lastMessageId: '' as string | null }, returnType: { messageIds: [] as string[] } },
     GET_MESSAGES: { name: 'getMessages', dataType: { chatId: '' as string, messageIds: [] as string[] }, returnType: { messages: {} as Record<string, MessageData> } },
-    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as MessageCreateData }, returnType: null },
+    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as MessageCreateData }, returnType: { successs: false as boolean } },
     RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as MessageData }, returnType: null },
     GET_RAW_CHAT_LIST_BASE_INFOS: { name: 'getChatListBaseInfos', dataType: {}, returnType: { chats: {} as Record<string, RawChatListInfos> } },
     GET_LAST_READERMESSAGE: { name: 'getLastReadedMessage', dataType: { chatId: '' as string }, returnType: { messageId: '' as string } },
     MARK_CHAT_AS_READED: { name: 'markChatAsReaded', dataType: { chatId: '' as string, messageId: '' as string }, returnType: null },
     REQUEST_CHAT_MARKING_READ: { name: 'requestChatMarkingRead', dataType: { chatId: '' as string }, returnType: null },
+    UPLOAD_ATTACHMENTS_REQUEST: { name: 'uploadAttachmentsRequest', dataType: { attachmentIdUrlMap: {} as Record<string, string> }, returnType: { uploaded: false as boolean } },
 
 
 
@@ -87,7 +87,7 @@ export const extension_webview_chatCommands = {
     GET_FRIEND_CHAT: { name: 'getFriendChat', dataType: { userId: '' as string }, returnType: { chat: null as ChatData<UserReference> | null } },
     FETCH_MESSAGES: { name: 'fetchMessages', dataType: { chatId: '' as string, max: 50 as number, lastMessageId: '' as string | null }, returnType: { messages: [] as DecrypredMessageData[] } },
     GET_MESSAGES: { name: 'getMessages', dataType: { chatId: '' as string, messageIds: [] as string[] }, returnType: { messages: {} as Record<string, DecrypredMessageData> } },
-    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as DecrypredMessageCreateData }, returnType: null },
+    SEND_MESSAGE: { name: 'sendMessage', dataType: { message: {} as DecrypredMessageCreateData }, returnType: { successs: false as boolean } },
     RECIVE_MESSAGE: { name: 'reciveMessage', dataType: { message: {} as DecrypredMessageData }, returnType: null },
     GET_CHAT_LIST: { name: 'getChatList', dataType: {}, returnType: {} as ChatList },
     SEND_CHAT_LIST_LOOKUP: { name: 'sendChatListLookup', dataType: {} as ChatList, returnType: null },

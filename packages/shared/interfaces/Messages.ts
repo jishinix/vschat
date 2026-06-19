@@ -1,7 +1,7 @@
 import { UserReference } from "./User";
 import { EncryptedContent, DecryptionCollection } from './EncryptedContent'
 
-type createRemoveAttributes = 'id' | 'timestamp' | 'sender';
+type createRemoveAttributes = 'id' | 'timestamp' | 'sender' | 'attachments';
 
 export interface MessageData {
     id: string,
@@ -16,12 +16,20 @@ export interface DecrypredMessageData extends Omit<MessageData, 'encryptedConten
     content: string
 }
 
-export type MessageCreateData = Omit<MessageData, createRemoveAttributes>
-export type DecrypredMessageCreateData = Omit<DecrypredMessageData, createRemoveAttributes>
+export type MessageCreateData = Omit<MessageData, createRemoveAttributes> & {
+    attachments?: Attachment[]
+}
+export type DecrypredMessageCreateData = Omit<DecrypredMessageData, createRemoveAttributes> & {
+    attachments?: RawAttachment[]
+}
 
 export interface Attachment {
     id: string,
     mineType: string,
     fileName: string,
     decryptCollection: DecryptionCollection
+}
+
+export type RawAttachment = Omit<Attachment, 'id' | 'decryptCollection'> & {
+    data: string
 }

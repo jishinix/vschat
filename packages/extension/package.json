@@ -78,6 +78,7 @@
   },
   "dependencies": {
     "@vschat/shared": "*",
+    "short-uuid": "^6.0.3",
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
