@@ -131,3 +131,15 @@ CREATE TABLE `Relationships` (
   CONSTRAINT `Relationships_ibfk_2` FOREIGN KEY (`RelatedUserId`) REFERENCES `Users` (`Id`) ON DELETE CASCADE,
   CONSTRAINT `chk_not_self_relation` CHECK ((`UserId` <> `RelatedUserId`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- visualstudiochat.MessageAttachments definition
+
+CREATE TABLE `MessageAttachments` (
+  `Id` varchar(100) NOT NULL,
+  `EncryptedContentId` varchar(100) NOT NULL,
+  `MineType` varchar(100) NOT NULL,
+  `FileName` varchar(300) NOT NULL,
+  `MessageId` varchar(100) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

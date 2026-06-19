@@ -1,4 +1,4 @@
-import { MessageData } from "@vschat/shared/interfaces/Messages";
+import { Attachment, MessageData } from "@vschat/shared/interfaces/Messages";
 import { Cache } from "@vschat/shared/Utils/Cache";
 import { database } from "../DbService";
 import { timeStamp } from "node:console";
@@ -48,9 +48,34 @@ export class MessagesLoader extends Cache<MessageData, LoaderMessageType> {
                     id: message.UserId,
                     username: message.Username,
                     publicKey: message.PublicKey
-                }
+                },
+                attachments: attachments.map(e=>({
+
+                }))
             })
         }
+        
+        
+        const attachmentRtn = await database('MessageAttachments')
+            .select([
+                'Id',
+                'EncryptedContentId',
+                'MineType',
+                'FileName',
+                'MessageId'
+            ])
+            .join('EncryptedContent', 'EncryptedContentId', '=', 'EncryptedContent.Id')
+            .where('MessageId', 'in', messages.map(e=>e.MessageId))
+            
+        const attachments = new Map<string, Attachment>();
+        for(const attachment of attachmentRtn){
+            attachments.set(attachment.Id, {
+                id: attachment.Id,
+                fileName: attachment.FileName,
+                mineType: attachment.mineType
+            })
+        }
+
         const encryptionKeys = await database('EncryptedContentKeys')
             .select([
                 'Messages.Id as MessageId',

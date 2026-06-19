@@ -1,5 +1,5 @@
 import { UserReference } from "./User";
-import { EncryptedContent } from './EncryptedContent'
+import { EncryptedContent, DecryptionCollection } from './EncryptedContent'
 
 type createRemoveAttributes = 'id' | 'timestamp' | 'sender';
 
@@ -8,7 +8,8 @@ export interface MessageData {
     chatId: string
     timestamp: number,
     sender: UserReference,
-    encryptedContent: EncryptedContent
+    encryptedContent: EncryptedContent,
+    attachments: Attachment[]
 }
 
 export interface DecrypredMessageData extends Omit<MessageData, 'encryptedContent'> {
@@ -17,3 +18,10 @@ export interface DecrypredMessageData extends Omit<MessageData, 'encryptedConten
 
 export type MessageCreateData = Omit<MessageData, createRemoveAttributes>
 export type DecrypredMessageCreateData = Omit<DecrypredMessageData, createRemoveAttributes>
+
+export interface Attachment {
+    id: string,
+    mineType: string,
+    fileName: string,
+    decryptCollection: DecryptionCollection
+}
