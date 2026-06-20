@@ -1,125 +1,151 @@
-import CryptoJS from "crypto-js";
-import forge from 'node-forge';
-import { EncryptedContent } from '@vschat/shared/interfaces/EncryptedContent'
-import { UserReference } from '@vschat/shared/interfaces/User'
-
+import { 
+    randomBytes, 
+    createCipheriv, 
+    createDecipheriv, 
+    generateKeyPairSync, 
+    publicEncrypt, 
+    privateDecrypt, 
+    constants, 
+    createHash,
+    scryptSync 
+} from 'node:crypto';
+import { EncryptedContent, EncryptedData } from '../interfaces/EncryptedContent';
+import { UserReference } from '../interfaces/User';
 
 export class CryptoService {
+    private static contentToKeyCache = new Map<string, string>()
+    private static decryptedKeysCache = new Map<string, string>()
+
+    // --- Original Methoden (Beibehalten) ---
+
     static generateRSAKeys() {
-        const { privateKey, publicKey } = forge.pki.rsa.generateKeyPair(2048);
-
-        const privatePem = forge.pki.privateKeyToPem(privateKey);
-        const publicPem = forge.pki.publicKeyToPem(publicKey);
-
-        return {
-            privateKey: privatePem,
-            publicKey: publicPem
-        };
+        const { privateKey, publicKey } = generateKeyPairSync('rsa', {
+            modulusLength: 2048,
+            publicKeyEncoding: { type: 'spki', format: 'pem' },
+            privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+        });
+        return { privateKey, publicKey };
     }
 
     static encryptWithPublicKey(publicKeyPem: string, plainText: string): string {
-        const publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
-        const encryptedBytes = publicKey.encrypt(plainText, 'RSA-OAEP', {
-            md: forge.md.sha256.create(),
-            mgf1: {
-                md: forge.md.sha256.create()
-            }
-        });
-        return forge.util.encode64(encryptedBytes);
+        const buffer = Buffer.from(plainText, 'utf-8');
+        const encrypted = publicEncrypt({
+            key: publicKeyPem,
+            padding: constants.RSA_PKCS1_OAEP_PADDING,
+            oaepHash: 'sha256'
+        }, buffer);
+        return encrypted.toString('base64');
     }
 
     static decryptWithPrivateKey(privateKeyPem: string, base64CipherText: string): string {
-        const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-        const encryptedBytes = forge.util.decode64(base64CipherText);
-        const decryptedPlaintext = privateKey.decrypt(encryptedBytes, 'RSA-OAEP', {
-            md: forge.md.sha256.create(),
-            mgf1: {
-                md: forge.md.sha256.create()
-            }
-        });
-
-        return decryptedPlaintext;
+        const buffer = Buffer.from(base64CipherText, 'base64');
+        const decrypted = privateDecrypt({
+            key: privateKeyPem,
+            padding: constants.RSA_PKCS1_OAEP_PADDING,
+            oaepHash: 'sha256'
+        }, buffer);
+        return decrypted.toString('utf-8');
     }
 
-    static async deriveHashes(str: string) {
-        const msgBuffer = new TextEncoder().encode(str);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    static async deriveHashes(str: string): Promise<string> {
+        return createHash('sha256').update(str).digest('hex');
     }
+
     static encryptText(str: string, key: string): string {
-        return CryptoJS.AES.encrypt(str, key).toString();
+        const aesKey = Buffer.from(key, 'base64');
+        const contentBuffer = Buffer.from(str, 'utf-8');
+        const encrypted = this.encryptBuffer(contentBuffer, aesKey);
+        return encrypted.toString('base64');
+    }
+
+    static encryptData(data: Buffer<ArrayBuffer>, key: string): Buffer<ArrayBuffer> {
+        const aesKey = Buffer.from(key, 'base64');
+        return this.encryptBuffer(data, aesKey);
     }
 
     static decryptText(cipherpayload: string, key: string): string {
-        try {
-            const bytes = CryptoJS.AES.decrypt(cipherpayload, key);
-            const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
-
-            if (!decryptedText) {
-                throw new Error('decryption failed - wrong key or corrupted data');
-            }
-
-            return decryptedText;
-        } catch (e) {
-            console.error('decryption failed:', e);
-            throw new Error('decryption failed');
-        }
+        const aesKey = Buffer.from(key, 'base64');
+        const buffer = Buffer.from(cipherpayload, 'base64');
+        return this.decryptBuffer(buffer, aesKey).toString('utf-8');
     }
 
     static generateSecureAESKey(): string {
-        // 32 Bytes = 256 Bit Schlüsselstärke
-        const bytes = forge.random.getBytesSync(32);
-        return forge.util.encode64(bytes);
+        return randomBytes(32).toString('base64');
     }
 
-    static createAuthProof(hash: string, challenge: string) {
-        const combined = hash + challenge;
-
-        // Und hashen das Ergebnis erneut
-        return this.deriveHashes(combined);
+    static createAuthProof(hash: string, challenge: string): Promise<string> {
+        return this.deriveHashes(hash + challenge);
     }
-
+        
     static generateKeyFromContent(content: string): string {
-        const md = forge.md.sha256.create();
-        md.update(content, 'utf8');
-        const hashBytes = md.digest().getBytes();
-
-        return forge.util.encode64(hashBytes);
+        if(this.contentToKeyCache.has(content)) return this.contentToKeyCache.get(content)!
+        const salt = createHash('sha256').update(content).digest('hex').substring(0, 16);
+        const derivedKey = scryptSync(content, salt, 32);
+        const key = derivedKey.toString('base64');
+        this.contentToKeyCache.set(content, key);
+        return key;
     }
+
+    // --- Interne Helper (Nativ) ---
+
+    private static encryptBuffer(buffer: Buffer<ArrayBuffer>, key: Buffer): Buffer<ArrayBuffer> {
+        const iv = randomBytes(12);
+        const cipher = createCipheriv('aes-256-gcm', key, iv);
+        const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
+        const tag = cipher.getAuthTag();
+        return Buffer.concat([iv, tag, encrypted]);
+    }
+
+    private static decryptBuffer(encryptedBuffer: Buffer<ArrayBuffer>, key: Buffer): Buffer<ArrayBuffer> {
+        const iv = encryptedBuffer.subarray(0, 12);
+        const tag = encryptedBuffer.subarray(12, 28);
+        const data = encryptedBuffer.subarray(28);
+        const decipher = createDecipheriv('aes-256-gcm', key, iv);
+        decipher.setAuthTag(tag);
+        return Buffer.concat([decipher.update(data), decipher.final()]);
+    }
+
+    // --- Die von dir gewünschten Methoden ---
 
     static createEncryptedContent(content: string, users: { [userId: string]: UserReference }, key?: string): EncryptedContent {
-
-        key = key || this.generateSecureAESKey();
-
-        const md = forge.md.md5.create();
-        md.update(key, 'utf8');
-        const keyFingerprint = md.digest().toHex().substring(0, 8);
+        const aesKeyString = key || this.generateSecureAESKey();
+        const aesKeyBuffer = Buffer.from(aesKeyString, 'base64');
+        
+        const encryptedContent = this.encryptText(content, aesKeyString);
+        
         return {
-            encryptedContent: this.encryptText(content, key),
-            keys: Object.fromEntries(Array.from(Object.entries(users)).map(e => [e[0], this.encryptWithPublicKey(e[1].publicKey, key)])),
-            fingerPrint: keyFingerprint
-        }
+            encryptedContent,
+            keys: Object.fromEntries(
+                Object.entries(users).map(([id, user]) => [id, this.encryptWithPublicKey(user.publicKey, aesKeyString)])
+            ),
+            fingerPrint: createHash('md5').update(aesKeyBuffer).digest('hex').substring(0, 8)
+        };
     }
 
-    static decryptContent(payload: EncryptedContent, userId: string, privateKey: string, contentKey?: string | null): { content: string, key: string } | null {
-        const key = contentKey || this.decryptWithPrivateKey(privateKey, payload.keys[userId]);
-        if (!key) return null;
+    static createEncryptedData(content: Buffer<ArrayBuffer>, users: { [userId: string]: UserReference }, key?: string): EncryptedData {
+        const aesKeyString = key || this.generateSecureAESKey();
+        const encryptedData = this.encryptData(content, aesKeyString);
+        
+        return {
+            encryptedData,
+            keys: Object.fromEntries(
+                Object.entries(users).map(([id, user]) => [id, this.encryptWithPublicKey(user.publicKey, aesKeyString)])
+            ),
+            fingerPrint: createHash('md5').update(Buffer.from(aesKeyString, 'base64')).digest('hex').substring(0, 8)
+        };
+    }
 
+    static decryptContent(payload: EncryptedContent, userId: string, privateKey: string): { content: string, key: string } | null {
+        const key = this.decryptedKeysCache.get(payload.fingerPrint) || this.decryptWithPrivateKey(privateKey, payload.keys[userId]);
+        if (!key) return null;
+        this.decryptedKeysCache.set(payload.fingerPrint, key);
         return { content: this.decryptText(payload.encryptedContent, key), key };
     }
 
     static decryptMultibleContent(contents: EncryptedContent[], privateKey: string, userId: string) {
-        const decryptedKeysMap = new Map<string, string>();
-
-        const rtn = contents.map(e => {
-            const encryptedKeyForUser = e.fingerPrint;
-            let key = decryptedKeysMap.get(encryptedKeyForUser);
-            const decrypted = CryptoService.decryptContent(e, userId, privateKey, key);
-            if (!key && decrypted) decryptedKeysMap.set(encryptedKeyForUser, decrypted?.key)
-            return decrypted?.content || null
-        })
-        return rtn;
+        return contents.map(e => {
+            const decrypted = this.decryptContent(e, userId, privateKey);
+            return decrypted?.content || null;
+        });
     }
 }

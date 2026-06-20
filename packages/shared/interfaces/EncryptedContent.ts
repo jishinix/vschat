@@ -9,3 +9,7 @@ export interface DecryptionCollection {
 export interface EncryptedContent extends DecryptionCollection{
     encryptedContent: string;
 }
+
+export interface EncryptedData extends DecryptionCollection{
+    encryptedData: Buffer<ArrayBuffer>;
+}

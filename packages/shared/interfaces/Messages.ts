@@ -31,5 +31,5 @@ export interface Attachment {
 }
 
 export type RawAttachment = Omit<Attachment, 'id' | 'decryptCollection'> & {
-    data: string
+    data: Buffer<ArrayBuffer>
 }

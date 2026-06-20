@@ -7,7 +7,7 @@ import { UserReference } from "@vschat/shared/interfaces/User";
 
 
 class MessageEncrypter {
-    private attachmentIdMap = new Map<string, string>()
+    private attachmentIdMap = new Map<string, Buffer<ArrayBuffer>>()
 
 
     async prepareMessage(chat: Chat, mcd: DecrypredMessageCreateData): Promise<MessageCreateData> {
@@ -29,9 +29,9 @@ class MessageEncrypter {
         const attachments: Attachment[] = [];
         if (mcd.attachments?.length) {
             return mcd.attachments.map(e => {
-                const encryptedContent = CryptoService.createEncryptedContent(e.data, participants, chatSessionKey)
+                const encryptedData = CryptoService.createEncryptedData(e.data, participants, chatSessionKey)
                 const id = generate();
-                this.attachmentIdMap.set(id, encryptedContent.encryptedContent)
+                this.attachmentIdMap.set(id, encryptedData.encryptedData)
                 setTimeout(() => {
                     this.attachmentIdMap.delete(id)
                 }, 1000 * 60 * 5)
@@ -39,8 +39,8 @@ class MessageEncrypter {
                     ...e,
                     id,
                     decryptCollection: {
-                        fingerPrint: encryptedContent.fingerPrint,
-                        keys: encryptedContent.keys
+                        fingerPrint: encryptedData.fingerPrint,
+                        keys: encryptedData.keys
                     }
                 }
             })
