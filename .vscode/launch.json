@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Extension",
+            "name": "Extension 1",
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
@@ -12,11 +12,34 @@
             "outFiles": [
                 "${workspaceFolder}/out/extension/**/*.js"
             ],
-            "preLaunchTask": "execute",
-            "envFile": "${workspaceFolder}/.env",
             "env": {
-                "NODE_TLS_REJECT_UNAUTHORIZED": "0" // Dann kannst du das auch aus dem Code löschen
+                "NODE_TLS_REJECT_UNAUTHORIZED": "0"
             }
+        },
+        {
+            "name": "Extension 2",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/out/extension-temp"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/out/extension-temp/**/*.js"
+            ],
+            "env": {
+                "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Both Extensions",
+            "configurations": [
+                "Extension 1",
+                "Extension 2"
+            ],
+            "preLaunchTask": "execute",
         }
     ]
 }
