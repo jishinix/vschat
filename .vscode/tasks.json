@@ -35,7 +35,7 @@
         {
             "label": "copy-workspace",
             "type": "shell",
-            "command": "mkdir -p ./out/extension-temp && cp -r ./out/extension/ ./out/extension-temp/",
+            "command": "node .vscode/task_clone.js",
             "problemMatcher": []
         },
         {
